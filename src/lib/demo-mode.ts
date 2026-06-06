@@ -10,37 +10,39 @@ export const DEMO_STEPS = [
   {
     id: 1,
     title: "Discover",
-    label: "Discover a local electrician",
-    description: "Scanning regional trades & fleet businesses for vehicle branding gaps…",
+    label: "Import DHL Fleet Services",
+    description: "Scanning logistics companies for vehicle branding opportunities…",
   },
   {
     id: 2,
     title: "Analyze",
     label: "Run Vehicle Branding Audit",
-    description: "Analyzing fleet visibility and wrap opportunities…",
+    description: "Analyzing vehicle visibility and wrap gaps…",
   },
   {
     id: 3,
     title: "Score",
-    label: "Calculate lead score",
-    description: "Running AI scoring model across 5 factors…",
+    label: "Qualify the lead",
+    description: "Running AI scoring across 5 factors…",
   },
   {
     id: 4,
     title: "Recommend",
-    label: "Recommend wrap services",
+    label: "Identify wrap services",
     description: "Matching optimal vehicle branding solutions…",
   },
   {
     id: 5,
     title: "Outreach",
     label: "Generate outreach email",
-    description: "Crafting personalized fleet branding outreach…",
+    description: "Crafting personalized vehicle branding outreach…",
   },
 ] as const;
 
+export const DEMO_STEP_DURATION_MS = 4000;
+
 const demoFactors = {
-  recentlyOpened: true,
+  recentlyOpened: false,
   activeSocialMedia: true,
   multipleLocations: true,
   brandingOpportunity: true,
@@ -51,21 +53,20 @@ const scoreBreakdown = calculateScore(demoFactors);
 
 const demoLeadBase = {
   id: "demo",
-  businessName: "Strom & Sicher Elektrotechnik",
-  industry: "Electricians",
-  location: "Industriestraße 8",
-  city: "Munich",
+  businessName: "DHL Fleet Services",
+  industry: "Logistics Companies",
+  location: "Logistikpark 1",
+  city: "Bonn",
   factors: demoFactors,
 };
 
 const demoRecommendedServices = [
+  "Vehicle branding",
   "Van graphics",
-  "Partial wraps",
-  "Fleet branding",
   "Full wraps",
 ];
 
-const demoEstimatedValue = { min: 3200, max: 7800 };
+const demoEstimatedValue = { min: 85000, max: 185000 };
 
 export const demoLead: Lead = {
   ...demoLeadBase,
@@ -80,26 +81,22 @@ export const demoLead: Lead = {
     factors: { brandingOpportunity: true, multipleLocations: true },
   }),
   contact: generateContact(demoLeadBase),
-  crmStatus: "Not Contacted",
   valuableReasons: [
-    "Recently opened (6 weeks ago)",
-    "Active social media presence",
-    "4-vehicle fleet with no consistent branding",
-    "High vehicle branding opportunity",
-    "Within 8 km service radius",
+    "120+ delivery vans with inconsistent branding",
+    "National vehicle visibility opportunity",
+    "High-priority logistics prospect",
   ],
   recommendedServices: demoRecommendedServices,
   estimatedValue: demoEstimatedValue,
+  crmStatus: "Not Contacted",
 };
 
 export const demoAnalysisInsights = [
-  { label: "Fleet Size", value: "4 unmarked service vans", icon: "calendar" },
-  { label: "Social Activity", value: "612 followers, 8 posts/week", icon: "social" },
-  { label: "Google Rating", value: "4.7 ★ (41 reviews)", icon: "star" },
-  { label: "Branding Gap", value: "No branded vans detected", icon: "sign" },
-  { label: "Daily Impressions", value: "~18K per vehicle on routes", icon: "traffic" },
+  { label: "Fleet Size", value: "120+ delivery vans", icon: "calendar" },
+  { label: "Social Activity", value: "Active LinkedIn & vehicle updates", icon: "social" },
+  { label: "Google Rating", value: "4.6 ★ (2,400+ reviews)", icon: "star" },
+  { label: "Branding Gap", value: "Inconsistent van graphics across depots", icon: "sign" },
+  { label: "Daily Impressions", value: "~45K per branded vehicle", icon: "traffic" },
 ];
 
 export const demoEmail = generateOutreachEmail(demoLead);
-
-export const DEMO_STEP_DURATION_MS = 4000;

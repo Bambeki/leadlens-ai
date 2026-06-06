@@ -22,7 +22,7 @@ export const SCORE_WEIGHTS: Record<ScoringFactor, number> = {
 export const SCORE_LABELS: Record<ScoringFactor, string> = {
   recentlyOpened: "Recently Opened",
   activeSocialMedia: "Active Social Media",
-  multipleLocations: "Fleet / Multi-Site",
+  multipleLocations: "Multi-Vehicle / Multi-Site",
   brandingOpportunity: "Vehicle Branding Gap",
   regionalProximity: "Regional Proximity",
 };

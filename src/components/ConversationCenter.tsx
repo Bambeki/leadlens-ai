@@ -93,7 +93,7 @@ function StatusPill({
     <span
       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
         active
-          ? "bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200"
+          ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/25"
           : "bg-white/10 text-slate-400"
       }`}
     >
@@ -207,7 +207,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
 
     if (!resendReady) {
       setSendError(
-        "Demo mode — add RESEND_API_KEY and RESEND_FROM_EMAIL to .env.local to send live emails."
+        "Email delivery is not connected yet. Visit Email Center to enable live sending."
       );
       return;
     }
@@ -281,7 +281,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
       return;
     }
     setSendError(null);
-    const replyBody = `Hi Marcus,\n\nThank you for reaching out about vehicle branding for ${lead.businessName}. We're interested in fleet wraps and would like to schedule a call to discuss options.\n\nCould we find a time next week?\n\nBest regards,\n${lead.contact.name}\n${lead.contact.role}`;
+    const replyBody = `Hi Marcus,\n\nThank you for reaching out about vehicle branding for ${lead.businessName}. We're interested in vehicle wraps and would like to schedule a call to discuss options.\n\nCould we find a time next week?\n\nBest regards,\n${lead.contact.name}\n${lead.contact.role}`;
 
     simulateWebhookEvent(lead, "customer_replied");
     addSimulatedCustomerReply(lead.id, {
@@ -338,15 +338,13 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
         </div>
 
         {!resendReady && (
-          <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">
-            Demo mode — Resend not configured. Draft and approve emails; add
-            RESEND_API_KEY to .env.local for live sending.
+          <p className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-300">
+            Draft and approve emails here. Connect your email in Email Center to send live.
           </p>
         )}
         {resendReady && (
           <p className="mt-3 text-xs text-slate-400">
-            From: {fromEmail ?? "Resend"} · Reply-To:{" "}
-            {replyToEmail ?? "not set — add RESEND_REPLY_TO_EMAIL to .env.local"}
+            Sending from {fromEmail ?? "your connected account"}
           </p>
         )}
       </div>
@@ -412,7 +410,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
                   </pre>
                   {msg.messageId && (
                     <p className="mt-2 font-mono text-[10px] text-violet-200">
-                      Resend ID: {msg.messageId}
+                      Message ID: {msg.messageId}
                     </p>
                   )}
                 </div>
@@ -425,23 +423,23 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
       {/* Composer */}
       <div className="p-5">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-          <span className="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-800">
+          <span className="rounded-full bg-violet-500/15 px-2.5 py-1 text-xs font-semibold text-violet-300">
             AI draft — editable before sending
           </span>
           <div className="flex flex-wrap gap-2">
             {composerStep === "draft" && (
-              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+              <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-300">
                 Awaiting approval
               </span>
             )}
             {composerStep === "approved" && (
-              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+              <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-300">
                 Approved — ready to send
               </span>
             )}
             {composerStep === "sent" && (
-              <span className="rounded-full bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700">
-                Sent via Resend
+              <span className="rounded-full bg-blue-500/15 px-2 py-0.5 text-xs font-semibold text-blue-300">
+                Sent
               </span>
             )}
           </div>
@@ -471,7 +469,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
                 if (composerStep === "approved") setComposerStep("draft");
               }}
               readOnly={isComposerLocked}
-              className="mt-1.5 w-full rounded-lg border border-saas-border bg-saas-card px-4 py-2.5 text-sm focus:border-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/20 disabled:bg-white/5"
+              className="saas-input mt-1.5 w-full px-4 py-2.5 text-sm disabled:bg-white/5"
             />
 
             <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-slate-400">
@@ -485,7 +483,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
               }}
               readOnly={isComposerLocked}
               rows={12}
-              className="mt-1.5 w-full resize-y rounded-lg border border-saas-border bg-saas-card px-4 py-3 font-sans text-sm leading-relaxed focus:border-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/20 disabled:bg-white/5"
+              className="saas-input mt-1.5 w-full resize-y px-4 py-3 font-sans text-sm leading-relaxed disabled:bg-white/5"
             />
 
             <p className="mt-2 text-xs text-slate-400">
@@ -530,7 +528,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
                     value={testEmail}
                     onChange={(e) => setTestEmail(e.target.value)}
                     placeholder="your@email.com"
-                    className="mt-2 w-full rounded-lg border border-saas-border bg-saas-card px-4 py-2.5 text-sm"
+                    className="saas-input mt-2 w-full px-4 py-2.5 text-sm"
                   />
                 )}
                 <p className="mt-2 text-xs text-slate-400">
@@ -571,8 +569,8 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
 
         {/* Simulated inbox */}
         {composerStep === "sent" && (
-          <div className="mt-6 rounded-lg border border-dashed border-violet-200 bg-violet-50/40 p-4">
-            <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">
+          <div className="mt-6 rounded-lg border border-dashed border-violet-500/25 bg-violet-500/10 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
               Simulated inbox
             </p>
             <p className="mt-1 text-sm text-slate-300">
@@ -591,7 +589,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
         )}
 
         {sendError && (
-          <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
+          <p className="mt-4 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm font-medium text-red-300">
             {sendError}
           </p>
         )}

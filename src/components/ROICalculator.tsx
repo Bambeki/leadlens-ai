@@ -30,8 +30,8 @@ function RevenueBarChart({
     <svg viewBox={`0 0 ${width} ${chartHeight + padding.bottom}`} className="w-full">
       <defs>
         <linearGradient id="revenueGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#6366f1" />
-          <stop offset="100%" stopColor="#818cf8" />
+          <stop offset="0%" stopColor="#7c3aed" />
+          <stop offset="100%" stopColor="#3b82f6" />
         </linearGradient>
       </defs>
       {data.map((d, i) => {
@@ -86,7 +86,7 @@ function ConversionDonut({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="#e2e8f0"
+          stroke="#1f2937"
           strokeWidth={stroke}
         />
         <circle
@@ -150,12 +150,12 @@ function TimeComparisonChart({
           />
         </div>
       </div>
-      <div className="rounded-lg bg-emerald-50 px-4 py-3">
+      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-4 py-3">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-emerald-800">Time saved</span>
-          <span className="text-lg font-bold text-emerald-700">{formatHours(saved)}</span>
+          <span className="text-sm font-medium text-emerald-300">Time saved</span>
+          <span className="text-lg font-bold text-emerald-400">{formatHours(saved)}</span>
         </div>
-        <p className="mt-1 text-xs text-emerald-600">
+        <p className="mt-1 text-xs text-emerald-400/80">
           ~37 min saved per lead (research, scoring, outreach drafting)
         </p>
       </div>
@@ -212,7 +212,7 @@ export default function ROICalculator() {
                   onChange={(e) =>
                     setAverageProjectValue(Number(e.target.value))
                   }
-                  className="mt-2 w-full accent-indigo-600"
+                  className="mt-2 w-full accent-violet-500"
                 />
                 <input
                   type="number"
@@ -223,7 +223,7 @@ export default function ROICalculator() {
                   onChange={(e) =>
                     setAverageProjectValue(Number(e.target.value) || 0)
                   }
-                  className="mt-2 w-full rounded-lg border border-saas-border px-3 py-2 text-sm focus:border-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                  className="saas-input mt-2 w-full px-3 py-2 text-sm"
                 />
               </div>
 
@@ -243,7 +243,7 @@ export default function ROICalculator() {
                   step={5}
                   value={leadsContacted}
                   onChange={(e) => setLeadsContacted(Number(e.target.value))}
-                  className="mt-2 w-full accent-indigo-600"
+                  className="mt-2 w-full accent-violet-500"
                 />
                 <input
                   type="number"
@@ -253,7 +253,7 @@ export default function ROICalculator() {
                   onChange={(e) =>
                     setLeadsContacted(Number(e.target.value) || 0)
                   }
-                  className="mt-2 w-full rounded-lg border border-saas-border px-3 py-2 text-sm focus:border-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                  className="saas-input mt-2 w-full px-3 py-2 text-sm"
                 />
               </div>
 
@@ -273,7 +273,7 @@ export default function ROICalculator() {
                   step={1}
                   value={conversionRate}
                   onChange={(e) => setConversionRate(Number(e.target.value))}
-                  className="mt-2 w-full accent-indigo-600"
+                  className="mt-2 w-full accent-violet-500"
                 />
                 <input
                   type="number"
@@ -283,7 +283,7 @@ export default function ROICalculator() {
                   onChange={(e) =>
                     setConversionRate(Number(e.target.value) || 0)
                   }
-                  className="mt-2 w-full rounded-lg border border-saas-border px-3 py-2 text-sm focus:border-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+                  className="saas-input mt-2 w-full px-3 py-2 text-sm"
                 />
               </div>
             </div>
@@ -293,7 +293,7 @@ export default function ROICalculator() {
         {/* Output cards */}
         <div className="lg:col-span-3">
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-xl border border-violet-500/20 bg-gradient-to-br from-indigo-50 to-white p-5 shadow-sm">
+            <div className="saas-glow-card border-violet-500/25 bg-gradient-to-br from-violet-500/15 to-saas-card p-5">
               <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
                 Monthly Revenue
               </p>
@@ -305,8 +305,8 @@ export default function ROICalculator() {
                 {formatCurrency(averageProjectValue)}
               </p>
             </div>
-            <div className="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-5 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-600">
+            <div className="saas-glow-card border-emerald-500/25 bg-gradient-to-br from-emerald-500/15 to-saas-card p-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400">
                 Annual Revenue
               </p>
               <p className="mt-2 text-2xl font-bold text-white">
@@ -316,8 +316,8 @@ export default function ROICalculator() {
                 12 × monthly projection
               </p>
             </div>
-            <div className="rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50 to-white p-5 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
+            <div className="saas-glow-card border-blue-500/25 bg-gradient-to-br from-blue-500/15 to-saas-card p-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-blue-400">
                 Time Saved
               </p>
               <p className="mt-2 text-2xl font-bold text-white">
@@ -363,11 +363,11 @@ export default function ROICalculator() {
           <div className="mt-4 space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-slate-400">Contacted</span>
-              <span className="font-semibold">{leadsContacted}</span>
+              <span className="font-semibold text-white">{leadsContacted}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-slate-400">Converted</span>
-              <span className="font-semibold text-emerald-600">
+              <span className="font-semibold text-emerald-400">
                 {results.dealsWon.toFixed(1)}
               </span>
             </div>

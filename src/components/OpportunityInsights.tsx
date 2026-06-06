@@ -64,17 +64,11 @@ export default function OpportunityInsights({
         <div>
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold text-white">
-              Opportunity Insights
+              Why This Lead Matters
             </h2>
-            <span className="inline-flex items-center gap-1 rounded-full bg-violet-500/15 px-2.5 py-0.5 text-xs font-semibold text-violet-400 ring-1 ring-inset ring-violet-500/20">
-              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
-              </svg>
-              AI-generated
-            </span>
           </div>
           <p className="mt-1 text-sm text-slate-400">
-            Evidence-based findings explaining this lead&apos;s score
+            Key signals behind this opportunity
           </p>
         </div>
         <div className="rounded-lg bg-white/5 px-3 py-2 text-right">

@@ -21,12 +21,12 @@ const TYPE_META: Record<
   NotificationType,
   { icon: string; color: string }
 > = {
-  email_sent: { icon: "send", color: "text-blue-600 bg-blue-50" },
-  email_opened: { icon: "open", color: "text-violet-600 bg-violet-50" },
-  email_replied: { icon: "reply", color: "text-emerald-600 bg-emerald-50" },
-  meeting_requested: { icon: "calendar", color: "text-amber-600 bg-amber-50" },
-  meeting_scheduled: { icon: "calendar", color: "text-amber-600 bg-amber-50" },
-  crm_updated: { icon: "crm", color: "text-indigo-600 bg-indigo-50" },
+  email_sent: { icon: "send", color: "text-blue-400 bg-blue-500/15" },
+  email_opened: { icon: "open", color: "text-violet-400 bg-violet-500/15" },
+  email_replied: { icon: "reply", color: "text-emerald-400 bg-emerald-500/15" },
+  meeting_requested: { icon: "calendar", color: "text-amber-400 bg-amber-500/15" },
+  meeting_scheduled: { icon: "calendar", color: "text-amber-400 bg-amber-500/15" },
+  crm_updated: { icon: "crm", color: "text-violet-400 bg-violet-500/15" },
 };
 
 export function getNotificationMeta(type: NotificationType) {

@@ -35,7 +35,7 @@ function openingInsight(lead: InsightInput): OpportunityInsight {
     id: `${lead.id}-opening`,
     category: "opening",
     finding: "Opened within last 6 months",
-    evidence: `Business registration filed ${timeframe}. Google Maps listing tagged "Recently opened." New fleet vehicles likely entering service — ideal window for first-time vehicle branding.`,
+    evidence: `Business registration filed ${timeframe}. Google Maps listing tagged "Recently opened." New company vehicles likely entering service — ideal window for first-time vehicle branding.`,
     scoreImpact: SCORE_WEIGHTS.recentlyOpened,
     source: "Google Maps · Trade Register",
   };
@@ -50,7 +50,7 @@ function socialInsight(lead: InsightInput): OpportunityInsight {
     id: `${lead.id}-social`,
     category: "social",
     finding: "Active social media presence",
-    evidence: `@${handle} — ${followers.toLocaleString("de-DE")} followers with ${postsPerWeek} posts/week. Recent posts show unbranded vans and job-site photos — strong signal of growth without fleet graphics investment.`,
+    evidence: `@${handle} — ${followers.toLocaleString("de-DE")} followers with ${postsPerWeek} posts/week. Recent posts show unbranded vans and job-site photos — strong signal of growth without vehicle graphics investment.`,
     scoreImpact: SCORE_WEIGHTS.activeSocialMedia,
     source: "Instagram · Social Signal AI",
   };
@@ -64,7 +64,7 @@ function locationsInsight(lead: InsightInput): OpportunityInsight {
     id: `${lead.id}-locations`,
     category: "locations",
     finding: "Multi-vehicle / multi-site operation",
-    evidence: `${count} vehicles or depots identified across ${cities.join(" and ")}. Fleet graphics inconsistent between units — partial wraps on some vans, plain white on others. Multi-vehicle operators typically budget €8K–€25K for unified fleet branding.`,
+    evidence: `${count} vehicles or depots identified across ${cities.join(" and ")}. Vehicle graphics inconsistent between units — partial wraps on some vans, plain white on others. Multi-vehicle operators typically budget €8K–€25K for unified vehicle branding.`,
     scoreImpact: SCORE_WEIGHTS.multipleLocations,
     source: "Fleet Registry · Web Crawl",
   };
@@ -76,7 +76,7 @@ function brandingInsight(lead: InsightInput): OpportunityInsight {
     "peeling partial wrap on one vehicle only",
     "hand-painted phone number on truck tailgate",
     "faded magnetic signs falling off doors",
-    "inconsistent colors across 3+ fleet vehicles",
+    "inconsistent colors across 3+ vehicles",
   ];
   const problem = problems[hash(lead.id, 6) % problems.length];
 
@@ -92,16 +92,16 @@ function brandingInsight(lead: InsightInput): OpportunityInsight {
     "Landscaping Businesses":
       "Landscaping crews with truck graphics win more curb-appeal referrals from visible job sites.",
     "Logistics Companies":
-      "Logistics leaders maintain consistent fleet branding across every trailer and cab.",
+      "Logistics leaders maintain consistent vehicle branding across every trailer and cab.",
   };
 
   return {
     id: `${lead.id}-branding`,
     category: "branding",
     finding: "Weak vehicle branding detected",
-    evidence: `Fleet Vision AI: ${problem}. ${industryContext[lead.industry] ?? "Local competitors invest in professional vehicle wraps."} Branded fleets generate an estimated 30–50K daily impressions per vehicle in urban routes.`,
+    evidence: `Vehicle Vision AI: ${problem}. ${industryContext[lead.industry] ?? "Local competitors invest in professional vehicle wraps."} Branded vehicles generate an estimated 30–50K daily impressions per vehicle in urban routes.`,
     scoreImpact: SCORE_WEIGHTS.brandingOpportunity,
-    source: "Fleet Vision AI · Vehicle Analysis",
+    source: "Vehicle Vision AI · Vehicle Analysis",
   };
 }
 

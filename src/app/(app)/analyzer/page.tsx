@@ -5,10 +5,10 @@ export default function AnalyzerPage() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">
-          Fleet Branding Analyzer
+          Vehicle Branding Audit
         </h1>
         <p className="mt-1 text-slate-400">
-          AI-powered Vehicle Branding Intelligence for prospect fleets
+          Analyze vehicle photos for branding gaps and project value
         </p>
       </div>
 

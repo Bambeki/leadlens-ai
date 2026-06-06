@@ -19,19 +19,19 @@ function hash(id: string, salt: number): number {
 
 const weaknessPool = [
   "Missing vehicle branding",
-  "Weak fleet visibility",
+  "Weak vehicle visibility",
   "No branded vans",
   "Inconsistent vehicle graphics",
   "Unmarked service vehicles on the road",
   "Faded van lettering and peeling decals",
-  "Mixed logo versions across fleet",
-  "Plain white fleet — zero mobile advertising",
+  "Mixed logo versions across vehicles",
+  "Plain white vehicles — zero mobile advertising",
 ];
 
 const VEHICLE_RECOMMENDATIONS = [
   "Full wraps",
   "Partial wraps",
-  "Fleet branding",
+  "Vehicle branding",
   "Truck graphics",
   "Van graphics",
 ];
@@ -60,7 +60,7 @@ function buildWeaknesses(lead: AuditInput, h: number): string[] {
   const count = lead.factors.brandingOpportunity ? 3 + (h % 2) : 2;
   const priority = [
     "Missing vehicle branding",
-    "Weak fleet visibility",
+    "Weak vehicle visibility",
     "No branded vans",
     "Inconsistent vehicle graphics",
   ];
@@ -86,10 +86,10 @@ function buildRecommendations(lead: AuditInput, h: number): string[] {
 
 function buildVerdict(score: number, industry: string): string {
   if (score <= 35)
-    return `Critical fleet branding gap — high-priority ${industry.toLowerCase()} opportunity`;
+    return `Critical vehicle branding gap — high-priority ${industry.toLowerCase()} opportunity`;
   if (score <= 55) return `Significant vehicle wrap potential detected`;
-  if (score <= 70) return `Moderate fleet branding upgrades recommended`;
-  return `Fleet mostly branded — refresh or expansion opportunity`;
+  if (score <= 70) return `Moderate vehicle branding upgrades recommended`;
+  return `Vehicles mostly branded — refresh or expansion opportunity`;
 }
 
 /** Vehicle Branding Audit — stored as SignageAudit for compatibility */

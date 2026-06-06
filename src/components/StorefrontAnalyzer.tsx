@@ -46,10 +46,10 @@ export default function StorefrontAnalyzer() {
     <div className="space-y-6">
       <div className="saas-card p-6">
         <h2 className="text-lg font-semibold text-white">
-          Upload Fleet / Vehicle Image
+          Upload Vehicle Image
         </h2>
         <p className="mt-1 text-sm text-slate-400">
-          Upload a photo of a business vehicle or fleet for Vehicle Branding Intelligence
+          Upload a vehicle photo to analyze branding gaps and project value
         </p>
 
         {!preview ? (
@@ -85,7 +85,7 @@ export default function StorefrontAnalyzer() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={preview}
-                alt="Uploaded fleet vehicle"
+                alt="Uploaded vehicle"
                 className="max-h-80 w-full object-cover"
               />
             </div>
@@ -137,7 +137,7 @@ export default function StorefrontAnalyzer() {
         <div className="grid gap-6 lg:grid-cols-2">
           <div className="saas-card p-6">
             <h3 className="text-lg font-semibold text-white">
-              Fleet Visibility Score
+              Vehicle Visibility Score
             </h3>
             <div className="mt-6 flex items-center gap-6">
               <div className="relative flex h-24 w-24 items-center justify-center">
@@ -175,7 +175,7 @@ export default function StorefrontAnalyzer() {
                     ? "Moderate visibility — room for improvement"
                     : analysis.visibilityScore >= 40
                       ? "Below average visibility — significant opportunity"
-                      : "Poor fleet visibility — high wrap opportunity"}
+                      : "Poor vehicle visibility — high wrap opportunity"}
                 </p>
               </div>
             </div>
@@ -189,12 +189,12 @@ export default function StorefrontAnalyzer() {
               {formatCurrency(analysis.estimatedOpportunity)}
             </p>
             <p className="mt-2 text-sm text-slate-400">
-              Potential wrap project value based on detected fleet branding gaps
+              Potential wrap project value based on detected vehicle branding gaps
             </p>
           </div>
 
           <div className="saas-card p-6">
-            <h3 className="flex items-center gap-2 text-lg font-semibold text-red-700">
+            <h3 className="flex items-center gap-2 text-lg font-semibold text-red-400">
               <svg
                 className="h-5 w-5"
                 fill="none"
@@ -224,7 +224,7 @@ export default function StorefrontAnalyzer() {
           </div>
 
           <div className="saas-card p-6">
-            <h3 className="flex items-center gap-2 text-lg font-semibold text-emerald-700">
+            <h3 className="flex items-center gap-2 text-lg font-semibold text-emerald-400">
               <svg
                 className="h-5 w-5"
                 fill="none"

@@ -201,11 +201,11 @@ export default function RespondClient({
 
   if (processed && action === "schedule" && confirmedSlot) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 p-6">
-        <div className="max-w-md rounded-2xl border border-emerald-200 bg-saas-card p-8 text-center shadow-lg">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100">
+      <div className="flex min-h-screen items-center justify-center bg-saas-bg p-6">
+        <div className="max-w-md rounded-2xl border border-emerald-500/30 bg-saas-card p-8 text-center shadow-lg">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/20">
             <svg
-              className="h-7 w-7 text-emerald-600"
+              className="h-7 w-7 text-emerald-400"
               fill="none"
               viewBox="0 0 24 24"
               strokeWidth={2}
@@ -237,7 +237,7 @@ export default function RespondClient({
   if (processed && action === "interested") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-saas-bg p-6">
-        <div className="max-w-md rounded-2xl border border-emerald-200 bg-saas-card p-8 text-center shadow-lg">
+        <div className="max-w-md rounded-2xl border border-emerald-500/30 bg-saas-card p-8 text-center shadow-lg">
           <h1 className="text-2xl font-bold text-white">
             Thanks for your response!
           </h1>
@@ -245,7 +245,7 @@ export default function RespondClient({
             We received your interest, {lead.contact.name}. Marcus from FleetBrand
             Pro will call <strong>{lead.businessName}</strong> shortly.
           </p>
-          <p className="mt-4 text-sm font-medium text-emerald-700">
+          <p className="mt-4 text-sm font-medium text-emerald-400">
             ✓ Your response updated our CRM automatically.
           </p>
         </div>

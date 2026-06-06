@@ -16,33 +16,37 @@ export default function PipelineClient({ baseLeads }: { baseLeads: Lead[] }) {
   const crmBreakdown = getCrmBreakdown(leadsWithCrm);
   const pipelineValue = getPipelineValue(leadsWithCrm);
 
+  const qualified = leadsWithCrm.filter(
+    (l) => l.priority === "High" || l.scoreBreakdown.total >= 55
+  ).length;
+
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">
-          Acquisition Pipeline
-        </h1>
+        <h1 className="text-2xl font-bold text-white">Pipeline</h1>
         <p className="mt-1 text-slate-400">
-          AI-powered customer acquisition — from discovery to close
+          Track every vehicle branding opportunity from discovery to close
         </p>
       </div>
 
       <PipelineVisualization stages={stages} />
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="saas-glow-card p-5">
-          <p className="text-sm text-slate-400">Discovered via Google Maps</p>
+          <p className="text-sm text-slate-400">Total Prospects</p>
           <p className="mt-1 text-3xl font-bold text-white">{leadsWithCrm.length}</p>
         </div>
         <div className="saas-glow-card p-5">
-          <p className="text-sm text-slate-400">High-Priority Opportunities</p>
-          <p className="mt-1 text-3xl font-bold text-red-400">
-            {leadsWithCrm.filter((l) => l.priority === "High").length}
-          </p>
+          <p className="text-sm text-slate-400">Qualified</p>
+          <p className="mt-1 text-3xl font-bold text-emerald-400">{qualified}</p>
         </div>
         <div className="saas-glow-card p-5">
-          <p className="text-sm text-slate-400">Contacts Discovered</p>
-          <p className="mt-1 text-3xl font-bold text-violet-400">{leadsWithCrm.length}</p>
+          <p className="text-sm text-slate-400">In Outreach</p>
+          <p className="mt-1 text-3xl font-bold text-violet-400">
+            {leadsWithCrm.filter((l) =>
+              ["Contacted", "Responded"].includes(l.crmStatus)
+            ).length}
+          </p>
         </div>
         <div className="saas-glow-card p-5">
           <p className="text-sm text-slate-400">Pipeline Value</p>
@@ -52,7 +56,7 @@ export default function PipelineClient({ baseLeads }: { baseLeads: Lead[] }) {
         </div>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-3">
+      <div className="mt-10 grid gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           <LeadsTable leads={leadsWithCrm} title="Pipeline Leads" />
         </div>

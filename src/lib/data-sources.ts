@@ -12,12 +12,12 @@ export const DATA_PIPELINE_STEPS = [
   {
     id: "analyze",
     label: "Analyze",
-    description: "Vehicle Branding Audit & fleet opportunity detection",
+    description: "Vehicle Branding Audit & vehicle opportunity detection",
   },
   {
     id: "score",
     label: "Score",
-    description: "Prioritize fleet leads with 100-point scoring model",
+    description: "Prioritize vehicle branding leads with 100-point scoring model",
   },
   {
     id: "contact",
@@ -58,13 +58,13 @@ export const DATA_SOURCES = [
     accent: "indigo",
     icon: "website",
     description:
-      "AI web crawl extracts contact details, legal pages, and fleet photos from each discovered business website.",
+      "AI web crawl extracts contact details, legal pages, and vehicle photos from each discovered business website.",
     fields: [
       "Contact page",
       "Impressum page",
       "Email address",
       "Services",
-      "Fleet / vehicle photos",
+      "Vehicle photos",
     ],
     usedFor: "Contact discovery & vehicle branding audit",
   },
@@ -75,7 +75,7 @@ export const DATA_SOURCES = [
     accent: "blue",
     icon: "linkedin",
     description:
-      "Company page analysis surfaces key stakeholders and growth signals that indicate fleet branding budget availability.",
+      "Company page analysis surfaces key stakeholders and growth signals that indicate vehicle branding budget availability.",
     fields: [
       "Decision makers",
       "Owner",
@@ -93,10 +93,10 @@ export const DATA_SOURCES = [
     accent: "pink",
     icon: "instagram",
     description:
-      "Social profile monitoring detects new fleet vehicles, job-site photos, and unbranded vans from public posts.",
+      "Social profile monitoring detects new company vehicles, job-site photos, and unbranded vans from public posts.",
     fields: [
       "Recent posts",
-      "Fleet photos",
+      "Vehicle photos",
       "Job-site vehicles",
       "Branding quality",
     ],
@@ -115,14 +115,14 @@ export const DATA_SOURCES = [
   },
   {
     id: "street-view",
-    title: "Fleet Vision / Vehicle Images",
+    title: "Vehicle Vision / Vehicle Images",
     subtitle: "Visual vehicle branding analysis",
     accent: "amber",
     icon: "image",
     description:
-      "Computer vision analyzes fleet and vehicle imagery to assess wrap opportunities, visibility, and branding gaps.",
+      "Computer vision analyzes vehicle imagery to assess wrap opportunities, visibility, and branding gaps.",
     fields: [
-      "Fleet visibility",
+      "Vehicle visibility",
       "Wrap quality",
       "Vehicle branding gaps",
     ],

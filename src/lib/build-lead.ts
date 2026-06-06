@@ -23,12 +23,12 @@ export interface RawLeadInput {
 }
 
 const servicesByIndustry: Record<string, string[]> = {
-  "Construction Companies": ["Truck graphics", "Fleet branding", "Full wraps"],
-  Electricians: ["Van graphics", "Partial wraps", "Fleet branding"],
+  "Construction Companies": ["Truck graphics", "Vehicle branding", "Full wraps"],
+  Electricians: ["Van graphics", "Partial wraps", "Vehicle branding"],
   Plumbers: ["Van graphics", "Full wraps", "Partial wraps"],
-  "Delivery Services": ["Van graphics", "Fleet branding", "Full wraps"],
-  "Landscaping Businesses": ["Truck graphics", "Van graphics", "Fleet branding"],
-  "Logistics Companies": ["Truck graphics", "Fleet branding", "Full wraps"],
+  "Delivery Services": ["Van graphics", "Vehicle branding", "Full wraps"],
+  "Landscaping Businesses": ["Truck graphics", "Van graphics", "Vehicle branding"],
+  "Logistics Companies": ["Truck graphics", "Vehicle branding", "Full wraps"],
 };
 
 const valueByIndustry: Record<string, { min: number; max: number }> = {
@@ -109,7 +109,7 @@ export function buildLeadFromScraped(
     factors.recentlyOpened && "Recently opened",
     factors.activeSocialMedia && "Active social media",
     factors.brandingOpportunity && "Vehicle branding opportunity",
-    isPriorityIndustry(industry) && "Priority fleet industry",
+    isPriorityIndustry(industry) && "Priority vehicle branding industry",
     "Discovered via Apify Google Maps Scraper",
     scraped.rating >= 4.0 && "Strong customer ratings",
   ].filter(Boolean) as string[];

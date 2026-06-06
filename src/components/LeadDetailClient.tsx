@@ -14,8 +14,6 @@ import CRMStatusTracker from "@/components/CRMStatusTracker";
 import LeadProcessTracker from "@/components/LeadProcessTracker";
 import CRMStatusBadge from "@/components/CRMStatusBadge";
 import ActivityTimeline from "@/components/ActivityTimeline";
-import EventAutomationSimulator from "@/components/EventAutomationSimulator";
-import CustomerResponsePanel from "@/components/CustomerResponsePanel";
 import { useLeadById } from "@/hooks/useAllLeads";
 import { useCrmOverrides } from "@/hooks/useCrmOverrides";
 import { leads as baseLeads } from "@/lib/mock-data";
@@ -60,11 +58,8 @@ export default function LeadDetailClient({ id }: { id: string }) {
 
       {lead.imported && (
         <div className="mb-4 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2">
-          <span className="rounded-full bg-emerald-600 px-2 py-0.5 text-xs font-bold text-white">
-            IMPORTED
-          </span>
           <span className="text-sm text-emerald-300">
-            Discovered via Apify Google Maps Scraper
+            Imported prospect — vehicle branding opportunity identified
           </span>
         </div>
       )}
@@ -167,8 +162,6 @@ export default function LeadDetailClient({ id }: { id: string }) {
             <ContactDiscovery contact={lead.contact} />
             <LeadProcessTracker leadId={lead.id} />
             <OutreachGenerator lead={lead} />
-            <CustomerResponsePanel lead={lead} />
-            <EventAutomationSimulator lead={lead} />
             <ActivityTimeline leadId={lead.id} />
             <CRMStatusTracker leadId={lead.id} initialStatus={crmStatus} />
           </div>

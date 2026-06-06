@@ -3,40 +3,40 @@ import { DATA_SOURCES } from "@/lib/data-sources";
 
 const accentStyles: Record<string, { bg: string; icon: string; ring: string; badge: string }> = {
   red: {
-    bg: "bg-red-50",
-    icon: "bg-red-100 text-red-600",
-    ring: "ring-red-100",
-    badge: "bg-red-50 text-red-700 ring-red-600/10",
+    bg: "bg-red-500/10",
+    icon: "bg-red-500/15 text-red-400",
+    ring: "ring-red-500/20",
+    badge: "bg-red-500/15 text-red-300 ring-red-500/25",
   },
   indigo: {
-    bg: "bg-violet-500/15",
+    bg: "bg-violet-500/10",
     icon: "bg-violet-500/15 text-violet-400",
-    ring: "ring-indigo-100",
-    badge: "bg-violet-500/15 text-violet-400 ring-indigo-600/10",
+    ring: "ring-violet-500/20",
+    badge: "bg-violet-500/15 text-violet-300 ring-violet-500/25",
   },
   blue: {
-    bg: "bg-blue-50",
-    icon: "bg-blue-100 text-blue-600",
-    ring: "ring-blue-100",
-    badge: "bg-blue-50 text-blue-700 ring-blue-600/10",
+    bg: "bg-blue-500/10",
+    icon: "bg-blue-500/15 text-blue-400",
+    ring: "ring-blue-500/20",
+    badge: "bg-blue-500/15 text-blue-300 ring-blue-500/25",
   },
   pink: {
-    bg: "bg-pink-50",
-    icon: "bg-pink-100 text-pink-600",
-    ring: "ring-pink-100",
-    badge: "bg-pink-50 text-pink-700 ring-pink-600/10",
+    bg: "bg-pink-500/10",
+    icon: "bg-pink-500/15 text-pink-400",
+    ring: "ring-pink-500/20",
+    badge: "bg-pink-500/15 text-pink-300 ring-pink-500/25",
   },
   violet: {
-    bg: "bg-violet-50",
-    icon: "bg-violet-100 text-violet-600",
-    ring: "ring-violet-100",
-    badge: "bg-violet-50 text-violet-700 ring-violet-600/10",
+    bg: "bg-violet-500/10",
+    icon: "bg-violet-500/15 text-violet-400",
+    ring: "ring-violet-500/20",
+    badge: "bg-violet-500/15 text-violet-300 ring-violet-500/25",
   },
   amber: {
-    bg: "bg-amber-50",
-    icon: "bg-amber-100 text-amber-600",
-    ring: "ring-amber-100",
-    badge: "bg-amber-50 text-amber-700 ring-amber-600/10",
+    bg: "bg-amber-500/10",
+    icon: "bg-amber-500/15 text-amber-400",
+    ring: "ring-amber-500/20",
+    badge: "bg-amber-500/15 text-amber-300 ring-amber-500/25",
   },
 };
 
@@ -88,7 +88,7 @@ export default function DataSourcesPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8 rounded-2xl border border-violet-500/20 bg-gradient-to-r from-indigo-50 via-white to-violet-50 p-8">
+      <div className="mb-8 rounded-2xl border border-violet-500/20 bg-gradient-to-r from-violet-500/10 via-saas-card to-blue-500/10 p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/15 px-3 py-1 text-xs font-semibold text-violet-400">

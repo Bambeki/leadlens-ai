@@ -266,7 +266,7 @@ export function buildHtmlEmail(options: HtmlEmailOptions): string {
                       ${safeCompany}
                     </p>
                     <p style="margin:4px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:rgba(255,255,255,0.85);">
-                      Vehicle Branding &amp; Fleet Wraps
+                      Vehicle Branding &amp; Wraps
                     </p>
                   </td>
                 </tr>

@@ -124,7 +124,7 @@ export default function LeadProcessTracker({ leadId }: { leadId: string }) {
           </p>
         </div>
         {state.meetingScheduled && (
-          <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-800">
+          <span className="rounded-full bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300">
             Meeting Scheduled
           </span>
         )}
@@ -141,15 +141,15 @@ export default function LeadProcessTracker({ leadId }: { leadId: string }) {
               <div
                 className={`flex min-w-[140px] flex-col rounded-lg px-4 py-3 text-sm transition-all ${
                   complete
-                    ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200"
+                    ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/25"
                     : active
                       ? "bg-violet-600 text-white shadow-sm"
-                      : "bg-white/5 text-slate-400 ring-1 ring-saas-border"
+                      : "bg-white/5 text-slate-300 ring-1 ring-saas-border"
                 }`}
               >
                 <span className="flex items-center gap-2 font-semibold">
                   {complete && (
-                    <span className="text-emerald-600" aria-hidden>
+                    <span className="text-emerald-400" aria-hidden>
                       ✓
                     </span>
                   )}
@@ -158,9 +158,9 @@ export default function LeadProcessTracker({ leadId }: { leadId: string }) {
                 <span
                   className={`mt-1 text-xs ${
                     complete
-                      ? "text-emerald-700"
+                      ? "text-emerald-400"
                       : active
-                        ? "text-indigo-100"
+                        ? "text-violet-100"
                         : "text-slate-400"
                   }`}
                 >
@@ -197,7 +197,7 @@ export default function LeadProcessTracker({ leadId }: { leadId: string }) {
       </div>
 
       {state.meeting && (
-        <p className="mt-3 text-xs text-emerald-700">
+        <p className="mt-3 text-xs text-emerald-400">
           ✓ Meeting saved — {state.meeting.displayTime}
           {state.meeting.autoScheduled !== false && (
             <span className="text-slate-400">

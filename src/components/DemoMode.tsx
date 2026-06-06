@@ -145,7 +145,7 @@ function DiscoverStep({ visible }: { visible: boolean }) {
               {demoLead.industry}
             </span>
             <span className="rounded-full bg-amber-500/20 px-3 py-1 text-xs font-medium text-amber-300">
-              Fleet Branding Gap
+              Vehicle Branding Gap
             </span>
           </div>
         </div>
@@ -509,8 +509,8 @@ export default function DemoMode({ isOpen, onClose }: DemoModeProps) {
             </svg>
           </div>
           <div>
-            <p className="text-sm font-bold text-white">Demo Mode</p>
-            <p className="text-xs text-slate-500">Live AI Lead Discovery</p>
+            <p className="text-sm font-bold text-white">Live Demo</p>
+            <p className="text-xs text-slate-500">DHL Fleet Services workflow</p>
           </div>
         </div>
         <button
@@ -631,7 +631,7 @@ export function DemoModeButton({
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z" />
         </svg>
-        Demo Mode
+        Live Demo
       </button>
       <DemoMode isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </>

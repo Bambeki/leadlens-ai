@@ -43,9 +43,9 @@ import { useHasMounted } from "@/hooks/useHasMounted";
 import Button from "./ui/Button";
 
 const CORE_STEPS = [
-  { id: "drafted", label: "Draft" },
-  { id: "approved", label: "Approve" },
-  { id: "sent", label: "Send" },
+  { id: "drafted", label: "Drafted" },
+  { id: "approved", label: "Approved" },
+  { id: "sent", label: "Sent" },
 ] as const;
 
 const POST_SEND_STEPS = [
@@ -279,16 +279,16 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
             Outreach Workflow
           </h3>
           <p className="mt-1 text-sm text-slate-400">
-            Draft → Approve → Send via Resend (manual send only)
+            Drafted → Approved → Sent — full outreach control
           </p>
           {resendConfigured === false && (
-            <p className="mt-2 text-xs font-medium text-amber-600">
-              Add RESEND_API_KEY to .env.local to enable live sending
+            <p className="mt-2 text-xs font-medium text-amber-400">
+              Email delivery is in preview mode. Connect your account in Email Center to send live.
             </p>
           )}
           {resendConfigured === true && (
-            <p className="mt-2 text-xs font-medium text-emerald-600">
-              ✓ Resend API connected
+            <p className="mt-2 text-xs font-medium text-emerald-400">
+              Email delivery connected — ready to send
             </p>
           )}
         </div>
@@ -316,8 +316,8 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
                       isActive
                         ? "bg-violet-600 text-white shadow-sm"
                         : isComplete
-                          ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
-                          : "bg-white/5 text-slate-400 ring-1 ring-saas-border"
+                          ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/25"
+                          : "bg-white/5 text-slate-300 ring-1 ring-saas-border"
                     }`}
                   >
                     {isComplete && !isActive && (
@@ -376,7 +376,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
             </p>
           )}
           {sendError && (
-            <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
+            <p className="mt-3 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm font-medium text-red-300">
               {sendError}
             </p>
           )}
@@ -384,11 +384,11 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
       )}
 
       {delivery && (
-        <div className="mt-5 rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 p-5">
+        <div className="mt-5 rounded-xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 to-teal-500/10 p-5">
           <div className="flex items-start gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-100">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-500/20">
               <svg
-                className="h-5 w-5 text-emerald-600"
+                className="h-5 w-5 text-emerald-400"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={2}
@@ -402,12 +402,12 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
               </svg>
             </div>
             <div>
-              <h4 className="font-bold text-emerald-900">Delivery Confirmed</h4>
-              <p className="mt-1 text-sm text-emerald-800">
-                Email successfully sent via Resend to{" "}
-                <span className="font-semibold">{delivery.sentTo}</span>
+              <h4 className="font-bold text-emerald-200">Delivery Confirmed</h4>
+              <p className="mt-1 text-sm text-emerald-300">
+                Email successfully sent to{" "}
+                <span className="font-semibold text-white">{delivery.sentTo}</span>
               </p>
-              <p className="mt-2 font-mono text-xs text-emerald-700">
+              <p className="mt-2 font-mono text-xs text-emerald-400">
                 Message ID: {delivery.messageId}
               </p>
             </div>
@@ -431,8 +431,8 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
                   <div
                     className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
                       complete
-                        ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
-                        : "bg-white/5 text-slate-400 ring-1 ring-saas-border"
+                        ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/25"
+                        : "bg-white/5 text-slate-300 ring-1 ring-saas-border"
                     }`}
                   >
                     {complete && <span className="text-emerald-500">✓</span>}
@@ -458,7 +458,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
             })}
           </div>
           {workflowState.meeting && (
-            <p className="mt-3 text-xs font-medium text-emerald-700">
+            <p className="mt-3 text-xs font-medium text-emerald-400">
               ✓ Meeting auto-scheduled — {workflowState.meeting.displayTime}
             </p>
           )}
@@ -505,7 +505,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
         <div className="mt-6 rounded-lg border border-saas-border bg-white/5 p-5">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-800">
+              <span className="rounded-full bg-violet-500/15 px-2.5 py-1 text-xs font-semibold text-violet-300">
                 AI draft — editable before sending
               </span>
               <div className="flex rounded-lg border border-saas-border bg-saas-card p-0.5">
@@ -534,12 +534,12 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
               </div>
             </div>
             {workflowStep === "drafted" && (
-              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700">
+              <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-300">
                 Awaiting approval
               </span>
             )}
             {workflowStep === "approved" && !delivery && (
-              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
+              <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-300">
                 Approved — ready to send
               </span>
             )}
@@ -626,7 +626,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
                     onClick={handleSend}
                     disabled={isSending}
                   >
-                    {isSending ? "Sending via Resend…" : "Send HTML email"}
+                    {isSending ? "Sending…" : "Send Email"}
                   </Button>
                 </>
               )}

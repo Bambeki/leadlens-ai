@@ -5,46 +5,58 @@ export const PIPELINE_STAGE_DEFS = [
   {
     id: "discovery" as const,
     label: "Discovery",
-    description: "Businesses collected from Google Maps",
+    description: "Vehicle branding prospects identified from market data",
   },
   {
     id: "qualification" as const,
     label: "Qualification",
-    description: "AI lead scoring & prioritization",
+    description: "AI scoring and lead prioritization",
   },
   {
     id: "opportunity" as const,
     label: "Opportunity Analysis",
-    description: "Vehicle branding intelligence & fleet opportunity detection",
-  },
-  {
-    id: "contact" as const,
-    label: "Contact Discovery",
-    description: "Decision-maker identification",
+    description: "Vehicle branding gaps and revenue potential",
   },
   {
     id: "outreach" as const,
     label: "Outreach",
-    description: "Personalized email generation",
+    description: "Personalized email campaigns sent",
   },
   {
-    id: "crm" as const,
-    label: "CRM Tracking",
-    description: "Pipeline status management",
+    id: "meeting" as const,
+    label: "Meeting",
+    description: "Consultations scheduled with prospects",
+  },
+  {
+    id: "won" as const,
+    label: "Won",
+    description: "Deals closed and revenue booked",
   },
 ];
 
 export function getPipelineStages(leads: Lead[]): PipelineStage[] {
-  const crmActive = leads.filter(
-    (l) => l.crmStatus !== "Not Contacted"
+  const outreachCount = leads.filter((l) =>
+    ["Contacted", "Responded", "Meeting Scheduled", "Won"].includes(l.crmStatus)
   ).length;
+  const meetingCount = leads.filter((l) =>
+    ["Meeting Scheduled", "Won"].includes(l.crmStatus)
+  ).length;
+  const wonCount = leads.filter((l) => l.crmStatus === "Won").length;
+
+  const counts: Record<string, number> = {
+    discovery: leads.length,
+    qualification: leads.filter(
+      (l) => l.priority === "High" || l.scoreBreakdown.total >= 55
+    ).length,
+    opportunity: leads.filter((l) => l.factors.brandingOpportunity).length,
+    outreach: outreachCount,
+    meeting: meetingCount,
+    won: wonCount,
+  };
 
   return PIPELINE_STAGE_DEFS.map((stage) => ({
     ...stage,
-    count:
-      stage.id === "crm"
-        ? crmActive
-        : leads.length,
+    count: counts[stage.id] ?? leads.length,
   }));
 }
 

@@ -98,7 +98,7 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
             Trigger webhook events to update outreach and CRM status automatically
           </p>
         </div>
-        <span className="rounded-full bg-violet-100 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
+        <span className="rounded-full bg-violet-500/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-violet-300">
           Demo event simulator — production uses Resend and Calendar webhooks
         </span>
       </div>
@@ -111,7 +111,7 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
       )}
 
       {!canSimulate && (
-        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
           Send an outreach email first. Webhooks only fire after delivery.
         </div>
       )}
@@ -142,13 +142,13 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
       </div>
 
       {error && (
-        <p className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm font-medium text-red-700">
+        <p className="mt-4 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm font-medium text-red-300">
           {error}
         </p>
       )}
 
       {lastEvent && !error && (
-        <p className="mt-4 text-sm font-medium text-emerald-700">
+        <p className="mt-4 text-sm font-medium text-emerald-400">
           ✓ Webhook event processed — CRM and timeline updated across the app.
         </p>
       )}

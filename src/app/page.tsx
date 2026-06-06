@@ -25,7 +25,7 @@ function MockDashboard() {
         </div>
         <div className="flex-1 p-4">
           <div className="mb-4 grid grid-cols-4 gap-2">
-            {["22", "12", "7", "3"].map((val, i) => (
+            {["5", "4", "3", "2"].map((val, i) => (
               <div
                 key={val}
                 className="rounded-lg border border-saas-border p-2"
@@ -101,7 +101,7 @@ function MockAnalyzer() {
         <div className="mb-3 h-24 rounded-lg bg-gradient-to-br from-slate-200 to-slate-300" />
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-lg border border-saas-border p-3">
-            <div className="text-xs text-slate-500">Fleet Visibility</div>
+            <div className="text-xs text-slate-500">Vehicle Visibility</div>
             <div className="mt-1 text-2xl font-bold text-red-500">58</div>
           </div>
           <div className="rounded-lg border border-saas-border p-3">
@@ -120,7 +120,7 @@ const benefits = [
   {
     title: "Smart Lead Scoring",
     description:
-      "Prioritize construction, trades, delivery, landscaping, and logistics fleets with AI vehicle branding scores.",
+      "Prioritize construction, trades, delivery, landscaping, and logistics companies with AI vehicle branding scores.",
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
@@ -140,7 +140,7 @@ const benefits = [
   {
     title: "Vehicle Branding Audit",
     description:
-      "Upload fleet photos and get instant visibility scores, wrap gap detection, and project value estimates.",
+      "Upload vehicle photos and get instant visibility scores, wrap gap detection, and project value estimates.",
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
@@ -150,7 +150,7 @@ const benefits = [
   {
     title: "Wrap Recommendations",
     description:
-      "Get tailored vehicle branding suggestions — full wraps, partial wraps, fleet branding, truck and van graphics.",
+      "Get tailored vehicle branding suggestions — full wraps, partial wraps, vehicle branding, truck and van graphics.",
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
@@ -197,7 +197,7 @@ export default function LandingPage() {
           </div>
           <div className="lg:mt-12">
             <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-violet-400">
-              Fleet Branding Analyzer
+              Vehicle Branding Audit
             </p>
             <MockAnalyzer />
           </div>
@@ -243,7 +243,7 @@ export default function LandingPage() {
             Ready to find your next big client?
           </h2>
           <p className="mt-4 text-lg text-slate-300">
-            Explore 18 pre-qualified fleet leads, generate outreach emails, and
+            Explore pre-qualified vehicle branding leads, generate outreach emails, and
             run vehicle branding audits — all in one demo.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
@@ -264,10 +264,10 @@ export default function LandingPage() {
       <footer className="border-t border-saas-border bg-saas-card py-8">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6">
           <p className="text-sm text-slate-500">
-            © 2026 LeadLens AI — Hackathon MVP
+            © 2026 LeadLens AI
           </p>
           <p className="text-sm text-slate-500">
-            Built for vehicle wrap & fleet branding companies
+            Built for vehicle wrap & vehicle branding companies
           </p>
         </div>
       </footer>

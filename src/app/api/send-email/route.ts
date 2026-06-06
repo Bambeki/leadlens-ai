@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "RESEND_API_KEY is not configured. Add it to .env.local to send emails.",
+          "Email delivery is not connected. Please configure your email provider in Email Center.",
         configured: false,
       },
       { status: 503 }

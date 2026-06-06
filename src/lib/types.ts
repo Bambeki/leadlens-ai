@@ -19,9 +19,9 @@ export type PipelineStageId =
   | "discovery"
   | "qualification"
   | "opportunity"
-  | "contact"
   | "outreach"
-  | "crm";
+  | "meeting"
+  | "won";
 
 export interface ScoreBreakdown {
   recentlyOpened: number;

@@ -19,8 +19,8 @@ function StatusCard({
     <div
       className={`rounded-xl border-2 p-5 shadow-sm transition-colors ${
         ok
-          ? "border-emerald-200 bg-emerald-50"
-          : "border-red-200 bg-red-50"
+          ? "border-emerald-500/30 bg-emerald-500/10"
+          : "border-red-500/30 bg-red-500/10"
       }`}
     >
       <div className="flex items-center justify-between gap-3">
@@ -28,8 +28,8 @@ function StatusCard({
         <span
           className={`rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide ${
             ok
-              ? "bg-emerald-200 text-emerald-800"
-              : "bg-red-200 text-red-800"
+              ? "bg-emerald-500/20 text-emerald-300"
+              : "bg-red-500/20 text-red-300"
           }`}
         >
           {ok ? "Detected" : "Missing"}

@@ -11,7 +11,6 @@ import {
   filterLeads,
   sortLeads,
   getEstimatedRevenue,
-  isHighOpportunity,
   type LeadFilter,
   type SortField,
   type SortDirection,
@@ -182,7 +181,6 @@ export default function LeadsTable({
             ) : (
               displayed.map((lead) => {
                 const crmStatus = crmOverrides[lead.id] ?? lead.crmStatus;
-                const highOpp = isHighOpportunity(lead);
                 return (
                   <tr
                     key={lead.id}
@@ -193,24 +191,9 @@ export default function LeadsTable({
                       <p className="font-semibold text-white group-hover:text-violet-300">
                         {lead.businessName}
                       </p>
-                      <div className="mt-1.5 flex flex-wrap gap-1">
-                        <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-red-400 ring-1 ring-red-500/20">
-                          Google Maps
-                        </span>
-                        <span className="rounded bg-blue-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-blue-400 ring-1 ring-blue-500/20">
-                          Email found
-                        </span>
-                        {lead.imported && (
-                          <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400 ring-1 ring-emerald-500/20">
-                            Apify import
-                          </span>
-                        )}
-                        {highOpp && (
-                          <span className="rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-400 ring-1 ring-amber-500/20">
-                            High opportunity
-                          </span>
-                        )}
-                      </div>
+                      {lead.imported && (
+                        <p className="mt-0.5 text-xs text-emerald-400">Imported</p>
+                      )}
                     </td>
                     <td className="px-4 py-4 text-slate-300">{lead.industry}</td>
                     <td className="px-4 py-4 text-slate-300">{lead.city}</td>

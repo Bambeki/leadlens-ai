@@ -114,7 +114,7 @@ export default function MeetingsClient() {
                   </td>
                   <td className="px-4 py-4 text-slate-300">{m.meetingType}</td>
                   <td className="px-4 py-4">
-                    <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-medium text-emerald-800">
+                    <span className="rounded-full bg-emerald-500/15 px-2.5 py-1 text-xs font-medium text-emerald-300">
                       {m.autoScheduled !== false || m.scheduledBy === "customer"
                         ? "Auto-scheduled by customer"
                         : "Scheduled"}

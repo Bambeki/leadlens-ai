@@ -5,15 +5,13 @@ import { usePathname } from "next/navigation";
 import NotificationCenter from "./NotificationCenter";
 
 const PAGE_TITLES: Record<string, string> = {
-  "/pipeline": "Acquisition Pipeline",
-  "/dashboard": "Lead Dashboard",
-  "/data-sources": "Data Sources",
+  "/pipeline": "Pipeline",
+  "/dashboard": "Dashboard",
   "/meetings": "Meetings",
   "/email-center": "Email Center",
   "/roi-calculator": "ROI Calculator",
-  "/system-status": "System Status",
   "/lead-import": "Lead Import",
-  "/analyzer": "Fleet Branding Analyzer",
+  "/analyzer": "Vehicle Branding Audit",
 };
 
 const MOBILE_NAV = [

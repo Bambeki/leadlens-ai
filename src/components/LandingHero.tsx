@@ -13,7 +13,7 @@ export default function LandingHero() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-400 opacity-75" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-violet-500" />
           </span>
-          Hackathon MVP — Live Demo
+          Live Demo
         </div>
 
         <h1 className="mx-auto max-w-4xl text-5xl font-bold tracking-tight text-white sm:text-6xl">
@@ -22,8 +22,8 @@ export default function LandingHero() {
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-300">
-          Find fleet branding opportunities, score trades & logistics leads, and
-          close wrap projects — without leaving LeadLens.
+          Discover logistics prospects, score vehicle branding gaps, send outreach,
+          and book meetings — all in one platform.
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -41,7 +41,7 @@ export default function LandingHero() {
             href="/analyzer"
             className="inline-flex items-center gap-2 rounded-xl border border-saas-border bg-saas-card px-8 py-3.5 text-base font-semibold text-slate-300 transition-colors hover:bg-white/5 hover:text-white"
           >
-            Try Fleet Branding Analyzer
+            Vehicle Branding Audit
           </Link>
         </div>
       </div>

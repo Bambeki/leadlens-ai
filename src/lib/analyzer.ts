@@ -5,13 +5,13 @@ const analysisTemplates: StorefrontAnalysis[] = [
     visibilityScore: 58,
     problems: [
       "Missing vehicle branding on service van",
-      "Weak fleet visibility on commercial routes",
-      "No branded vans in fleet photos",
+      "Weak vehicle visibility on commercial routes",
+      "No branded vans in vehicle photos",
     ],
     recommendations: [
       "Full wrap on primary service van",
       "Van graphics with logo and phone number",
-      "Fleet branding package for 3+ vehicles",
+      "Vehicle branding package for 3+ vehicles",
     ],
     estimatedOpportunity: 4200,
   },
@@ -19,13 +19,13 @@ const analysisTemplates: StorefrontAnalysis[] = [
     visibilityScore: 42,
     problems: [
       "Faded partial wrap peeling on doors",
-      "Inconsistent vehicle graphics across fleet",
+      "Inconsistent vehicle graphics across units",
       "Plain white trucks — no mobile advertising",
     ],
     recommendations: [
       "Replace with full vehicle wrap",
       "Truck graphics for high-visibility routes",
-      "Unified fleet branding across all units",
+      "Unified vehicle branding across all units",
     ],
     estimatedOpportunity: 6800,
   },
@@ -36,7 +36,7 @@ const analysisTemplates: StorefrontAnalysis[] = [
       "Logo too small on existing van graphics",
     ],
     recommendations: [
-      "Extend partial wraps to full fleet",
+      "Extend partial wraps to full vehicle lineup",
       "Upgrade van graphics for legibility at distance",
       "Add truck graphics for larger vehicles",
     ],
@@ -46,24 +46,24 @@ const analysisTemplates: StorefrontAnalysis[] = [
     visibilityScore: 35,
     problems: [
       "No vehicle branding detected",
-      "Unmarked fleet — missed daily impressions",
+      "Unmarked vehicles — missed daily impressions",
       "Hand-painted phone numbers on tailgate only",
     ],
     recommendations: [
       "Full wraps on service vehicles",
       "Van graphics package",
-      "Fleet branding rollout plan",
+      "Vehicle branding rollout plan",
     ],
     estimatedOpportunity: 8500,
   },
   {
     visibilityScore: 63,
     problems: [
-      "Inconsistent colors across 4 fleet vehicles",
+      "Inconsistent colors across 4 vehicles",
       "Magnetic signs instead of permanent graphics",
     ],
     recommendations: [
-      "Professional fleet branding program",
+      "Professional vehicle branding program",
       "Truck graphics for heavy vehicles",
       "Partial wraps as phase-one upgrade",
     ],

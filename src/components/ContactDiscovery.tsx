@@ -4,8 +4,8 @@ export default function ContactDiscovery({ contact }: { contact: Contact }) {
   return (
     <div className="saas-card p-6">
       <div className="flex items-center gap-2">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-100">
-          <svg className="h-5 w-5 text-violet-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-500/15">
+          <svg className="h-5 w-5 text-violet-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
           </svg>
         </div>
@@ -18,8 +18,8 @@ export default function ContactDiscovery({ contact }: { contact: Contact }) {
         <span
           className={`ml-auto rounded-full px-2.5 py-0.5 text-xs font-semibold ${
             contact.confidence === "high"
-              ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-600/10"
-              : "bg-amber-50 text-amber-700 ring-1 ring-amber-600/10"
+              ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/25"
+              : "bg-amber-500/15 text-amber-300 ring-1 ring-amber-500/25"
           }`}
         >
           {contact.confidence} confidence
