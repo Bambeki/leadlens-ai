@@ -16,10 +16,10 @@ import Button from "./ui/Button";
 
 function ProcessingView() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-violet-50 p-6">
-      <div className="max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-lg">
-        <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-indigo-200 border-t-indigo-600" />
-        <p className="mt-4 text-sm font-medium text-slate-600">
+    <div className="flex min-h-screen items-center justify-center bg-saas-bg p-6">
+      <div className="max-w-md rounded-2xl border border-saas-border bg-saas-card p-8 text-center shadow-lg">
+        <div className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-violet-500/20 border-t-indigo-600" />
+        <p className="mt-4 text-sm font-medium text-slate-300">
           Processing customer response...
         </p>
       </div>
@@ -29,13 +29,13 @@ function ProcessingView() {
 
 function HubLoadingSkeleton() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-violet-50 p-6">
-      <div className="max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-lg">
-        <div className="mx-auto h-8 w-48 animate-pulse rounded bg-slate-100" />
-        <div className="mx-auto mt-4 h-6 w-64 animate-pulse rounded bg-slate-100" />
+    <div className="flex min-h-screen items-center justify-center bg-saas-bg p-6">
+      <div className="max-w-md rounded-2xl border border-saas-border bg-saas-card p-8 text-center shadow-lg">
+        <div className="mx-auto h-8 w-48 animate-pulse rounded bg-white/10" />
+        <div className="mx-auto mt-4 h-6 w-64 animate-pulse rounded bg-white/10" />
         <div className="mt-6 space-y-3">
           {[1, 2, 3].map((n) => (
-            <div key={n} className="h-10 animate-pulse rounded-lg bg-slate-100" />
+            <div key={n} className="h-10 animate-pulse rounded-lg bg-white/10" />
           ))}
         </div>
       </div>
@@ -45,20 +45,20 @@ function HubLoadingSkeleton() {
 
 function SchedulePickerSkeleton() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-violet-50 p-6">
-      <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
-        <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+    <div className="flex min-h-screen items-center justify-center bg-saas-bg p-6">
+      <div className="w-full max-w-lg rounded-2xl border border-saas-border bg-saas-card p-8 shadow-lg">
+        <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
           FleetBrand Pro
         </p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900">
+        <h1 className="mt-2 text-2xl font-bold text-white">
           Choose a meeting time
         </h1>
-        <p className="mt-2 text-sm text-slate-500">Loading available times...</p>
+        <p className="mt-2 text-sm text-slate-400">Loading available times...</p>
         <div className="mt-6 space-y-3">
           {[1, 2, 3, 4].map((n) => (
             <div
               key={n}
-              className="h-14 animate-pulse rounded-xl bg-slate-100"
+              className="h-14 animate-pulse rounded-xl bg-white/10"
             />
           ))}
         </div>
@@ -157,10 +157,10 @@ export default function RespondClient({
 
   if (!lead) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
-        <div className="max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-          <h1 className="text-xl font-bold text-slate-900">Link not found</h1>
-          <p className="mt-2 text-sm text-slate-500">
+      <div className="flex min-h-screen items-center justify-center bg-white/5 p-6">
+        <div className="max-w-md rounded-2xl border border-saas-border bg-saas-card p-8 text-center shadow-sm">
+          <h1 className="text-xl font-bold text-white">Link not found</h1>
+          <p className="mt-2 text-sm text-slate-400">
             This response link is invalid or the lead no longer exists.
           </p>
         </div>
@@ -170,15 +170,15 @@ export default function RespondClient({
 
   if (action === "schedule" && !slotId) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-violet-50 p-6">
-        <div className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-8 shadow-lg">
-          <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+      <div className="flex min-h-screen items-center justify-center bg-saas-bg p-6">
+        <div className="w-full max-w-lg rounded-2xl border border-saas-border bg-saas-card p-8 shadow-lg">
+          <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
             FleetBrand Pro
           </p>
-          <h1 className="mt-2 text-2xl font-bold text-slate-900">
+          <h1 className="mt-2 text-2xl font-bold text-white">
             Choose a meeting time
           </h1>
-          <p className="mt-2 text-slate-600">
+          <p className="mt-2 text-slate-300">
             Hi {lead.contact.name} — pick a time that works for{" "}
             <span className="font-semibold">{lead.businessName}</span>.
           </p>
@@ -187,10 +187,10 @@ export default function RespondClient({
               <Link
                 key={slot.id}
                 href={`/respond/${leadId}?action=schedule&slot=${slot.id}`}
-                className="flex w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-5 py-4 text-left transition-all hover:border-indigo-300 hover:bg-indigo-50"
+                className="flex w-full items-center justify-between rounded-xl border border-saas-border bg-white/5 px-5 py-4 text-left transition-all hover:border-violet-500/30 hover:bg-violet-500/15"
               >
-                <span className="font-semibold text-slate-900">{slot.label}</span>
-                <span className="text-sm text-indigo-600">Select →</span>
+                <span className="font-semibold text-white">{slot.label}</span>
+                <span className="text-sm text-violet-400">Select →</span>
               </Link>
             ))}
           </div>
@@ -202,7 +202,7 @@ export default function RespondClient({
   if (processed && action === "schedule" && confirmedSlot) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-emerald-50 to-teal-50 p-6">
-        <div className="max-w-md rounded-2xl border border-emerald-200 bg-white p-8 text-center shadow-lg">
+        <div className="max-w-md rounded-2xl border border-emerald-200 bg-saas-card p-8 text-center shadow-lg">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-emerald-100">
             <svg
               className="h-7 w-7 text-emerald-600"
@@ -218,14 +218,14 @@ export default function RespondClient({
               />
             </svg>
           </div>
-          <h1 className="mt-4 text-2xl font-bold text-slate-900">
+          <h1 className="mt-4 text-2xl font-bold text-white">
             Meeting confirmed
           </h1>
-          <p className="mt-2 text-slate-600">
+          <p className="mt-2 text-slate-300">
             Thanks, {lead.contact.name}! Your meeting with FleetBrand Pro is
             scheduled for <strong>{confirmedSlot}</strong>.
           </p>
-          <p className="mt-4 text-sm text-slate-500">
+          <p className="mt-4 text-sm text-slate-400">
             A calendar invite will be sent to your email. CRM updated
             automatically in LeadLens AI.
           </p>
@@ -236,12 +236,12 @@ export default function RespondClient({
 
   if (processed && action === "interested") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-emerald-50 to-indigo-50 p-6">
-        <div className="max-w-md rounded-2xl border border-emerald-200 bg-white p-8 text-center shadow-lg">
-          <h1 className="text-2xl font-bold text-slate-900">
+      <div className="flex min-h-screen items-center justify-center bg-saas-bg p-6">
+        <div className="max-w-md rounded-2xl border border-emerald-200 bg-saas-card p-8 text-center shadow-lg">
+          <h1 className="text-2xl font-bold text-white">
             Thanks for your response!
           </h1>
-          <p className="mt-3 text-slate-600">
+          <p className="mt-3 text-slate-300">
             We received your interest, {lead.contact.name}. Marcus from FleetBrand
             Pro will call <strong>{lead.businessName}</strong> shortly.
           </p>
@@ -255,12 +255,12 @@ export default function RespondClient({
 
   if (processed && action === "declined") {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 p-6">
-        <div className="max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-lg">
-          <h1 className="text-2xl font-bold text-slate-900">
+      <div className="flex min-h-screen items-center justify-center bg-white/5 p-6">
+        <div className="max-w-md rounded-2xl border border-saas-border bg-saas-card p-8 text-center shadow-lg">
+          <h1 className="text-2xl font-bold text-white">
             Thanks for your response
           </h1>
-          <p className="mt-3 text-slate-600">
+          <p className="mt-3 text-slate-300">
             No problem — we&apos;ve noted your preference for{" "}
             {lead.businessName}. You won&apos;t receive further outreach about
             this offer.
@@ -271,15 +271,15 @@ export default function RespondClient({
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-indigo-50 to-violet-50 p-6">
-      <div className="max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-lg">
-        <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+    <div className="flex min-h-screen items-center justify-center bg-saas-bg p-6">
+      <div className="max-w-md rounded-2xl border border-saas-border bg-saas-card p-8 text-center shadow-lg">
+        <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
           FleetBrand Pro × {lead.businessName}
         </p>
-        <h1 className="mt-2 text-2xl font-bold text-slate-900">
+        <h1 className="mt-2 text-2xl font-bold text-white">
           Thanks for your response
         </h1>
-        <p className="mt-3 text-slate-600">
+        <p className="mt-3 text-slate-300">
           Hi {lead.contact.name}, how would you like to proceed?
         </p>
         <div className="mt-6 space-y-3 text-left">

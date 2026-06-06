@@ -2,7 +2,7 @@ import type { Contact } from "@/lib/types";
 
 export default function ContactDiscovery({ contact }: { contact: Contact }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="saas-card p-6">
       <div className="flex items-center gap-2">
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-100">
           <svg className="h-5 w-5 text-violet-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -10,10 +10,10 @@ export default function ContactDiscovery({ contact }: { contact: Contact }) {
           </svg>
         </div>
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">
+          <h2 className="text-lg font-semibold text-white">
             Contact Discovery
           </h2>
-          <p className="text-sm text-slate-500">AI-identified decision maker</p>
+          <p className="text-sm text-slate-400">AI-identified decision maker</p>
         </div>
         <span
           className={`ml-auto rounded-full px-2.5 py-0.5 text-xs font-semibold ${
@@ -26,7 +26,7 @@ export default function ContactDiscovery({ contact }: { contact: Contact }) {
         </span>
       </div>
 
-      <div className="mt-5 flex items-start gap-4 rounded-lg border border-slate-100 bg-slate-50 p-5">
+      <div className="mt-5 flex items-start gap-4 rounded-lg border border-saas-border bg-white/5 p-5">
         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 text-lg font-bold text-white">
           {contact.name
             .split(" ")
@@ -34,11 +34,11 @@ export default function ContactDiscovery({ contact }: { contact: Contact }) {
             .join("")}
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-lg font-semibold text-slate-900">{contact.name}</p>
-          <p className="text-sm text-slate-500">{contact.role}</p>
+          <p className="text-lg font-semibold text-white">{contact.name}</p>
+          <p className="text-sm text-slate-400">{contact.role}</p>
           <a
             href={`mailto:${contact.email}`}
-            className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-indigo-600 hover:text-indigo-800"
+            className="mt-2 inline-flex items-center gap-1.5 text-sm font-medium text-violet-400 hover:text-violet-300"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />

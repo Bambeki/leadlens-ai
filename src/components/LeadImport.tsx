@@ -248,10 +248,10 @@ export default function LeadImport() {
                 disabled={!isDone || step === "scraping"}
                 className={`rounded-full px-3 py-1 text-xs font-semibold transition-all ${
                   isActive
-                    ? "bg-indigo-600 text-white"
+                    ? "bg-violet-600 text-white"
                     : isDone
                       ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-200"
-                      : "bg-slate-100 text-slate-500"
+                      : "bg-white/10 text-slate-500"
                 } ${isDone && step !== "scraping" ? "cursor-pointer" : "cursor-default"}`}
               >
                 {isDone && !isActive && "✓ "}
@@ -269,8 +269,8 @@ export default function LeadImport() {
 
       {/* Step 1: Location */}
       {step === "location" && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          <h2 className="text-lg font-bold text-slate-900">Choose your location</h2>
+        <div className="rounded-2xl border border-saas-border bg-saas-card p-6 shadow-sm sm:p-8">
+          <h2 className="text-lg font-bold text-white">Choose your location</h2>
           <p className="mt-1 text-sm text-slate-500">
             Detect your city automatically or enter it manually
           </p>
@@ -308,10 +308,10 @@ export default function LeadImport() {
               <p className="text-xs font-semibold uppercase tracking-wide text-emerald-600">
                 Detected location
               </p>
-              <p className="mt-1 text-lg font-bold text-slate-900">
+              <p className="mt-1 text-lg font-bold text-white">
                 {city}
                 {region && (
-                  <span className="ml-2 text-base font-normal text-slate-600">
+                  <span className="ml-2 text-base font-normal text-slate-300">
                     · {region}
                   </span>
                 )}
@@ -325,7 +325,7 @@ export default function LeadImport() {
           )}
 
           <div className="mt-6">
-            <label className="text-sm font-medium text-slate-700">
+            <label className="text-sm font-medium text-slate-300">
               City / region (manual entry)
             </label>
             <input
@@ -336,7 +336,7 @@ export default function LeadImport() {
                 setLocationError("");
               }}
               placeholder="e.g. Giessen, Marburg, Wetzlar"
-              className="mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm transition-colors focus:border-indigo-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="saas-input mt-1.5 w-full px-4 py-2.5 text-sm"
             />
           </div>
 
@@ -350,10 +350,10 @@ export default function LeadImport() {
 
       {/* Step 2: Business types */}
       {step === "types" && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className="rounded-2xl border border-saas-border bg-saas-card p-6 shadow-sm sm:p-8">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
-              <h2 className="text-lg font-bold text-slate-900">
+              <h2 className="text-lg font-bold text-white">
                 Select business types
               </h2>
               <p className="mt-1 text-sm text-slate-500">
@@ -365,8 +365,8 @@ export default function LeadImport() {
               onClick={() => setAdvancedMode(!advancedMode)}
               className={`rounded-full px-3 py-1 text-xs font-semibold transition-colors ${
                 advancedMode
-                  ? "bg-indigo-100 text-indigo-700"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  ? "bg-violet-500/15 text-indigo-700"
+                  : "bg-white/10 text-slate-300 hover:bg-white/10"
               }`}
             >
               {advancedMode ? "Advanced Mode ON" : "Advanced Mode"}
@@ -375,7 +375,7 @@ export default function LeadImport() {
 
           {advancedMode ? (
             <div className="mt-6">
-              <label className="text-sm font-medium text-slate-700">
+              <label className="text-sm font-medium text-slate-300">
                 Keyword (optional — overrides category selection)
               </label>
               <input
@@ -383,7 +383,7 @@ export default function LeadImport() {
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 placeholder="e.g. electricians, plumbers, construction companies"
-                className="mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm focus:border-indigo-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                className="mt-1.5 w-full rounded-lg border border-saas-border bg-white/5 px-4 py-2.5 text-sm focus:border-indigo-300 focus:bg-saas-card focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
               />
               <p className="mt-2 text-xs text-slate-500">
                 Example: Keyword <strong>electricians</strong> · City <strong>Giessen</strong>
@@ -393,7 +393,7 @@ export default function LeadImport() {
                   <button
                     key={`${ex.searchTerm}-${ex.city}`}
                     onClick={() => applyExample(ex)}
-                    className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+                    className="rounded-full border border-saas-border bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-300 hover:border-violet-500/20 hover:bg-white/5 hover:text-violet-400"
                   >
                     {ex.searchTerm} in {ex.city}
                   </button>
@@ -403,13 +403,13 @@ export default function LeadImport() {
           ) : (
             <div className="mt-6">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-slate-700">
+                <p className="text-sm font-medium text-slate-300">
                   Default high-value searches
                 </p>
                 <button
                   type="button"
                   onClick={toggleAllTypes}
-                  className="text-xs font-semibold text-indigo-600 hover:text-indigo-800"
+                  className="text-xs font-semibold text-violet-400 hover:text-indigo-800"
                 >
                   {selectedTypes.size === DEFAULT_SIGNAGE_SEARCHES.length
                     ? "Deselect all"
@@ -422,15 +422,15 @@ export default function LeadImport() {
                     key={type.id}
                     className={`flex cursor-pointer items-center gap-3 rounded-lg border px-4 py-3 transition-colors ${
                       selectedTypes.has(type.id)
-                        ? "border-indigo-200 bg-indigo-50/50"
-                        : "border-slate-200 bg-slate-50 hover:bg-white"
+                        ? "border-violet-500/20 bg-violet-500/10"
+                        : "border-saas-border bg-white/5 hover:bg-white/10"
                     }`}
                   >
                     <input
                       type="checkbox"
                       checked={selectedTypes.has(type.id)}
                       onChange={() => toggleType(type.id)}
-                      className="rounded border-slate-300 text-indigo-600"
+                      className="rounded border-slate-300 text-violet-400"
                     />
                     <span className="text-sm font-medium text-slate-800">
                       {type.label}
@@ -471,8 +471,8 @@ export default function LeadImport() {
 
       {/* Step 3: Discover */}
       {(step === "discover" || step === "scraping") && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-          <h2 className="text-lg font-bold text-slate-900">Discover leads</h2>
+        <div className="rounded-2xl border border-saas-border bg-saas-card p-6 shadow-sm sm:p-8">
+          <h2 className="text-lg font-bold text-white">Discover leads</h2>
           <p className="mt-1 text-sm text-slate-500">
             Search within a radius of {city}
             {advancedMode && keyword.trim()
@@ -481,7 +481,7 @@ export default function LeadImport() {
           </p>
 
           <div className="mt-6">
-            <p className="text-sm font-medium text-slate-700">Search radius</p>
+            <p className="text-sm font-medium text-slate-300">Search radius</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {RADIUS_OPTIONS.map((r) => (
                 <button
@@ -491,8 +491,8 @@ export default function LeadImport() {
                   disabled={step === "scraping"}
                   className={`rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
                     radiusKm === r
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                      ? "bg-violet-600 text-white shadow-sm"
+                      : "bg-white/10 text-slate-300 hover:bg-white/10"
                   } disabled:opacity-50`}
                 >
                   {r} km
@@ -506,7 +506,7 @@ export default function LeadImport() {
           )}
 
           <div className="mt-8 rounded-xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-violet-50 p-6 text-center">
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-slate-300">
               One click runs multiple Google Maps searches, removes duplicates,
               scores every business, and ranks the best leads first.
             </p>
@@ -532,12 +532,12 @@ export default function LeadImport() {
           </div>
 
           {step === "scraping" && (
-            <div className="mt-6 rounded-lg border border-indigo-100 bg-indigo-50 p-4">
+            <div className="mt-6 rounded-lg border border-violet-500/20 bg-violet-500/10 p-4">
               <div className="flex items-center gap-3">
-                <div className="h-2 flex-1 overflow-hidden rounded-full bg-indigo-200">
-                  <div className="h-full w-2/3 animate-pulse rounded-full bg-indigo-500" />
+                <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
+                  <div className="h-full w-2/3 animate-pulse rounded-full bg-violet-500" />
                 </div>
-                <span className="text-xs font-medium text-indigo-600">
+                <span className="text-xs font-medium text-violet-400">
                   {scrapeProgress}
                 </span>
               </div>
@@ -558,10 +558,10 @@ export default function LeadImport() {
 
       {/* Step 4: Review & import */}
       {step === "review" && (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-6 py-4">
+        <div className="overflow-hidden rounded-2xl border border-saas-border bg-saas-card shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-saas-border px-6 py-4">
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">
+              <h2 className="text-lg font-semibold text-white">
                 Ranked leads — best first
               </h2>
               <p className="text-sm text-slate-500">
@@ -586,7 +586,7 @@ export default function LeadImport() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[900px] text-left text-sm">
               <thead>
-                <tr className="border-b border-slate-200 bg-slate-50">
+                <tr className="border-b border-saas-border bg-white/5">
                   <th className="px-4 py-3">
                     <input
                       type="checkbox"
@@ -595,20 +595,20 @@ export default function LeadImport() {
                       className="rounded border-slate-300"
                     />
                   </th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Score</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Business</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Rating</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Reviews</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Website</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Phone</th>
-                  <th className="px-4 py-3 font-semibold text-slate-600">Address</th>
+                  <th className="px-4 py-3 font-semibold text-slate-300">Score</th>
+                  <th className="px-4 py-3 font-semibold text-slate-300">Business</th>
+                  <th className="px-4 py-3 font-semibold text-slate-300">Rating</th>
+                  <th className="px-4 py-3 font-semibold text-slate-300">Reviews</th>
+                  <th className="px-4 py-3 font-semibold text-slate-300">Website</th>
+                  <th className="px-4 py-3 font-semibold text-slate-300">Phone</th>
+                  <th className="px-4 py-3 font-semibold text-slate-300">Address</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {results.map((r) => (
                   <tr
                     key={r.id}
-                    className={`transition-colors ${selected.has(r.id) ? "bg-indigo-50/40" : "hover:bg-slate-50"}`}
+                    className={`transition-colors ${selected.has(r.id) ? "bg-violet-500/10" : "hover:bg-white/5"}`}
                   >
                     <td className="px-4 py-3">
                       <input
@@ -620,29 +620,29 @@ export default function LeadImport() {
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-indigo-600">
+                        <span className="text-lg font-bold text-violet-400">
                           {r.score}
                         </span>
                         <PriorityBadge priority={r.priority} />
                       </div>
                     </td>
                     <td className="px-4 py-3">
-                      <p className="font-semibold text-slate-900">{r.businessName}</p>
+                      <p className="font-semibold text-white">{r.businessName}</p>
                       <p className="text-xs text-slate-500">{r.category}</p>
                     </td>
                     <td className="px-4 py-3">
                       <span className="font-semibold text-amber-600">{r.rating} ★</span>
                     </td>
-                    <td className="px-4 py-3 text-slate-600">{r.reviewCount}</td>
+                    <td className="px-4 py-3 text-slate-300">{r.reviewCount}</td>
                     <td className="px-4 py-3">
                       {r.website ? (
-                        <span className="text-indigo-600">{r.website}</span>
+                        <span className="text-violet-400">{r.website}</span>
                       ) : (
-                        <span className="text-slate-400">—</span>
+                        <span className="text-slate-500">—</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-slate-600">{r.phone}</td>
-                    <td className="px-4 py-3 text-slate-600">
+                    <td className="px-4 py-3 text-slate-300">{r.phone}</td>
+                    <td className="px-4 py-3 text-slate-300">
                       {r.address}, {r.city}
                     </td>
                   </tr>
@@ -661,10 +661,10 @@ export default function LeadImport() {
               <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-7.5" />
             </svg>
           </div>
-          <h2 className="mt-4 text-2xl font-bold text-slate-900">
+          <h2 className="mt-4 text-2xl font-bold text-white">
             {importedCount} Leads Imported
           </h2>
-          <p className="mt-2 text-slate-600">
+          <p className="mt-2 text-slate-300">
             Businesses from {searchLabel} near {city} are now in your LeadLens
             pipeline — scored, enriched, and ready for outreach.
           </p>
@@ -684,15 +684,15 @@ export default function LeadImport() {
 
       {/* Import history */}
       {sessions.length > 0 && (step === "location" || step === "types") && (
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="font-semibold text-slate-900">Recent Imports</h3>
+        <div className="rounded-xl border border-saas-border bg-saas-card p-6 shadow-sm">
+          <h3 className="font-semibold text-white">Recent Imports</h3>
           <ul className="mt-3 space-y-2">
             {sessions.slice(0, 5).map((s) => (
               <li
                 key={s.id}
-                className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-2 text-sm"
+                className="flex items-center justify-between rounded-lg bg-white/5 px-4 py-2 text-sm"
               >
-                <span className="text-slate-700">
+                <span className="text-slate-300">
                   {s.searchTerm} in {s.city}
                 </span>
                 <span className="text-slate-500">

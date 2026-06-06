@@ -44,16 +44,16 @@ export default function StorefrontAnalyzer() {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="text-lg font-semibold text-slate-900">
+      <div className="saas-card p-6">
+        <h2 className="text-lg font-semibold text-white">
           Upload Fleet / Vehicle Image
         </h2>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-slate-400">
           Upload a photo of a business vehicle or fleet for Vehicle Branding Intelligence
         </p>
 
         {!preview ? (
-          <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 px-6 py-12 transition-colors hover:border-indigo-400 hover:bg-indigo-50/30">
+          <label className="mt-6 flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-saas-border bg-white/5 px-6 py-12 transition-colors hover:border-violet-500/40 hover:bg-violet-500/10">
             <svg
               className="h-12 w-12 text-slate-400"
               fill="none"
@@ -67,10 +67,10 @@ export default function StorefrontAnalyzer() {
                 d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z"
               />
             </svg>
-            <p className="mt-4 text-sm font-medium text-slate-700">
+            <p className="mt-4 text-sm font-medium text-slate-300">
               Click to upload or drag and drop
             </p>
-            <p className="mt-1 text-xs text-slate-500">PNG, JPG up to 10MB</p>
+            <p className="mt-1 text-xs text-slate-400">PNG, JPG up to 10MB</p>
             <input
               ref={inputRef}
               type="file"
@@ -81,7 +81,7 @@ export default function StorefrontAnalyzer() {
           </label>
         ) : (
           <div className="mt-6">
-            <div className="relative overflow-hidden rounded-xl border border-slate-200">
+            <div className="relative overflow-hidden rounded-xl border border-saas-border">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={preview}
@@ -93,7 +93,7 @@ export default function StorefrontAnalyzer() {
               <button
                 onClick={handleAnalyze}
                 disabled={isAnalyzing}
-                className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-indigo-700 disabled:opacity-60"
               >
                 {isAnalyzing ? (
                   <>
@@ -124,7 +124,7 @@ export default function StorefrontAnalyzer() {
               </button>
               <button
                 onClick={handleReset}
-                className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                className="rounded-lg border border-saas-border px-4 py-2.5 text-sm font-medium text-slate-300 transition-colors hover:bg-white/5"
               >
                 Upload Different Image
               </button>
@@ -135,8 +135,8 @@ export default function StorefrontAnalyzer() {
 
       {analysis && (
         <div className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-slate-900">
+          <div className="saas-card p-6">
+            <h3 className="text-lg font-semibold text-white">
               Fleet Visibility Score
             </h3>
             <div className="mt-6 flex items-center gap-6">
@@ -163,14 +163,14 @@ export default function StorefrontAnalyzer() {
                   />
                 </svg>
                 <div className="absolute text-center">
-                  <p className="text-2xl font-bold text-slate-900">
+                  <p className="text-2xl font-bold text-white">
                     {analysis.visibilityScore}
                   </p>
-                  <p className="text-xs text-slate-500">/100</p>
+                  <p className="text-xs text-slate-400">/100</p>
                 </div>
               </div>
               <div>
-                <p className="text-sm text-slate-600">
+                <p className="text-sm text-slate-300">
                   {analysis.visibilityScore >= 60
                     ? "Moderate visibility — room for improvement"
                     : analysis.visibilityScore >= 40
@@ -181,19 +181,19 @@ export default function StorefrontAnalyzer() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h3 className="text-lg font-semibold text-slate-900">
+          <div className="saas-card p-6">
+            <h3 className="text-lg font-semibold text-white">
               Estimated Opportunity
             </h3>
-            <p className="mt-4 text-4xl font-bold text-indigo-600">
+            <p className="mt-4 text-4xl font-bold text-violet-400">
               {formatCurrency(analysis.estimatedOpportunity)}
             </p>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-slate-400">
               Potential wrap project value based on detected fleet branding gaps
             </p>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="saas-card p-6">
             <h3 className="flex items-center gap-2 text-lg font-semibold text-red-700">
               <svg
                 className="h-5 w-5"
@@ -214,7 +214,7 @@ export default function StorefrontAnalyzer() {
               {analysis.problems.map((problem) => (
                 <li
                   key={problem}
-                  className="flex items-start gap-2 text-sm text-slate-700"
+                  className="flex items-start gap-2 text-sm text-slate-300"
                 >
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-red-500" />
                   {problem}
@@ -223,7 +223,7 @@ export default function StorefrontAnalyzer() {
             </ul>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div className="saas-card p-6">
             <h3 className="flex items-center gap-2 text-lg font-semibold text-emerald-700">
               <svg
                 className="h-5 w-5"
@@ -244,7 +244,7 @@ export default function StorefrontAnalyzer() {
               {analysis.recommendations.map((rec) => (
                 <li
                   key={rec}
-                  className="flex items-start gap-2 text-sm text-slate-700"
+                  className="flex items-start gap-2 text-sm text-slate-300"
                 >
                   <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
                   {rec}

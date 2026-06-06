@@ -26,13 +26,13 @@ export default function EmailPreview({
   });
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-slate-100">
-      <div className="flex items-center justify-between border-b border-slate-200 bg-white px-4 py-2.5">
+    <div className="overflow-hidden rounded-xl border border-saas-border bg-white/10">
+      <div className="flex items-center justify-between border-b border-saas-border bg-saas-card px-4 py-2.5">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             Email Preview
           </span>
-          <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-semibold text-indigo-700">
+          <span className="rounded-full bg-violet-500/15 px-2 py-0.5 text-[10px] font-semibold text-violet-400">
             HTML
           </span>
         </div>
@@ -48,7 +48,7 @@ export default function EmailPreview({
         <iframe
           title="Email preview"
           srcDoc={html}
-          className="h-[480px] w-full rounded-lg border border-slate-200 bg-white shadow-sm"
+          className="h-[480px] w-full rounded-lg border border-saas-border bg-saas-card shadow-sm"
           sandbox="allow-same-origin"
         />
       </div>

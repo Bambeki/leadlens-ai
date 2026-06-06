@@ -28,14 +28,14 @@ export default function DashboardClient({ baseLeads }: { baseLeads: Lead[] }) {
       <DashboardDemoBanner />
 
       {importedCount > 0 && (
-        <div className="mb-6 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-3">
-          <span className="text-sm font-medium text-emerald-800">
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-5 py-3">
+          <span className="text-sm font-medium text-emerald-300">
             {importedCount} imported lead{importedCount !== 1 ? "s" : ""} from
             Apify scraper active in pipeline
           </span>
           <Link
             href="/lead-import"
-            className="text-sm font-semibold text-emerald-700 hover:text-emerald-900"
+            className="text-sm font-semibold text-emerald-400 hover:text-emerald-300"
           >
             Import more →
           </Link>
@@ -43,29 +43,29 @@ export default function DashboardClient({ baseLeads }: { baseLeads: Lead[] }) {
       )}
 
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Lead Dashboard</h1>
-        <p className="mt-1 text-slate-500">
+        <h1 className="text-2xl font-bold text-white">Lead Dashboard</h1>
+        <p className="mt-1 text-slate-400">
           All discovered leads —{" "}
-          <Link href="/pipeline" className="font-medium text-indigo-600 hover:text-indigo-800">
+          <Link href="/pipeline" className="font-medium text-violet-400 hover:text-violet-300">
             acquisition pipeline
           </Link>{" "}
           ·{" "}
-          <Link href="/lead-import" className="font-medium text-indigo-600 hover:text-indigo-800">
+          <Link href="/lead-import" className="font-medium text-violet-400 hover:text-violet-300">
             import new leads
           </Link>
         </p>
       </div>
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total Leads" value={stats.total} accent="indigo" icon={<UsersIcon />} />
+        <StatCard label="Total Leads" value={stats.total} accent="violet" icon={<UsersIcon />} />
         <StatCard label="High Priority" value={stats.high} accent="red" icon={<FireIcon />} />
         <StatCard label="Medium Priority" value={stats.medium} accent="amber" icon={<ChartIcon />} />
         <StatCard label="Low Priority" value={stats.low} accent="emerald" icon={<CheckIcon />} />
       </div>
 
       {stats.meetingScheduled > 0 && (
-        <div className="mb-6 flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 px-5 py-3">
-          <span className="text-sm font-medium text-amber-900">
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-amber-500/20 bg-amber-500/10 px-5 py-3">
+          <span className="text-sm font-medium text-amber-300">
             {stats.meetingScheduled} lead
             {stats.meetingScheduled !== 1 ? "s" : ""} with meetings scheduled —
             CRM funnel updated automatically

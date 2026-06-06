@@ -9,9 +9,9 @@ export default function CrmFunnel({
   const max = Math.max(...breakdown.map((b) => b.count), 1);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-slate-900">CRM Pipeline</h2>
-      <p className="mt-1 text-sm text-slate-500">
+    <div className="saas-card p-6">
+      <h2 className="text-lg font-semibold text-white">CRM Pipeline</h2>
+      <p className="mt-1 text-sm text-slate-400">
         Lead status across acquisition funnel
       </p>
       <div className="mt-5 space-y-3">
@@ -21,9 +21,9 @@ export default function CrmFunnel({
             <div key={status}>
               <div className="flex items-center justify-between text-sm">
                 <span className={`font-medium ${style.text}`}>{status}</span>
-                <span className="font-semibold text-slate-900">{count}</span>
+                <span className="font-semibold text-white">{count}</span>
               </div>
-              <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100">
+              <div className="mt-1 h-2 overflow-hidden rounded-full bg-white/10">
                 <div
                   className={`h-full rounded-full transition-all ${style.dot}`}
                   style={{ width: `${(count / max) * 100}%` }}

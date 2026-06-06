@@ -59,30 +59,30 @@ function stepComplete(
 
 function ProcessTrackerSkeleton() {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="saas-card p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">
+          <h3 className="text-lg font-semibold text-white">
             Process Tracker
           </h3>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-400">
             Auto-updates from outreach, CRM, and saved meetings
           </p>
         </div>
-        <span className="h-6 w-28 animate-pulse rounded-full bg-slate-100" />
+        <span className="h-6 w-28 animate-pulse rounded-full bg-white/10" />
       </div>
       <div className="mt-6 flex flex-wrap items-center gap-2">
         {PROCESS_STEPS.map((step) => (
           <div
             key={step.id}
-            className="min-w-[140px] animate-pulse rounded-lg bg-slate-100 px-4 py-3"
+            className="min-w-[140px] animate-pulse rounded-lg bg-white/10 px-4 py-3"
           >
             <div className="h-4 w-24 rounded bg-slate-200" />
             <div className="mt-2 h-3 w-32 rounded bg-slate-200" />
           </div>
         ))}
       </div>
-      <div className="mt-4 h-2 animate-pulse rounded-full bg-slate-100" />
+      <div className="mt-4 h-2 animate-pulse rounded-full bg-white/10" />
     </div>
   );
 }
@@ -113,13 +113,13 @@ export default function LeadProcessTracker({ leadId }: { leadId: string }) {
   ).length;
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="saas-card p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">
+          <h3 className="text-lg font-semibold text-white">
             Process Tracker
           </h3>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-400">
             Auto-updates from outreach, CRM, and saved meetings
           </p>
         </div>
@@ -143,8 +143,8 @@ export default function LeadProcessTracker({ leadId }: { leadId: string }) {
                   complete
                     ? "bg-emerald-50 text-emerald-800 ring-1 ring-emerald-200"
                     : active
-                      ? "bg-indigo-600 text-white shadow-sm"
-                      : "bg-slate-50 text-slate-400 ring-1 ring-slate-200"
+                      ? "bg-violet-600 text-white shadow-sm"
+                      : "bg-white/5 text-slate-400 ring-1 ring-saas-border"
                 }`}
               >
                 <span className="flex items-center gap-2 font-semibold">
@@ -187,7 +187,7 @@ export default function LeadProcessTracker({ leadId }: { leadId: string }) {
         })}
       </div>
 
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
+      <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
         <div
           className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-emerald-500 transition-all duration-500"
           style={{
@@ -200,7 +200,7 @@ export default function LeadProcessTracker({ leadId }: { leadId: string }) {
         <p className="mt-3 text-xs text-emerald-700">
           ✓ Meeting saved — {state.meeting.displayTime}
           {state.meeting.autoScheduled !== false && (
-            <span className="text-slate-500">
+            <span className="text-slate-400">
               {" "}
               · Auto-scheduled by customer
             </span>
@@ -211,7 +211,7 @@ export default function LeadProcessTracker({ leadId }: { leadId: string }) {
       {state.outreachStatus && (
         <p className="mt-2 text-xs text-slate-400">
           Workflow status:{" "}
-          <span className="font-medium text-slate-600">
+          <span className="font-medium text-slate-300">
             {state.outreachStatus as OutreachStatus}
           </span>
         </p>

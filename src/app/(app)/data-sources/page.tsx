@@ -9,10 +9,10 @@ const accentStyles: Record<string, { bg: string; icon: string; ring: string; bad
     badge: "bg-red-50 text-red-700 ring-red-600/10",
   },
   indigo: {
-    bg: "bg-indigo-50",
-    icon: "bg-indigo-100 text-indigo-600",
+    bg: "bg-violet-500/15",
+    icon: "bg-violet-500/15 text-violet-400",
     ring: "ring-indigo-100",
-    badge: "bg-indigo-50 text-indigo-700 ring-indigo-600/10",
+    badge: "bg-violet-500/15 text-violet-400 ring-indigo-600/10",
   },
   blue: {
     bg: "bg-blue-50",
@@ -88,19 +88,19 @@ export default function DataSourcesPage() {
   return (
     <div>
       {/* Header */}
-      <div className="mb-8 rounded-2xl border border-indigo-100 bg-gradient-to-r from-indigo-50 via-white to-violet-50 p-8">
+      <div className="mb-8 rounded-2xl border border-violet-500/20 bg-gradient-to-r from-indigo-50 via-white to-violet-50 p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-2xl">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-500/15 px-3 py-1 text-xs font-semibold text-violet-400">
               <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375" />
               </svg>
               System Architecture
             </span>
-            <h1 className="mt-3 text-3xl font-bold text-slate-900">
+            <h1 className="mt-3 text-3xl font-bold text-white">
               Data Sources & Enrichment
             </h1>
-            <p className="mt-3 text-lg leading-relaxed text-slate-600">
+            <p className="mt-3 text-lg leading-relaxed text-slate-300">
               LeadLens AI aggregates data from six external sources, enriches
               each business profile with AI analysis, and transforms raw
               listings into qualified vehicle branding opportunities with verified
@@ -108,13 +108,13 @@ export default function DataSourcesPage() {
             </p>
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-xl border border-slate-200 bg-white px-5 py-4 text-center shadow-sm">
-              <p className="text-2xl font-bold text-indigo-600">6</p>
-              <p className="text-xs text-slate-500">Data Sources</p>
+            <div className="rounded-xl border border-saas-border bg-saas-card px-5 py-4 text-center shadow-sm">
+              <p className="text-2xl font-bold text-violet-400">6</p>
+              <p className="text-xs text-slate-400">Data Sources</p>
             </div>
-            <div className="rounded-xl border border-slate-200 bg-white px-5 py-4 text-center shadow-sm">
-              <p className="text-2xl font-bold text-indigo-600">6</p>
-              <p className="text-xs text-slate-500">Pipeline Stages</p>
+            <div className="rounded-xl border border-saas-border bg-saas-card px-5 py-4 text-center shadow-sm">
+              <p className="text-2xl font-bold text-violet-400">6</p>
+              <p className="text-xs text-slate-400">Pipeline Stages</p>
             </div>
           </div>
         </div>
@@ -125,8 +125,8 @@ export default function DataSourcesPage() {
 
       {/* How it works */}
       <div className="mt-10 mb-6">
-        <h2 className="text-xl font-bold text-slate-900">Enrichment Sources</h2>
-        <p className="mt-1 text-slate-500">
+        <h2 className="text-xl font-bold text-white">Enrichment Sources</h2>
+        <p className="mt-1 text-slate-400">
           Each discovered business is cross-referenced against all sources below
         </p>
       </div>
@@ -137,7 +137,7 @@ export default function DataSourcesPage() {
           return (
             <div
               key={source.id}
-              className={`overflow-hidden rounded-2xl border bg-white shadow-sm ring-1 ${style.ring}`}
+              className={`overflow-hidden rounded-2xl border bg-saas-card shadow-sm ring-1 ${style.ring}`}
             >
               <div className={`border-b px-6 py-5 ${style.bg}`}>
                 <div className="flex items-start gap-4">
@@ -147,10 +147,10 @@ export default function DataSourcesPage() {
                     <SourceIcon type={source.icon} />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-slate-900">
+                    <h3 className="text-lg font-bold text-white">
                       {source.title}
                     </h3>
-                    <p className="text-sm font-medium text-slate-500">
+                    <p className="text-sm font-medium text-slate-400">
                       {source.subtitle}
                     </p>
                   </div>
@@ -158,7 +158,7 @@ export default function DataSourcesPage() {
               </div>
 
               <div className="p-6">
-                <p className="text-sm leading-relaxed text-slate-600">
+                <p className="text-sm leading-relaxed text-slate-300">
                   {source.description}
                 </p>
 
@@ -170,7 +170,7 @@ export default function DataSourcesPage() {
                     {source.fields.map((field) => (
                       <li
                         key={field}
-                        className="flex items-center gap-2 text-sm text-slate-700"
+                        className="flex items-center gap-2 text-sm text-slate-300"
                       >
                         <svg
                           className="h-4 w-4 shrink-0 text-emerald-500"
@@ -191,7 +191,7 @@ export default function DataSourcesPage() {
                   </ul>
                 </div>
 
-                <div className="mt-5 flex items-center gap-2 border-t border-slate-100 pt-4">
+                <div className="mt-5 flex items-center gap-2 border-t border-saas-border pt-4">
                   <span className="text-xs text-slate-400">Powers:</span>
                   <span
                     className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ring-inset ${style.badge}`}
@@ -206,35 +206,35 @@ export default function DataSourcesPage() {
       </div>
 
       {/* Architecture summary */}
-      <div className="mt-10 rounded-2xl border border-slate-200 bg-slate-50 p-8">
-        <h2 className="text-lg font-bold text-slate-900">
+      <div className="mt-10 rounded-2xl border border-saas-border bg-white/5 p-8">
+        <h2 className="text-lg font-bold text-white">
           How LeadLens AI Uses This Data
         </h2>
         <div className="mt-6 grid gap-6 sm:grid-cols-3">
           <div>
-            <p className="text-sm font-semibold text-indigo-600">1. Discover</p>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="text-sm font-semibold text-violet-400">1. Discover</p>
+            <p className="mt-1 text-sm text-slate-300">
               Apify scrapes Google Maps for businesses within your service
               radius, capturing name, address, ratings, and category.
             </p>
           </div>
           <div>
-            <p className="text-sm font-semibold text-indigo-600">2. Enrich</p>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="text-sm font-semibold text-violet-400">2. Enrich</p>
+            <p className="mt-1 text-sm text-slate-300">
               Websites, LinkedIn, Instagram, and email APIs layer on contacts,
               decision makers, and visual branding signals.
             </p>
           </div>
           <div>
-            <p className="text-sm font-semibold text-indigo-600">3. Act</p>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="text-sm font-semibold text-violet-400">3. Act</p>
+            <p className="mt-1 text-sm text-slate-300">
               AI scores each lead, runs Vehicle Branding Audits, generates outreach, and
               tracks progress through your CRM pipeline.
             </p>
           </div>
         </div>
-        <p className="mt-6 rounded-lg border border-indigo-100 bg-white px-4 py-3 text-sm text-slate-500">
-          <span className="font-semibold text-slate-700">Hackathon note:</span>{" "}
+        <p className="mt-6 rounded-lg border border-violet-500/20 bg-saas-card px-4 py-3 text-sm text-slate-400">
+          <span className="font-semibold text-slate-300">Hackathon note:</span>{" "}
           This prototype simulates all enrichment layers with realistic mock
           data — no live API keys required for the demo.
         </p>

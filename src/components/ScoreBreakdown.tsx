@@ -16,9 +16,9 @@ export default function ScoreBreakdown({
   breakdown: ScoreBreakdownType;
 }) {
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h3 className="text-lg font-semibold text-slate-900">Score Breakdown</h3>
-      <p className="mt-1 text-sm text-slate-500">
+    <div className="saas-card p-6">
+      <h3 className="text-lg font-semibold text-white">Score Breakdown</h3>
+      <p className="mt-1 text-sm text-slate-400">
         Lead scoring model — total out of 100 points
       </p>
 
@@ -28,22 +28,23 @@ export default function ScoreBreakdown({
             <path
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               fill="none"
-              stroke="#e2e8f0"
+              stroke="rgba(255,255,255,0.1)"
               strokeWidth="3"
             />
             <path
               d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
               fill="none"
-              stroke="#4f46e5"
+              stroke="#7c3aed"
               strokeWidth="3"
               strokeDasharray={`${breakdown.total}, 100`}
+              strokeLinecap="round"
             />
           </svg>
           <div className="absolute text-center">
-            <p className="text-3xl font-bold text-slate-900">
+            <p className="text-3xl font-bold text-white">
               {breakdown.total}
             </p>
-            <p className="text-xs text-slate-500">/ 100</p>
+            <p className="text-xs text-slate-400">/ 100</p>
           </div>
         </div>
       </div>
@@ -58,23 +59,23 @@ export default function ScoreBreakdown({
               <div className="flex items-center justify-between text-sm">
                 <span
                   className={
-                    active ? "font-medium text-slate-700" : "text-slate-400"
+                    active ? "font-medium text-slate-300" : "text-slate-500"
                   }
                 >
                   {SCORE_LABELS[factor]}
                 </span>
                 <span
                   className={
-                    active ? "font-semibold text-slate-900" : "text-slate-400"
+                    active ? "font-semibold text-white" : "text-slate-500"
                   }
                 >
                   {score} / {max}
                 </span>
               </div>
-              <div className="mt-1 h-2 overflow-hidden rounded-full bg-slate-100">
+              <div className="mt-1 h-2 overflow-hidden rounded-full bg-white/10">
                 <div
                   className={`h-full rounded-full transition-all ${
-                    active ? "bg-indigo-500" : "bg-slate-200"
+                    active ? "bg-violet-500" : "bg-white/5"
                   }`}
                   style={{ width: `${(score / max) * 100}%` }}
                 />

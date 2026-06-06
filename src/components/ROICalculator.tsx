@@ -103,10 +103,10 @@ function ConversionDonut({
         />
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
-        <span className="text-2xl font-bold text-slate-900">
+        <span className="text-2xl font-bold text-white">
           {total > 0 ? Math.round(pct * 100) : 0}%
         </span>
-        <span className="text-xs text-slate-500">conversion</span>
+        <span className="text-xs text-slate-400">conversion</span>
       </div>
     </div>
   );
@@ -128,10 +128,10 @@ function TimeComparisonChart({
     <div className="space-y-4">
       <div>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-slate-600">Manual outreach</span>
-          <span className="font-semibold text-slate-900">{formatHours(manual)}</span>
+          <span className="text-slate-300">Manual outreach</span>
+          <span className="font-semibold text-white">{formatHours(manual)}</span>
         </div>
-        <div className="mt-1.5 h-3 overflow-hidden rounded-full bg-slate-100">
+        <div className="mt-1.5 h-3 overflow-hidden rounded-full bg-white/10">
           <div
             className="h-full rounded-full bg-slate-400 transition-all duration-500"
             style={{ width: `${(manual / max) * barMaxWidth}%` }}
@@ -140,12 +140,12 @@ function TimeComparisonChart({
       </div>
       <div>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-slate-600">With LeadLens AI</span>
-          <span className="font-semibold text-indigo-600">{formatHours(automated)}</span>
+          <span className="text-slate-300">With LeadLens AI</span>
+          <span className="font-semibold text-violet-400">{formatHours(automated)}</span>
         </div>
-        <div className="mt-1.5 h-3 overflow-hidden rounded-full bg-slate-100">
+        <div className="mt-1.5 h-3 overflow-hidden rounded-full bg-white/10">
           <div
-            className="h-full rounded-full bg-indigo-500 transition-all duration-500"
+            className="h-full rounded-full bg-violet-500/150 transition-all duration-500"
             style={{ width: `${(automated / max) * barMaxWidth}%` }}
           />
         </div>
@@ -187,19 +187,19 @@ export default function ROICalculator() {
       <div className="grid gap-8 lg:grid-cols-5">
         {/* Inputs */}
         <div className="lg:col-span-2">
-          <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-900">Your Inputs</h2>
-            <p className="mt-1 text-sm text-slate-500">
+          <div className="saas-card p-6">
+            <h2 className="text-lg font-semibold text-white">Your Inputs</h2>
+            <p className="mt-1 text-sm text-slate-400">
               Adjust sliders to model your vehicle branding business ROI
             </p>
 
             <div className="mt-6 space-y-6">
               <div>
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-slate-700">
+                  <label className="text-sm font-medium text-slate-300">
                     Average project value
                   </label>
-                  <span className="text-sm font-bold text-indigo-600">
+                  <span className="text-sm font-bold text-violet-400">
                     {formatCurrency(averageProjectValue)}
                   </span>
                 </div>
@@ -223,16 +223,16 @@ export default function ROICalculator() {
                   onChange={(e) =>
                     setAverageProjectValue(Number(e.target.value) || 0)
                   }
-                  className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  className="mt-2 w-full rounded-lg border border-saas-border px-3 py-2 text-sm focus:border-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-slate-700">
+                  <label className="text-sm font-medium text-slate-300">
                     Leads contacted / month
                   </label>
-                  <span className="text-sm font-bold text-indigo-600">
+                  <span className="text-sm font-bold text-violet-400">
                     {leadsContacted}
                   </span>
                 </div>
@@ -253,16 +253,16 @@ export default function ROICalculator() {
                   onChange={(e) =>
                     setLeadsContacted(Number(e.target.value) || 0)
                   }
-                  className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  className="mt-2 w-full rounded-lg border border-saas-border px-3 py-2 text-sm focus:border-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between">
-                  <label className="text-sm font-medium text-slate-700">
+                  <label className="text-sm font-medium text-slate-300">
                     Conversion rate
                   </label>
-                  <span className="text-sm font-bold text-indigo-600">
+                  <span className="text-sm font-bold text-violet-400">
                     {conversionRate}%
                   </span>
                 </div>
@@ -283,7 +283,7 @@ export default function ROICalculator() {
                   onChange={(e) =>
                     setConversionRate(Number(e.target.value) || 0)
                   }
-                  className="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                  className="mt-2 w-full rounded-lg border border-saas-border px-3 py-2 text-sm focus:border-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
                 />
               </div>
             </div>
@@ -293,14 +293,14 @@ export default function ROICalculator() {
         {/* Output cards */}
         <div className="lg:col-span-3">
           <div className="grid gap-4 sm:grid-cols-3">
-            <div className="rounded-xl border border-indigo-200 bg-gradient-to-br from-indigo-50 to-white p-5 shadow-sm">
-              <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+            <div className="rounded-xl border border-violet-500/20 bg-gradient-to-br from-indigo-50 to-white p-5 shadow-sm">
+              <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
                 Monthly Revenue
               </p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
+              <p className="mt-2 text-2xl font-bold text-white">
                 {formatCurrency(results.monthlyRevenue)}
               </p>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-slate-400">
                 {results.dealsWon.toFixed(1)} deals ×{" "}
                 {formatCurrency(averageProjectValue)}
               </p>
@@ -309,10 +309,10 @@ export default function ROICalculator() {
               <p className="text-xs font-semibold uppercase tracking-wide text-emerald-600">
                 Annual Revenue
               </p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
+              <p className="mt-2 text-2xl font-bold text-white">
                 {formatCurrency(results.annualRevenue)}
               </p>
-              <p className="mt-1 text-xs text-slate-500">
+              <p className="mt-1 text-xs text-slate-400">
                 12 × monthly projection
               </p>
             </div>
@@ -320,10 +320,10 @@ export default function ROICalculator() {
               <p className="text-xs font-semibold uppercase tracking-wide text-violet-600">
                 Time Saved
               </p>
-              <p className="mt-2 text-2xl font-bold text-slate-900">
+              <p className="mt-2 text-2xl font-bold text-white">
                 {formatHours(results.timeSavedHours)}
               </p>
-              <p className="mt-1 text-xs text-slate-500">per month</p>
+              <p className="mt-1 text-xs text-slate-400">per month</p>
             </div>
           </div>
         </div>
@@ -331,11 +331,11 @@ export default function ROICalculator() {
 
       {/* Charts */}
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
-          <h3 className="font-semibold text-slate-900">
+        <div className="saas-card p-6 lg:col-span-2">
+          <h3 className="font-semibold text-white">
             Cumulative Revenue Projection
           </h3>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-400">
             12-month revenue at current conversion rate
           </p>
           <div className="mt-6">
@@ -344,14 +344,14 @@ export default function ROICalculator() {
               maxValue={maxProjection}
             />
           </div>
-          <p className="mt-2 text-right text-sm font-semibold text-indigo-600">
+          <p className="mt-2 text-right text-sm font-semibold text-violet-400">
             Year-end total: {formatCurrency(results.annualRevenue)}
           </p>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-          <h3 className="font-semibold text-slate-900">Conversion Funnel</h3>
-          <p className="mt-1 text-sm text-slate-500">
+        <div className="saas-card p-6">
+          <h3 className="font-semibold text-white">Conversion Funnel</h3>
+          <p className="mt-1 text-sm text-slate-400">
             Leads contacted vs deals won
           </p>
           <div className="mt-6">
@@ -362,11 +362,11 @@ export default function ROICalculator() {
           </div>
           <div className="mt-4 space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="text-slate-500">Contacted</span>
+              <span className="text-slate-400">Contacted</span>
               <span className="font-semibold">{leadsContacted}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-slate-500">Converted</span>
+              <span className="text-slate-400">Converted</span>
               <span className="font-semibold text-emerald-600">
                 {results.dealsWon.toFixed(1)}
               </span>
@@ -374,11 +374,11 @@ export default function ROICalculator() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-3">
-          <h3 className="font-semibold text-slate-900">
+        <div className="saas-card p-6 lg:col-span-3">
+          <h3 className="font-semibold text-white">
             Outreach Time Comparison
           </h3>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-400">
             Manual research & outreach vs LeadLens AI automation
           </p>
           <div className="mt-6 max-w-md">

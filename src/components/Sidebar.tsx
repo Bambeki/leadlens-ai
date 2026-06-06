@@ -83,17 +83,17 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-slate-200 bg-white md:flex">
-      <div className="flex h-16 items-center gap-2.5 border-b border-slate-200 px-6">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
+    <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-saas-border bg-saas-card md:flex">
+      <div className="flex h-16 items-center gap-2.5 border-b border-saas-border px-6">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-blue-600 shadow-lg shadow-violet-600/30">
           <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
           </svg>
         </div>
         <div>
-          <p className="text-sm font-bold text-slate-900">LeadLens AI</p>
-          <p className="text-xs text-slate-500">Acquisition Pipeline</p>
+          <p className="text-sm font-bold text-white">LeadLens AI</p>
+          <p className="text-xs text-slate-500">Vehicle Branding Intel</p>
         </div>
       </div>
 
@@ -105,13 +105,13 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-200 ${
                 isActive
-                  ? "bg-indigo-50 text-indigo-700"
-                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  ? "bg-violet-600/15 text-violet-300 ring-1 ring-violet-500/25"
+                  : "text-slate-400 hover:bg-white/5 hover:text-white"
               }`}
             >
-              <span className={isActive ? "text-indigo-600" : "text-slate-400"}>
+              <span className={isActive ? "text-violet-400" : "text-slate-500"}>
                 {item.icon}
               </span>
               {item.label}
@@ -120,11 +120,11 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="space-y-3 border-t border-slate-200 p-4">
+      <div className="space-y-3 border-t border-saas-border p-4">
         <DemoModeButton variant="sidebar" />
         <Link
           href="/"
-          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700"
+          className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-500 transition-colors hover:bg-white/5 hover:text-slate-300"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />

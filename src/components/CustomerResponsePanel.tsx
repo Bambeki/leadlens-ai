@@ -35,16 +35,16 @@ export default function CustomerResponsePanel({ lead }: { lead: Lead }) {
 
   if (!hasMounted) {
     return (
-      <div className="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-slate-900">
+      <div className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-violet-500/10 p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-white">
           Customer Response Links
         </h3>
-        <p className="mt-1 text-sm text-slate-500">Loading response links...</p>
+        <p className="mt-1 text-sm text-slate-400">Loading response links...</p>
         <div className="mt-4 space-y-2">
           {[1, 2, 3].map((n) => (
             <div
               key={n}
-              className="h-16 animate-pulse rounded-lg bg-white/60"
+              className="h-16 animate-pulse rounded-lg bg-saas-card/60"
             />
           ))}
         </div>
@@ -53,11 +53,11 @@ export default function CustomerResponsePanel({ lead }: { lead: Lead }) {
   }
 
   return (
-    <div className="rounded-xl border border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50 p-6 shadow-sm">
-      <h3 className="text-lg font-semibold text-slate-900">
+    <div className="rounded-xl border border-blue-500/20 bg-gradient-to-br from-blue-500/10 to-violet-500/10 p-6 shadow-sm">
+      <h3 className="text-lg font-semibold text-white">
         Customer Response Links
       </h3>
-      <p className="mt-1 text-sm text-slate-600">
+      <p className="mt-1 text-sm text-slate-300">
         Share these links in demo emails — judges click them to update CRM
         automatically (no manual simulation needed).
       </p>
@@ -66,13 +66,13 @@ export default function CustomerResponsePanel({ lead }: { lead: Lead }) {
         {links.map((link) => (
           <div
             key={link.label}
-            className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white bg-white/80 px-4 py-3"
+            className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-saas-border bg-saas-card px-4 py-3"
           >
             <div className="min-w-0">
-              <span className="text-sm font-medium text-slate-800">
+              <span className="text-sm font-medium text-slate-300">
                 {link.label}
               </span>
-              <p className="mt-0.5 truncate font-mono text-xs text-slate-500">
+              <p className="mt-0.5 truncate font-mono text-xs text-slate-400">
                 {link.path}
               </p>
             </div>
@@ -98,7 +98,7 @@ export default function CustomerResponsePanel({ lead }: { lead: Lead }) {
         </a>
       </div>
 
-      <p className="mt-3 text-xs text-slate-500">
+      <p className="mt-3 text-xs text-slate-400">
         Copy Link includes the full URL for email sharing. Open uses relative
         paths — same as links embedded in outreach emails.
       </p>

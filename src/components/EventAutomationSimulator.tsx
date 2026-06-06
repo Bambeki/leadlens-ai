@@ -91,10 +91,10 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
     <div className="rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50/80 to-indigo-50/50 p-6 shadow-sm">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">
+          <h3 className="text-lg font-semibold text-white">
             Event Automation Simulator
           </h3>
-          <p className="mt-1 text-sm text-slate-600">
+          <p className="mt-1 text-sm text-slate-300">
             Trigger webhook events to update outreach and CRM status automatically
           </p>
         </div>
@@ -104,9 +104,9 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
       </div>
 
       {outreachStatus && (
-        <p className="mt-3 text-xs text-slate-500">
+        <p className="mt-3 text-xs text-slate-400">
           Outreach status:{" "}
-          <span className="font-semibold text-indigo-700">{outreachStatus}</span>
+          <span className="font-semibold text-violet-400">{outreachStatus}</span>
         </p>
       )}
 
@@ -120,10 +120,10 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
         {EVENTS.map((ev) => (
           <div
             key={ev.id}
-            className="rounded-lg border border-white/80 bg-white/90 p-4 shadow-sm"
+            className="rounded-lg border border-white/80 bg-saas-card/90 p-4 shadow-sm"
           >
-            <p className="text-sm font-semibold text-slate-900">{ev.label}</p>
-            <p className="mt-0.5 text-xs text-slate-500">{ev.description}</p>
+            <p className="text-sm font-semibold text-white">{ev.label}</p>
+            <p className="mt-0.5 text-xs text-slate-400">{ev.description}</p>
             <p className="mt-1 font-mono text-[10px] text-violet-600">
               {ev.webhook}
             </p>

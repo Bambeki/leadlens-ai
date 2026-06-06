@@ -38,11 +38,11 @@ const SIMULATED_PROVIDERS = [
     name: "SMTP",
     description: "Custom SMTP server configuration",
     icon: (
-      <svg className="h-8 w-8 text-slate-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+      <svg className="h-8 w-8 text-slate-300" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
       </svg>
     ),
-    color: "border-slate-200 hover:border-slate-300",
+    color: "border-saas-border hover:border-slate-300",
   },
 ];
 
@@ -73,15 +73,15 @@ export default function EmailCenterPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">Email Center</h1>
-        <p className="mt-1 text-slate-500">
+        <h1 className="text-2xl font-bold text-white">Email Center</h1>
+        <p className="mt-1 text-slate-400">
           Connect your email provider to send outreach from LeadLens AI
         </p>
       </div>
 
       {systemStatus === null ? (
-        <div className="mb-6 rounded-xl border border-slate-200 bg-slate-50 px-5 py-4">
-          <p className="text-sm text-slate-500">Checking Resend configuration…</p>
+        <div className="mb-6 rounded-xl border border-saas-border bg-white/5 px-5 py-4">
+          <p className="text-sm text-slate-400">Checking Resend configuration…</p>
         </div>
       ) : resendReady ? (
         <div className="mb-6 flex items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4">
@@ -100,8 +100,8 @@ export default function EmailCenterPage() {
       )}
 
       {anySimulatedConnected && !resendReady && (
-        <div className="mb-6 flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-5 py-4">
-          <p className="text-sm text-slate-600">
+        <div className="mb-6 flex items-center gap-3 rounded-xl border border-saas-border bg-white/5 px-5 py-4">
+          <p className="text-sm text-slate-300">
             Simulated provider connected — configure Resend in .env.local for live sending
           </p>
         </div>
@@ -109,12 +109,12 @@ export default function EmailCenterPage() {
 
       {/* Resend — live integration */}
       <div
-        className={`mb-6 rounded-xl border-2 bg-white p-6 shadow-sm transition-all duration-200 border-slate-800 ${
+        className={`mb-6 rounded-xl border-2 bg-saas-card p-6 shadow-sm transition-all duration-200 border-slate-800 ${
           resendReady ? "ring-2 ring-emerald-500/30" : ""
         }`}
       >
         <div className="flex items-start gap-4">
-          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-slate-50">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/5">
             <svg className="h-8 w-8" viewBox="0 0 24 24" fill="none">
               <rect width="24" height="24" rx="6" fill="#000" />
               <path d="M7 8h10v2H7V8zm0 4h7v2H7v-2z" fill="#fff" />
@@ -122,9 +122,9 @@ export default function EmailCenterPage() {
           </div>
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="font-bold text-slate-900">Resend API</h3>
+              <h3 className="font-bold text-white">Resend API</h3>
               {systemStatus === null ? (
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-500">
+                <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs font-semibold text-slate-400">
                   Checking…
                 </span>
               ) : resendReady ? (
@@ -137,21 +137,21 @@ export default function EmailCenterPage() {
                 </span>
               )}
             </div>
-            <p className="mt-1 text-sm text-slate-500">
+            <p className="mt-1 text-sm text-slate-400">
               Transactional email via Resend — powers the Draft → Approve → Send workflow
             </p>
             {!resendReady && systemStatus !== null && (
-              <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <div className="mt-4 rounded-lg border border-saas-border bg-white/5 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
                   Setup (.env.local)
                 </p>
                 <pre className="mt-2 overflow-x-auto rounded bg-slate-900 px-3 py-2 font-mono text-xs text-slate-100">
 {`RESEND_API_KEY=re_xxxxxxxxxxxx
 RESEND_FROM_EMAIL="LeadLens AI <onboarding@resend.dev>"`}
                 </pre>
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs text-slate-400">
                   Restart the dev server after adding keys.{" "}
-                  <Link href="/system-status" className="font-medium text-indigo-600 hover:underline">
+                  <Link href="/system-status" className="font-medium text-violet-400 hover:underline">
                     View system status →
                   </Link>
                 </p>
@@ -169,24 +169,24 @@ RESEND_FROM_EMAIL="LeadLens AI <onboarding@resend.dev>"`}
         {SIMULATED_PROVIDERS.map((provider) => (
           <div
             key={provider.id}
-            className={`rounded-xl border-2 bg-white p-6 shadow-sm transition-all duration-200 ${provider.color} ${
+            className={`rounded-xl border-2 bg-saas-card p-6 shadow-sm transition-all duration-200 ${provider.color} ${
               connected[provider.id] ? "ring-2 ring-emerald-500/30" : ""
             }`}
           >
             <div className="flex items-start gap-4">
-              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-slate-50">
+              <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-white/5">
                 {provider.icon}
               </div>
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-slate-900">{provider.name}</h3>
+                  <h3 className="font-bold text-white">{provider.name}</h3>
                   {connected[provider.id] && (
                     <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
                       Connected
                     </span>
                   )}
                 </div>
-                <p className="mt-1 text-sm text-slate-500">
+                <p className="mt-1 text-sm text-slate-400">
                   {provider.description}
                 </p>
                 {success === provider.id && (
@@ -215,20 +215,20 @@ RESEND_FROM_EMAIL="LeadLens AI <onboarding@resend.dev>"`}
         ))}
       </div>
 
-      <div className="mt-8 rounded-xl border border-violet-200 bg-gradient-to-br from-violet-50 to-indigo-50 p-6">
-        <h2 className="font-semibold text-slate-900">Webhook Automation</h2>
-        <p className="mt-1 text-sm text-slate-600">
+      <div className="mt-8 rounded-xl border border-violet-500/20 bg-gradient-to-br from-violet-500/10 to-blue-500/10 p-6">
+        <h2 className="font-semibold text-white">Webhook Automation</h2>
+        <p className="mt-1 text-sm text-slate-300">
           How LeadLens knows when customers engage — in production these events
           arrive via webhooks and update CRM automatically.
         </p>
 
         <div className="mt-6 grid gap-4 lg:grid-cols-3">
-          <div className="rounded-lg border border-white bg-white/90 p-4 shadow-sm">
-            <h3 className="text-sm font-bold text-slate-900">Resend Webhooks</h3>
-            <p className="mt-1 text-xs text-slate-500">
+          <div className="rounded-lg border border-saas-border bg-saas-card p-4 shadow-sm">
+            <h3 className="text-sm font-bold text-white">Resend Webhooks</h3>
+            <p className="mt-1 text-xs text-slate-400">
               Outbound email lifecycle events
             </p>
-            <ul className="mt-3 space-y-1.5 text-sm text-slate-700">
+            <ul className="mt-3 space-y-1.5 text-sm text-slate-300">
               <li>
                 <span className="font-mono text-xs text-violet-600">email.sent</span>
                 {" "}— message accepted by Resend
@@ -252,31 +252,31 @@ RESEND_FROM_EMAIL="LeadLens AI <onboarding@resend.dev>"`}
             </ul>
           </div>
 
-          <div className="rounded-lg border border-white bg-white/90 p-4 shadow-sm">
-            <h3 className="text-sm font-bold text-slate-900">
+          <div className="rounded-lg border border-saas-border bg-saas-card p-4 shadow-sm">
+            <h3 className="text-sm font-bold text-white">
               Resend Inbound Webhook
             </h3>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs text-slate-400">
               Customer reply detection
             </p>
-            <ul className="mt-3 space-y-1.5 text-sm text-slate-700">
+            <ul className="mt-3 space-y-1.5 text-sm text-slate-300">
               <li>
                 <span className="font-mono text-xs text-violet-600">inbound.received</span>
                 {" "}— reply parsed from customer inbox
               </li>
-              <li className="text-xs text-slate-500">
+              <li className="text-xs text-slate-400">
                 Triggers CRM update to{" "}
                 <strong>Responded</strong> and logs activity on the lead timeline.
               </li>
             </ul>
           </div>
 
-          <div className="rounded-lg border border-white bg-white/90 p-4 shadow-sm">
-            <h3 className="text-sm font-bold text-slate-900">Calendar Webhook</h3>
-            <p className="mt-1 text-xs text-slate-500">
+          <div className="rounded-lg border border-saas-border bg-saas-card p-4 shadow-sm">
+            <h3 className="text-sm font-bold text-white">Calendar Webhook</h3>
+            <p className="mt-1 text-xs text-slate-400">
               Meeting invite responses
             </p>
-            <ul className="mt-3 space-y-1.5 text-sm text-slate-700">
+            <ul className="mt-3 space-y-1.5 text-sm text-slate-300">
               <li>
                 <span className="font-mono text-xs text-violet-600">calendar.accepted</span>
                 {" "}— meeting accepted → CRM{" "}
@@ -296,9 +296,9 @@ RESEND_FROM_EMAIL="LeadLens AI <onboarding@resend.dev>"`}
         </p>
       </div>
 
-      <div className="mt-8 rounded-xl border border-slate-200 bg-slate-50 p-6">
-        <h2 className="font-semibold text-slate-900">Outreach Workflow</h2>
-        <p className="mt-1 text-sm text-slate-500">
+      <div className="mt-8 rounded-xl border border-saas-border bg-white/5 p-6">
+        <h2 className="font-semibold text-white">Outreach Workflow</h2>
+        <p className="mt-1 text-sm text-slate-400">
           Draft → Approve → Send via Resend. Use your own email for demo test sends.
         </p>
         <Link href="/dashboard" className="mt-4 inline-block">

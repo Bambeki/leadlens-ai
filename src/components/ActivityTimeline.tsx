@@ -12,7 +12,7 @@ const TYPE_STYLES: Record<string, { dot: string; icon: string }> = {
   email_drafted: { dot: "bg-slate-400", icon: "✎" },
   email_approved: { dot: "bg-amber-500", icon: "✓" },
   email_sent: { dot: "bg-blue-500", icon: "✉" },
-  crm_contacted: { dot: "bg-indigo-500", icon: "◎" },
+  crm_contacted: { dot: "bg-violet-500/150", icon: "◎" },
   email_opened: { dot: "bg-violet-500", icon: "◉" },
   email_replied: { dot: "bg-emerald-500", icon: "↩" },
   crm_responded: { dot: "bg-violet-600", icon: "◎" },
@@ -49,18 +49,18 @@ export default function ActivityTimeline({ leadId }: { leadId: string }) {
 
   if (!hasMounted) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-slate-900">Activity Timeline</h3>
-        <p className="mt-1 text-sm text-slate-500">
+      <div className="saas-card p-6">
+        <h3 className="text-lg font-semibold text-white">Activity Timeline</h3>
+        <p className="mt-1 text-sm text-slate-400">
           Outreach and CRM events for this lead
         </p>
         <div className="mt-6 space-y-4">
           {[1, 2, 3].map((n) => (
             <div key={n} className="flex gap-4">
-              <div className="h-6 w-6 animate-pulse rounded-full bg-slate-100" />
+              <div className="h-6 w-6 animate-pulse rounded-full bg-white/10" />
               <div className="flex-1 space-y-2">
-                <div className="h-4 w-48 animate-pulse rounded bg-slate-100" />
-                <div className="h-3 w-24 animate-pulse rounded bg-slate-100" />
+                <div className="h-4 w-48 animate-pulse rounded bg-white/10" />
+                <div className="h-3 w-24 animate-pulse rounded bg-white/10" />
               </div>
             </div>
           ))}
@@ -70,9 +70,9 @@ export default function ActivityTimeline({ leadId }: { leadId: string }) {
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h3 className="text-lg font-semibold text-slate-900">Activity Timeline</h3>
-      <p className="mt-1 text-sm text-slate-500">
+    <div className="saas-card p-6">
+      <h3 className="text-lg font-semibold text-white">Activity Timeline</h3>
+      <p className="mt-1 text-sm text-slate-400">
         Outreach and CRM events for this lead
       </p>
 
@@ -96,7 +96,7 @@ export default function ActivityTimeline({ leadId }: { leadId: string }) {
                   {style.icon}
                 </span>
                 <div className="min-w-0 flex-1 pt-0.5">
-                  <p className="text-sm font-medium text-slate-900">
+                  <p className="text-sm font-medium text-white">
                     {event.label}
                   </p>
                   <p className="mt-0.5 text-xs text-slate-400">

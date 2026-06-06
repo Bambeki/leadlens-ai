@@ -48,7 +48,7 @@ function StepIndicator({
                   isComplete
                     ? "border-emerald-400 bg-emerald-500 text-white"
                     : isActive
-                      ? "border-indigo-400 bg-indigo-600 text-white shadow-lg shadow-indigo-500/40"
+                      ? "border-violet-400 bg-violet-600 text-white shadow-lg shadow-violet-500/40"
                       : "border-slate-600 bg-slate-800 text-slate-500"
                 }`}
               >
@@ -58,7 +58,7 @@ function StepIndicator({
                   </svg>
                 ) : isActive ? (
                   <span className="relative flex h-3 w-3">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-300 opacity-75" />
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-300 opacity-75" />
                     <span className="relative inline-flex h-3 w-3 rounded-full bg-white" />
                   </span>
                 ) : (
@@ -68,7 +68,7 @@ function StepIndicator({
               <span
                 className={`mt-2 hidden text-xs font-medium sm:block ${
                   isActive
-                    ? "text-indigo-300"
+                    ? "text-violet-300"
                     : isComplete
                       ? "text-emerald-400"
                       : "text-slate-500"
@@ -499,10 +499,10 @@ export default function DemoMode({ isOpen, onClose }: DemoModeProps) {
   const step = DEMO_STEPS[currentStep - 1];
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-slate-950/95 backdrop-blur-sm">
-      <div className="flex items-center justify-between border-b border-slate-800 px-6 py-4">
+    <div className="fixed inset-0 z-50 flex flex-col bg-saas-bg/98 backdrop-blur-md">
+      <div className="flex items-center justify-between border-b border-saas-border px-6 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600">
             <svg className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -523,20 +523,20 @@ export default function DemoMode({ isOpen, onClose }: DemoModeProps) {
         </button>
       </div>
 
-      <div className="border-b border-slate-800 px-6 py-6">
+      <div className="border-b border-saas-border px-6 py-6">
         <StepIndicator currentStep={currentStep} completedSteps={completedSteps} />
       </div>
 
       <div className="flex flex-1 flex-col items-center justify-center overflow-y-auto px-6 py-8">
-        <div className="mb-8 text-center">
-          <p className="text-sm font-medium text-indigo-400">
+        <div className="demo-step-enter mb-8 text-center">
+          <p className="text-sm font-medium text-violet-400">
             Step {currentStep} of {DEMO_STEPS.length}
           </p>
           <h2 className="mt-1 text-2xl font-bold text-white">{step.label}</h2>
           <p className="mt-2 text-slate-400">{step.description}</p>
         </div>
 
-        <div className="flex w-full items-center justify-center">
+        <div className="demo-step-enter demo-cinematic-glow flex w-full items-center justify-center rounded-2xl border border-violet-500/20 bg-saas-card/50 p-8">
           {currentStep === 1 && <DiscoverStep visible={discoverVisible} />}
           {currentStep === 2 && <AnalyzeStep visibleCount={analyzeVisibleCount} />}
           {currentStep === 3 && (
@@ -549,13 +549,13 @@ export default function DemoMode({ isOpen, onClose }: DemoModeProps) {
         </div>
       </div>
 
-      <div className="flex items-center justify-between border-t border-slate-800 px-6 py-4">
+      <div className="flex items-center justify-between border-t border-saas-border px-6 py-4">
         <div className="flex items-center gap-2">
           {isPlaying && !isComplete && (
             <>
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-indigo-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-indigo-500" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-violet-500" />
               </span>
               <span className="text-sm text-slate-400">Running demo…</span>
             </>
@@ -579,7 +579,7 @@ export default function DemoMode({ isOpen, onClose }: DemoModeProps) {
               <Link
                 href="/dashboard"
                 onClick={onClose}
-                className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
+                className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-violet-500"
               >
                 Open Dashboard
               </Link>
@@ -595,7 +595,7 @@ export default function DemoMode({ isOpen, onClose }: DemoModeProps) {
               {currentStep < 5 && (
                 <button
                   onClick={handleNext}
-                  className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-indigo-700"
+                  className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-violet-500"
                 >
                   Skip to Next Step
                 </button>

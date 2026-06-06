@@ -94,7 +94,7 @@ function StatusPill({
       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
         active
           ? "bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200"
-          : "bg-slate-100 text-slate-400"
+          : "bg-white/10 text-slate-400"
       }`}
     >
       <span>{icon}</span>
@@ -294,13 +294,13 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
 
   if (!hasMounted) {
     return (
-      <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-200 bg-slate-50 px-5 py-4">
-          <div className="h-5 w-56 animate-pulse rounded bg-slate-200" />
+      <div className="overflow-hidden rounded-xl border border-saas-border bg-saas-card shadow-sm">
+        <div className="border-b border-saas-border bg-white/5 px-5 py-4">
+          <div className="h-5 w-56 animate-pulse rounded bg-white/10" />
         </div>
         <div className="space-y-4 p-5">
           {[1, 2].map((n) => (
-            <div key={n} className="h-20 animate-pulse rounded-lg bg-slate-100" />
+            <div key={n} className="h-20 animate-pulse rounded-lg bg-white/10" />
           ))}
         </div>
       </div>
@@ -308,20 +308,20 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <div className="overflow-hidden rounded-xl border border-saas-border bg-saas-card shadow-sm">
       {/* Inbox header */}
-      <div className="border-b border-slate-200 bg-gradient-to-r from-slate-50 to-indigo-50/40 px-5 py-4">
+      <div className="border-b border-saas-border bg-gradient-to-r from-saas-card to-violet-500/10 px-5 py-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">
+            <h3 className="text-lg font-semibold text-white">
               Customer Communication Center
             </h3>
-            <p className="mt-0.5 text-sm text-slate-500">
+            <p className="mt-0.5 text-sm text-slate-400">
               Contact {lead.contact.name} at {lead.businessName} — no Gmail or
               Outlook required
             </p>
           </div>
-          <span className="rounded-full bg-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-800">
+          <span className="rounded-full bg-violet-500/15 px-3 py-1 text-xs font-semibold text-violet-300">
             {lead.contact.email}
           </span>
         </div>
@@ -344,7 +344,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
           </p>
         )}
         {resendReady && (
-          <p className="mt-3 text-xs text-slate-500">
+          <p className="mt-3 text-xs text-slate-400">
             From: {fromEmail ?? "Resend"} · Reply-To:{" "}
             {replyToEmail ?? "not set — add RESEND_REPLY_TO_EMAIL to .env.local"}
           </p>
@@ -352,10 +352,10 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
       </div>
 
       {/* Thread */}
-      <div className="max-h-[420px] overflow-y-auto border-b border-slate-100 bg-slate-50/50 px-5 py-4">
+      <div className="max-h-[420px] overflow-y-auto border-b border-saas-border bg-white/5 px-5 py-4">
         {messages.length === 0 ? (
           <div className="py-10 text-center">
-            <p className="text-sm font-medium text-slate-600">No messages yet</p>
+            <p className="text-sm font-medium text-slate-300">No messages yet</p>
             <p className="mt-1 text-xs text-slate-400">
               Generate an AI email below to start the conversation thread
             </p>
@@ -370,16 +370,16 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
                 <div
                   className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-sm ${
                     msg.direction === "outbound"
-                      ? "rounded-br-md bg-indigo-600 text-white"
-                      : "rounded-bl-md border border-slate-200 bg-white text-slate-800"
+                      ? "rounded-br-md bg-violet-600 text-white"
+                      : "rounded-bl-md border border-saas-border bg-saas-card text-slate-300"
                   }`}
                 >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <span
                       className={`text-xs font-semibold ${
                         msg.direction === "outbound"
-                          ? "text-indigo-100"
-                          : "text-slate-500"
+                          ? "text-violet-100"
+                          : "text-slate-400"
                       }`}
                     >
                       {msg.author}
@@ -387,7 +387,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
                     <span
                       className={`text-[10px] ${
                         msg.direction === "outbound"
-                          ? "text-indigo-200"
+                          ? "text-violet-200"
                           : "text-slate-400"
                       }`}
                     >
@@ -397,7 +397,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
                   {msg.subject && (
                     <p
                       className={`mt-1 text-sm font-semibold ${
-                        msg.direction === "outbound" ? "text-white" : "text-slate-900"
+                        msg.direction === "outbound" ? "text-white" : "text-white"
                       }`}
                     >
                       {msg.subject}
@@ -405,13 +405,13 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
                   )}
                   <pre
                     className={`mt-2 whitespace-pre-wrap font-sans text-sm leading-relaxed ${
-                      msg.direction === "outbound" ? "text-indigo-50" : "text-slate-700"
+                      msg.direction === "outbound" ? "text-violet-50" : "text-slate-300"
                     }`}
                   >
                     {msg.body}
                   </pre>
                   {msg.messageId && (
-                    <p className="mt-2 font-mono text-[10px] text-indigo-200">
+                    <p className="mt-2 font-mono text-[10px] text-violet-200">
                       Resend ID: {msg.messageId}
                     </p>
                   )}
@@ -448,8 +448,8 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
         </div>
 
         {!subject && !body && composerStep === "draft" && (
-          <div className="mb-4 rounded-lg border border-dashed border-slate-200 bg-slate-50 py-8 text-center">
-            <p className="text-sm text-slate-500">
+          <div className="mb-4 rounded-lg border border-dashed border-saas-border bg-white/5 py-8 text-center">
+            <p className="text-sm text-slate-400">
               Generate a personalized outreach email to begin
             </p>
             <Button className="mt-3" onClick={handleGenerate} disabled={isGenerating}>
@@ -460,7 +460,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
 
         {(subject || body || composerStep !== "draft") && (
           <>
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-400">
               Subject
             </label>
             <input
@@ -471,10 +471,10 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
                 if (composerStep === "approved") setComposerStep("draft");
               }}
               readOnly={isComposerLocked}
-              className="mt-1.5 w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-50"
+              className="mt-1.5 w-full rounded-lg border border-saas-border bg-saas-card px-4 py-2.5 text-sm focus:border-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/20 disabled:bg-white/5"
             />
 
-            <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+            <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-slate-400">
               Message
             </label>
             <textarea
@@ -485,7 +485,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
               }}
               readOnly={isComposerLocked}
               rows={12}
-              className="mt-1.5 w-full resize-y rounded-lg border border-slate-200 bg-white px-4 py-3 font-sans text-sm leading-relaxed focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-50"
+              className="mt-1.5 w-full resize-y rounded-lg border border-saas-border bg-saas-card px-4 py-3 font-sans text-sm leading-relaxed focus:border-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/20 disabled:bg-white/5"
             />
 
             <p className="mt-2 text-xs text-slate-400">
@@ -495,7 +495,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
 
             {isEditable && (
               <div className="mt-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+                <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
                   Meeting proposals
                 </p>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -514,8 +514,8 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
             )}
 
             {composerStep === "approved" && (
-              <div className="mt-4 rounded-lg border border-indigo-100 bg-indigo-50/50 p-4">
-                <label className="flex items-center gap-2 text-sm text-slate-700">
+              <div className="mt-4 rounded-lg border border-violet-500/20 bg-violet-500/10 p-4">
+                <label className="flex items-center gap-2 text-sm text-slate-300">
                   <input
                     type="checkbox"
                     checked={useTestEmail}
@@ -530,10 +530,10 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
                     value={testEmail}
                     onChange={(e) => setTestEmail(e.target.value)}
                     placeholder="your@email.com"
-                    className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm"
+                    className="mt-2 w-full rounded-lg border border-saas-border bg-saas-card px-4 py-2.5 text-sm"
                   />
                 )}
-                <p className="mt-2 text-xs text-slate-500">
+                <p className="mt-2 text-xs text-slate-400">
                   Emails are never sent automatically — click Send after approval.
                 </p>
               </div>
@@ -575,7 +575,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
             <p className="text-xs font-semibold uppercase tracking-wide text-violet-700">
               Simulated inbox
             </p>
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-slate-300">
               Demo customer responses appear in the thread above — no external
               inbox required.
             </p>

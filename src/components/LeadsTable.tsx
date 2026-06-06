@@ -36,10 +36,10 @@ function SortHeader({
   return (
     <button
       onClick={() => onSort(field)}
-      className="inline-flex items-center gap-1 font-semibold text-slate-600 transition-colors hover:text-indigo-600"
+      className="inline-flex items-center gap-1 font-semibold text-slate-400 transition-colors hover:text-violet-400"
     >
       {label}
-      <span className={`text-xs ${active ? "text-indigo-600" : "text-slate-300"}`}>
+      <span className={`text-xs ${active ? "text-violet-400" : "text-slate-500"}`}>
         {active ? (direction === "asc" ? "↑" : "↓") : "↕"}
       </span>
     </button>
@@ -80,13 +80,13 @@ export default function LeadsTable({
   }, [leads, filter, search, sortField, sortDir, crmOverrides]);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+    <div className="saas-card overflow-hidden transition-shadow hover:shadow-lg hover:shadow-violet-500/5">
       {/* Toolbar */}
-      <div className="border-b border-slate-200 px-4 py-4 sm:px-6">
+      <div className="border-b border-saas-border px-4 py-4 sm:px-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-            <p className="mt-0.5 text-sm text-slate-500">
+            <h2 className="text-lg font-semibold text-white">{title}</h2>
+            <p className="mt-0.5 text-sm text-slate-400">
               {displayed.length} of {leads.length} leads · click any row to open
             </p>
           </div>
@@ -105,7 +105,7 @@ export default function LeadsTable({
               placeholder="Search name, industry, city, contact…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-slate-200 bg-slate-50 py-2.5 pl-10 pr-4 text-sm text-slate-900 placeholder:text-slate-400 transition-colors focus:border-indigo-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="saas-input w-full py-2.5 pl-10 pr-4 text-sm"
             />
           </div>
         </div>
@@ -118,8 +118,8 @@ export default function LeadsTable({
               onClick={() => setFilter(tab.id)}
               className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 ${
                 filter === tab.id
-                  ? "bg-indigo-600 text-white shadow-sm"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  ? "bg-violet-600 text-white shadow-sm shadow-violet-500/20"
+                  : "bg-white/5 text-slate-400 hover:bg-white/10 hover:text-slate-300"
               }`}
             >
               {tab.label}
@@ -130,9 +130,9 @@ export default function LeadsTable({
 
       {/* Table */}
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[900px] text-left text-sm">
+        <table className="saas-table w-full min-w-[900px] text-left text-sm">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50/80">
+            <tr className="border-b border-saas-border text-slate-400">
               <th className="px-4 py-3 sm:px-6">Business</th>
               <th className="px-4 py-3">Industry</th>
               <th className="px-4 py-3">
@@ -153,18 +153,18 @@ export default function LeadsTable({
               <th className="px-4 py-3">Contact</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-saas-border">
             {displayed.length === 0 ? (
               <tr>
                 <td colSpan={8} className="px-6 py-16 text-center">
                   <div className="mx-auto max-w-sm">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-white/5">
                       <svg className="h-6 w-6 text-slate-400" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                       </svg>
                     </div>
-                    <p className="mt-4 font-medium text-slate-900">No leads found</p>
-                    <p className="mt-1 text-sm text-slate-500">
+                    <p className="mt-4 font-medium text-white">No leads found</p>
+                    <p className="mt-1 text-sm text-slate-400">
                       Try adjusting your filters or search query.
                     </p>
                     <button
@@ -172,7 +172,7 @@ export default function LeadsTable({
                         setFilter("all");
                         setSearch("");
                       }}
-                      className="mt-4 text-sm font-semibold text-indigo-600 hover:text-indigo-800"
+                      className="mt-4 text-sm font-semibold text-violet-400 hover:text-violet-300"
                     >
                       Clear all filters
                     </button>
@@ -187,36 +187,36 @@ export default function LeadsTable({
                   <tr
                     key={lead.id}
                     onClick={() => router.push(`/leads/${lead.id}`)}
-                    className="group cursor-pointer transition-all duration-200 hover:bg-indigo-50/60"
+                    className="group cursor-pointer transition-all duration-200"
                   >
                     <td className="px-4 py-4 sm:px-6">
-                      <p className="font-semibold text-slate-900 group-hover:text-indigo-700">
+                      <p className="font-semibold text-white group-hover:text-violet-300">
                         {lead.businessName}
                       </p>
                       <div className="mt-1.5 flex flex-wrap gap-1">
-                        <span className="rounded bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold text-red-600 ring-1 ring-red-600/10">
+                        <span className="rounded bg-red-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-red-400 ring-1 ring-red-500/20">
                           Google Maps
                         </span>
-                        <span className="rounded bg-blue-50 px-1.5 py-0.5 text-[10px] font-semibold text-blue-600 ring-1 ring-blue-600/10">
+                        <span className="rounded bg-blue-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-blue-400 ring-1 ring-blue-500/20">
                           Email found
                         </span>
                         {lead.imported && (
-                          <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 ring-1 ring-emerald-600/10">
+                          <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400 ring-1 ring-emerald-500/20">
                             Apify import
                           </span>
                         )}
                         {highOpp && (
-                          <span className="rounded bg-amber-50 px-1.5 py-0.5 text-[10px] font-semibold text-amber-700 ring-1 ring-amber-600/10">
+                          <span className="rounded bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-amber-400 ring-1 ring-amber-500/20">
                             High opportunity
                           </span>
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-4 text-slate-600">{lead.industry}</td>
-                    <td className="px-4 py-4 text-slate-600">{lead.city}</td>
+                    <td className="px-4 py-4 text-slate-300">{lead.industry}</td>
+                    <td className="px-4 py-4 text-slate-300">{lead.city}</td>
                     <td className="px-4 py-4">
                       <div className="flex items-center gap-2">
-                        <div className="h-2 w-14 overflow-hidden rounded-full bg-slate-100">
+                        <div className="h-2 w-14 overflow-hidden rounded-full bg-white/10">
                           <div
                             className={`h-full rounded-full transition-all ${
                               lead.scoreBreakdown.total >= 70
@@ -228,12 +228,12 @@ export default function LeadsTable({
                             style={{ width: `${lead.scoreBreakdown.total}%` }}
                           />
                         </div>
-                        <span className="font-bold text-slate-900">
+                        <span className="font-bold text-white">
                           {lead.scoreBreakdown.total}
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-4 font-medium text-slate-700">
+                    <td className="px-4 py-4 font-medium text-slate-300">
                       {formatCurrency(getEstimatedRevenue(lead))}
                     </td>
                     <td className="px-4 py-4">
@@ -243,7 +243,7 @@ export default function LeadsTable({
                       <CRMStatusBadge status={crmStatus} />
                     </td>
                     <td className="px-4 py-4">
-                      <p className="font-medium text-slate-700">{lead.contact.name}</p>
+                      <p className="font-medium text-slate-300">{lead.contact.name}</p>
                       <p className="text-xs text-slate-400">{lead.contact.role}</p>
                     </td>
                   </tr>

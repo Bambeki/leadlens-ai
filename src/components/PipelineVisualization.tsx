@@ -40,13 +40,13 @@ export default function PipelineVisualization({
   stages: PipelineStage[];
 }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-6 shadow-xl sm:p-8">
+    <div className="overflow-hidden rounded-2xl border border-saas-border bg-gradient-to-br from-saas-bg via-violet-950/40 to-saas-bg p-6 shadow-xl sm:p-8">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-bold text-white">
             Customer Acquisition Pipeline
           </h2>
-          <p className="text-sm text-indigo-300">
+          <p className="text-sm text-violet-300">
             AI-powered workflow — discovery to close
           </p>
         </div>
@@ -59,11 +59,11 @@ export default function PipelineVisualization({
       <div className="flex flex-col gap-4 lg:flex-row lg:items-stretch">
         {stages.map((stage, index) => (
           <div key={stage.id} className="flex flex-1 items-center gap-2 lg:flex-col lg:gap-3">
-            <div className="flex flex-1 flex-col rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur transition-colors hover:bg-white/10">
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-500/30 text-indigo-200">
+            <div className="saas-card-hover flex flex-1 flex-col rounded-xl border border-saas-border bg-saas-card p-4">
+              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-violet-500/20 text-violet-300">
                 {stageIcons[stage.id]}
               </div>
-              <p className="text-xs font-medium uppercase tracking-wider text-indigo-400">
+              <p className="text-xs font-medium uppercase tracking-wider text-violet-400">
                 Step {index + 1}
               </p>
               <h3 className="mt-0.5 font-semibold text-white">{stage.label}</h3>
@@ -73,17 +73,13 @@ export default function PipelineVisualization({
               <p className="mt-3 text-2xl font-bold text-white">{stage.count}</p>
             </div>
             {index < stages.length - 1 && (
-              <div className="hidden shrink-0 items-center lg:flex">
-                <svg className="h-5 w-5 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
+              <div className="hidden shrink-0 items-center lg:flex lg:w-full lg:max-w-none">
+                <div className="pipeline-connector" />
               </div>
             )}
             {index < stages.length - 1 && (
-              <div className="flex justify-center lg:hidden">
-                <svg className="h-5 w-5 rotate-90 text-indigo-400" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                </svg>
+              <div className="flex justify-center py-1 lg:hidden">
+                <div className="pipeline-connector h-8 w-0.5 min-w-0 rotate-0" style={{ width: 2, minWidth: 2, backgroundSize: "100% 200%", animation: "pipeline-flow 3s linear infinite" }} />
               </div>
             )}
           </div>

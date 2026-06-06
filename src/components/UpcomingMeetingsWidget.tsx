@@ -42,30 +42,30 @@ export default function UpcomingMeetingsWidget() {
 
   if (!hasMounted) {
     return (
-      <div className="mb-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-        <div className="border-b border-slate-200 bg-slate-50 px-5 py-4">
-          <div className="h-4 w-40 animate-pulse rounded bg-slate-200" />
-          <div className="mt-2 h-3 w-56 animate-pulse rounded bg-slate-100" />
+      <div className="saas-card mb-8 overflow-hidden">
+        <div className="border-b border-saas-border px-5 py-4">
+          <div className="h-4 w-40 animate-pulse rounded bg-white/10" />
+          <div className="mt-2 h-3 w-56 animate-pulse rounded bg-white/5" />
         </div>
         <div className="px-5 py-8">
-          <div className="h-4 w-full animate-pulse rounded bg-slate-100" />
+          <div className="h-4 w-full animate-pulse rounded bg-white/5" />
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mb-8 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-5 py-4">
+    <div className="saas-card mb-8 overflow-hidden">
+      <div className="flex items-center justify-between border-b border-saas-border px-5 py-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-500/15 text-amber-400">
             <CalendarIcon />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-slate-900">
+            <h2 className="text-sm font-semibold text-white">
               Upcoming Meetings
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-400">
               {meetings.length === 0
                 ? "No meetings on the calendar"
                 : `${meetings.length} scheduled`}
@@ -74,7 +74,7 @@ export default function UpcomingMeetingsWidget() {
         </div>
         <Link
           href="/meetings"
-          className="text-xs font-semibold text-indigo-600 hover:text-indigo-800"
+          className="text-xs font-semibold text-violet-400 hover:text-violet-300"
         >
           View all →
         </Link>
@@ -82,63 +82,63 @@ export default function UpcomingMeetingsWidget() {
 
       {meetings.length === 0 ? (
         <div className="px-5 py-8 text-center">
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-slate-400">
             Meetings appear here when customers pick a time via response links.
           </p>
         </div>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] text-left text-sm">
+          <table className="saas-table w-full min-w-[640px] text-left text-sm">
             <thead>
-              <tr className="border-b border-slate-100 bg-white">
-                <th className="px-5 py-2.5 text-xs font-semibold text-slate-500">
+              <tr className="border-b border-saas-border text-slate-400">
+                <th className="px-5 py-2.5 text-xs font-semibold">
                   Business
                 </th>
-                <th className="px-4 py-2.5 text-xs font-semibold text-slate-500">
+                <th className="px-4 py-2.5 text-xs font-semibold">
                   Contact
                 </th>
-                <th className="px-4 py-2.5 text-xs font-semibold text-slate-500">
+                <th className="px-4 py-2.5 text-xs font-semibold">
                   Date
                 </th>
-                <th className="px-4 py-2.5 text-xs font-semibold text-slate-500">
+                <th className="px-4 py-2.5 text-xs font-semibold">
                   Time
                 </th>
-                <th className="px-4 py-2.5 text-xs font-semibold text-slate-500">
+                <th className="px-4 py-2.5 text-xs font-semibold">
                   Status
                 </th>
-                <th className="px-5 py-2.5 text-xs font-semibold text-slate-500">
+                <th className="px-5 py-2.5 text-xs font-semibold">
                   Countdown
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-saas-border">
               {meetings.map((m) => (
-                <tr key={m.id} className="hover:bg-slate-50/80">
+                <tr key={m.id}>
                   <td className="px-5 py-3">
                     <Link
                       href={`/leads/${m.leadId}`}
-                      className="font-semibold text-indigo-600 hover:text-indigo-800"
+                      className="font-semibold text-violet-400 hover:text-violet-300"
                     >
                       {m.businessName}
                     </Link>
                   </td>
-                  <td className="px-4 py-3 text-slate-700">
+                  <td className="px-4 py-3 text-slate-300">
                     <span className="font-medium">{m.contactName}</span>
                     <span className="block text-xs text-slate-400">
                       {m.contactRole}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-slate-600">
+                  <td className="px-4 py-3 text-slate-300">
                     {formatMeetingDate(m.scheduledAt)}
                   </td>
-                  <td className="px-4 py-3 text-slate-600">
+                  <td className="px-4 py-3 text-slate-300">
                     {formatMeetingTime(m.scheduledAt)}
                   </td>
                   <td className="px-4 py-3">
                     <CRMStatusBadge status={m.crmStatus} />
                   </td>
                   <td className="px-5 py-3">
-                    <span className="whitespace-nowrap rounded-full bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-800">
+                    <span className="whitespace-nowrap rounded-full bg-amber-500/15 px-2.5 py-1 text-xs font-medium text-amber-400">
                       {formatMeetingCountdown(m.scheduledAt)}
                     </span>
                   </td>

@@ -58,11 +58,11 @@ export default function CRMStatusTracker({
   const currentIndex = CRM_STATUSES.indexOf(status);
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="saas-card p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-slate-900">CRM Tracking</h2>
-          <p className="text-sm text-slate-500">Pipeline status management</p>
+          <h2 className="text-lg font-semibold text-white">CRM Tracking</h2>
+          <p className="text-sm text-slate-400">Pipeline status management</p>
         </div>
         <CRMStatusBadge status={status} />
       </div>
@@ -80,8 +80,8 @@ export default function CRMStatusTracker({
                 isActive
                   ? `${style.bg} ${style.text} ring-2 ring-offset-1 ${style.ring}`
                   : isPast
-                    ? "bg-slate-100 text-slate-500"
-                    : "bg-white text-slate-400 ring-1 ring-slate-200 hover:bg-slate-50 hover:text-slate-600"
+                    ? "bg-white/10 text-slate-400"
+                    : "bg-saas-card text-slate-400 ring-1 ring-saas-border hover:bg-white/5 hover:text-slate-300"
               }`}
             >
               {s}
@@ -90,7 +90,7 @@ export default function CRMStatusTracker({
         })}
       </div>
 
-      <div className="mt-4 h-2 overflow-hidden rounded-full bg-slate-100">
+      <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10">
         <div
           className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-500"
           style={{

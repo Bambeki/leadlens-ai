@@ -5,15 +5,15 @@ type Size = "sm" | "md" | "lg";
 
 const variants: Record<Variant, string> = {
   primary:
-    "bg-indigo-600 text-white shadow-sm hover:bg-indigo-700 focus-visible:ring-indigo-500",
+    "bg-violet-600 text-white shadow-lg shadow-violet-600/25 hover:bg-violet-500 hover:shadow-violet-500/30 focus-visible:ring-violet-500",
   secondary:
-    "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus-visible:ring-slate-400",
+    "border border-saas-border bg-saas-card text-slate-300 hover:border-violet-500/40 hover:bg-white/5 hover:text-white focus-visible:ring-violet-500",
   ghost:
-    "text-slate-600 hover:bg-slate-100 focus-visible:ring-slate-400",
+    "text-slate-400 hover:bg-white/5 hover:text-white focus-visible:ring-violet-500",
   success:
-    "bg-emerald-600 text-white shadow-sm hover:bg-emerald-700 focus-visible:ring-emerald-500",
+    "bg-emerald-600 text-white shadow-lg shadow-emerald-600/20 hover:bg-emerald-500 focus-visible:ring-emerald-500",
   danger:
-    "bg-red-600 text-white shadow-sm hover:bg-red-700 focus-visible:ring-red-500",
+    "bg-red-600 text-white shadow-lg shadow-red-600/20 hover:bg-red-500 focus-visible:ring-red-500",
 };
 
 const sizes: Record<Size, string> = {
@@ -31,7 +31,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = "primary", size = "md", className = "", children, ...props }, ref) => (
     <button
       ref={ref}
-      className={`inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-saas-bg disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${sizes[size]} ${className}`}
       {...props}
     >
       {children}

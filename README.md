@@ -57,3 +57,4 @@ src/
 ```
 
 No external APIs required — all data and AI features use local mock logic.
+

@@ -272,13 +272,13 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="saas-card p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">
+          <h3 className="text-lg font-semibold text-white">
             Outreach Workflow
           </h3>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-400">
             Draft → Approve → Send via Resend (manual send only)
           </p>
           {resendConfigured === false && (
@@ -314,10 +314,10 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
                   <div
                     className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
                       isActive
-                        ? "bg-indigo-600 text-white shadow-sm"
+                        ? "bg-violet-600 text-white shadow-sm"
                         : isComplete
                           ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
-                          : "bg-slate-50 text-slate-400 ring-1 ring-slate-200"
+                          : "bg-white/5 text-slate-400 ring-1 ring-saas-border"
                     }`}
                   >
                     {isComplete && !isActive && (
@@ -348,11 +348,11 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
       )}
 
       {draftReady && workflowStep === "approved" && !delivery && (
-        <div className="mt-5 rounded-lg border border-indigo-100 bg-indigo-50/50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+        <div className="mt-5 rounded-lg border border-violet-500/20 bg-violet-500/10 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
             Demo: Send test to your email
           </p>
-          <label className="mt-3 flex items-center gap-2 text-sm text-slate-700">
+          <label className="mt-3 flex items-center gap-2 text-sm text-slate-300">
             <input
               type="checkbox"
               checked={useTestEmail}
@@ -367,10 +367,10 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
               value={testEmail}
               onChange={(e) => setTestEmail(e.target.value)}
               placeholder="your@email.com"
-              className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+              className="mt-2 w-full rounded-lg border border-saas-border bg-saas-card px-4 py-2.5 text-sm focus:border-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/20"
             />
           ) : (
-            <p className="mt-2 text-sm text-slate-600">
+            <p className="mt-2 text-sm text-slate-300">
               Will send to lead contact:{" "}
               <span className="font-medium">{lead.contact.email}</span>
             </p>
@@ -417,7 +417,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
 
       {hasMounted && (isSent || workflowState.meetingScheduled) && (
         <div className="mt-5">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
             Post-send workflow
           </p>
           <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -432,7 +432,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
                     className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold transition-all ${
                       complete
                         ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
-                        : "bg-slate-50 text-slate-400 ring-1 ring-slate-200"
+                        : "bg-white/5 text-slate-400 ring-1 ring-saas-border"
                     }`}
                   >
                     {complete && <span className="text-emerald-500">✓</span>}
@@ -463,7 +463,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
             </p>
           )}
           {isSent && !workflowState.meetingScheduled && (
-            <p className="mt-3 text-xs text-slate-500">
+            <p className="mt-3 text-xs text-slate-400">
               Customer response links update this workflow automatically — no
               manual simulator needed for meetings.
             </p>
@@ -482,8 +482,8 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
       )}
 
       {draftReady && !isSent && (
-        <div className="mt-5 rounded-lg border border-dashed border-indigo-200 bg-indigo-50/50 p-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+        <div className="mt-5 rounded-lg border border-dashed border-violet-500/20 bg-violet-500/10 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
             Meeting Automation
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
@@ -502,20 +502,20 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
       )}
 
       {draftReady && (
-        <div className="mt-6 rounded-lg border border-slate-200 bg-slate-50 p-5">
+        <div className="mt-6 rounded-lg border border-saas-border bg-white/5 p-5">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full bg-violet-100 px-2.5 py-1 text-xs font-semibold text-violet-800">
                 AI draft — editable before sending
               </span>
-              <div className="flex rounded-lg border border-slate-200 bg-white p-0.5">
+              <div className="flex rounded-lg border border-saas-border bg-saas-card p-0.5">
                 <button
                   type="button"
                   onClick={() => setViewMode("edit")}
                   className={`rounded-md px-3 py-1 text-xs font-semibold transition-colors ${
                     viewMode === "edit"
-                      ? "bg-indigo-600 text-white"
-                      : "text-slate-500 hover:text-slate-700"
+                      ? "bg-violet-600 text-white"
+                      : "text-slate-400 hover:text-slate-300"
                   }`}
                 >
                   Edit
@@ -525,8 +525,8 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
                   onClick={() => setViewMode("preview")}
                   className={`rounded-md px-3 py-1 text-xs font-semibold transition-colors ${
                     viewMode === "preview"
-                      ? "bg-indigo-600 text-white"
-                      : "text-slate-500 hover:text-slate-700"
+                      ? "bg-violet-600 text-white"
+                      : "text-slate-400 hover:text-slate-300"
                   }`}
                 >
                   Preview
@@ -559,7 +559,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
             />
           ) : (
             <>
-              <label className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <label className="block text-xs font-semibold uppercase tracking-wide text-slate-400">
                 Subject
               </label>
               <input
@@ -567,10 +567,10 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
                 value={subject}
                 onChange={(e) => handleSubjectChange(e.target.value)}
                 readOnly={!isEditable}
-                className="mt-2 w-full rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-900 focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-600"
+                className="mt-2 w-full rounded-lg border border-saas-border bg-saas-card px-4 py-2.5 text-sm font-medium text-white focus:border-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/20 disabled:bg-white/10 disabled:text-slate-300"
               />
 
-              <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-slate-500">
+              <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-slate-400">
                 Email body
               </label>
               <textarea
@@ -578,7 +578,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
                 onChange={(e) => handleBodyChange(e.target.value)}
                 readOnly={!isEditable}
                 rows={18}
-                className="mt-2 w-full resize-y rounded-lg border border-slate-200 bg-white px-4 py-3 font-sans text-sm leading-relaxed text-slate-700 focus:border-indigo-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 disabled:bg-slate-100 disabled:text-slate-600"
+                className="mt-2 w-full resize-y rounded-lg border border-saas-border bg-saas-card px-4 py-3 font-sans text-sm leading-relaxed text-slate-300 focus:border-violet-500/30 focus:outline-none focus:ring-2 focus:ring-violet-500/20 disabled:bg-white/10 disabled:text-slate-300"
               />
 
               <p className="mt-2 text-xs text-slate-400">
@@ -636,8 +636,8 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
       )}
 
       {!draftReady && !isGenerating && workflowStep === null && (
-        <div className="mt-6 rounded-lg border border-dashed border-slate-200 bg-slate-50 py-10 text-center">
-          <p className="text-sm text-slate-500">
+        <div className="mt-6 rounded-lg border border-dashed border-saas-border bg-white/5 py-10 text-center">
+          <p className="text-sm text-slate-400">
             Generate an email to start the Draft → Approve → Send workflow
           </p>
         </div>

@@ -24,7 +24,7 @@ function StatusCard({
       }`}
     >
       <div className="flex items-center justify-between gap-3">
-        <h3 className="font-semibold text-slate-900">{label}</h3>
+        <h3 className="font-semibold text-white">{label}</h3>
         <span
           className={`rounded-full px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide ${
             ok
@@ -36,7 +36,7 @@ function StatusCard({
         </span>
       </div>
       {description && (
-        <p className="mt-2 text-sm text-slate-600">{description}</p>
+        <p className="mt-2 text-sm text-slate-300">{description}</p>
       )}
     </div>
   );
@@ -56,14 +56,14 @@ export default function SystemStatusPage() {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">System Status</h1>
-        <p className="mt-1 text-slate-500">
+        <h1 className="text-2xl font-bold text-white">System Status</h1>
+        <p className="mt-1 text-slate-400">
           Environment variable detection for Resend and Apify (no secrets shown)
         </p>
       </div>
 
       {loading && (
-        <p className="text-sm text-slate-500">Checking server environment…</p>
+        <p className="text-sm text-slate-400">Checking server environment…</p>
       )}
 
       {status && (
@@ -114,8 +114,8 @@ export default function SystemStatusPage() {
             </div>
           </section>
 
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-600">
-            <p className="font-medium text-slate-800">Troubleshooting</p>
+          <div className="rounded-xl border border-saas-border bg-white/5 p-5 text-sm text-slate-300">
+            <p className="font-medium text-slate-300">Troubleshooting</p>
             <ul className="mt-2 list-inside list-disc space-y-1">
               <li>
                 Place variables in <code className="text-xs">.env.local</code> at

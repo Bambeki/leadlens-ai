@@ -19,10 +19,10 @@ export default function PipelineClient({ baseLeads }: { baseLeads: Lead[] }) {
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-slate-900">
+        <h1 className="text-2xl font-bold text-white">
           Acquisition Pipeline
         </h1>
-        <p className="mt-1 text-slate-500">
+        <p className="mt-1 text-slate-400">
           AI-powered customer acquisition — from discovery to close
         </p>
       </div>
@@ -30,23 +30,23 @@ export default function PipelineClient({ baseLeads }: { baseLeads: Lead[] }) {
       <PipelineVisualization stages={stages} />
 
       <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-slate-500">Discovered via Google Maps</p>
-          <p className="mt-1 text-3xl font-bold text-slate-900">{leadsWithCrm.length}</p>
+        <div className="saas-glow-card p-5">
+          <p className="text-sm text-slate-400">Discovered via Google Maps</p>
+          <p className="mt-1 text-3xl font-bold text-white">{leadsWithCrm.length}</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-slate-500">High-Priority Opportunities</p>
-          <p className="mt-1 text-3xl font-bold text-red-600">
+        <div className="saas-glow-card p-5">
+          <p className="text-sm text-slate-400">High-Priority Opportunities</p>
+          <p className="mt-1 text-3xl font-bold text-red-400">
             {leadsWithCrm.filter((l) => l.priority === "High").length}
           </p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-slate-500">Contacts Discovered</p>
-          <p className="mt-1 text-3xl font-bold text-violet-600">{leadsWithCrm.length}</p>
+        <div className="saas-glow-card p-5">
+          <p className="text-sm text-slate-400">Contacts Discovered</p>
+          <p className="mt-1 text-3xl font-bold text-violet-400">{leadsWithCrm.length}</p>
         </div>
-        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-sm text-slate-500">Pipeline Value</p>
-          <p className="mt-1 text-3xl font-bold text-indigo-600">
+        <div className="saas-glow-card p-5">
+          <p className="text-sm text-slate-400">Pipeline Value</p>
+          <p className="mt-1 text-3xl font-bold text-blue-400">
             {formatCurrency(pipelineValue)}
           </p>
         </div>

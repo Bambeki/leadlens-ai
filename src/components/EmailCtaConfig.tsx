@@ -16,9 +16,9 @@ const VARIANT_STYLES: Record<
   "primary" | "secondary" | "tertiary",
   string
 > = {
-  primary: "bg-indigo-600 text-white ring-indigo-600",
-  secondary: "bg-indigo-50 text-indigo-700 ring-indigo-300",
-  tertiary: "bg-white text-indigo-600 ring-indigo-200",
+  primary: "bg-violet-600 text-white ring-indigo-600",
+  secondary: "bg-violet-500/15 text-violet-400 ring-indigo-300",
+  tertiary: "bg-saas-card text-violet-400 ring-indigo-200",
 };
 
 export default function EmailCtaConfigPanel({
@@ -32,11 +32,11 @@ export default function EmailCtaConfigPanel({
   }
 
   return (
-    <div className="rounded-lg border border-indigo-100 bg-indigo-50/40 p-4">
-      <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600">
+    <div className="rounded-lg border border-violet-500/20 bg-violet-500/10 p-4">
+      <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
         Email CTA Buttons
       </p>
-      <p className="mt-1 text-xs text-slate-500">
+      <p className="mt-1 text-xs text-slate-400">
         Choose which action buttons appear in the HTML email
       </p>
       <div className="mt-3 flex flex-col gap-2">
@@ -47,8 +47,8 @@ export default function EmailCtaConfigPanel({
               key={cta.id}
               className={`flex cursor-pointer items-center justify-between gap-3 rounded-lg border px-3 py-2.5 transition-colors ${
                 enabled
-                  ? "border-indigo-200 bg-white"
-                  : "border-slate-200 bg-slate-50 opacity-70"
+                  ? "border-violet-500/20 bg-saas-card"
+                  : "border-saas-border bg-white/5 opacity-70"
               } ${disabled ? "cursor-not-allowed opacity-60" : ""}`}
             >
               <div className="flex items-center gap-3">
@@ -57,7 +57,7 @@ export default function EmailCtaConfigPanel({
                   checked={enabled}
                   onChange={() => toggle(cta.id)}
                   disabled={disabled}
-                  className="rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                  className="rounded border-slate-300 text-violet-400 focus:ring-violet-500"
                 />
                 <span
                   className={`inline-flex rounded-lg px-3 py-1 text-xs font-semibold ring-1 ring-inset ${VARIANT_STYLES[cta.variant]}`}

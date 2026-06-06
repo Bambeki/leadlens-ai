@@ -36,7 +36,7 @@ const stepIcons: Record<string, React.ReactNode> = {
 
 export default function DataPipelineFlow() {
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-6 shadow-xl sm:p-8">
+    <div className="overflow-hidden rounded-2xl border border-saas-border bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 p-6 shadow-xl sm:p-8">
       <div className="mb-6">
         <h2 className="text-lg font-bold text-white">Data Pipeline</h2>
         <p className="mt-1 text-sm text-indigo-300">
@@ -47,8 +47,8 @@ export default function DataPipelineFlow() {
       <div className="flex flex-col gap-3 lg:flex-row lg:items-stretch">
         {DATA_PIPELINE_STEPS.map((step, index) => (
           <div key={step.id} className="flex flex-1 items-center gap-2">
-            <div className="flex flex-1 flex-col rounded-xl border border-white/10 bg-white/5 p-4 backdrop-blur">
-              <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-indigo-500/30 text-indigo-200">
+            <div className="flex flex-1 flex-col rounded-xl border border-white/10 bg-saas-card/5 p-4 backdrop-blur">
+              <div className="mb-2 flex h-9 w-9 items-center justify-center rounded-lg bg-violet-500/20 text-violet-300">
                 {stepIcons[step.id]}
               </div>
               <p className="text-xs font-medium uppercase tracking-wider text-indigo-400">

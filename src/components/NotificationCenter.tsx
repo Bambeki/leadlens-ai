@@ -30,7 +30,7 @@ export default function NotificationCenter() {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="relative rounded-lg p-2 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-700"
+        className="relative rounded-lg p-2 text-slate-400 transition-colors hover:bg-white/5 hover:text-white"
         aria-label="Notifications"
       >
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -49,13 +49,13 @@ export default function NotificationCenter() {
             className="fixed inset-0 z-40"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-xl sm:w-96">
-            <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
-              <h3 className="font-semibold text-slate-900">Notifications</h3>
+          <div className="saas-glass absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-xl border border-saas-border shadow-xl sm:w-96">
+            <div className="flex items-center justify-between border-b border-saas-border px-4 py-3">
+              <h3 className="font-semibold text-white">Notifications</h3>
               {unread > 0 && (
                 <button
                   onClick={markAllRead}
-                  className="text-xs font-medium text-indigo-600 hover:text-indigo-800"
+                  className="text-xs font-medium text-violet-400 hover:text-violet-300"
                 >
                   Mark all read
                 </button>
@@ -63,7 +63,7 @@ export default function NotificationCenter() {
             </div>
             <div className="max-h-80 overflow-y-auto">
               {notifications.length === 0 ? (
-                <p className="px-4 py-8 text-center text-sm text-slate-500">
+                <p className="px-4 py-8 text-center text-sm text-slate-400">
                   No notifications yet
                 </p>
               ) : (
@@ -72,8 +72,8 @@ export default function NotificationCenter() {
                   return (
                     <div
                       key={n.id}
-                      className={`border-b border-slate-50 px-4 py-3 transition-colors ${
-                        n.read ? "bg-white" : "bg-indigo-50/40"
+                      className={`border-b border-saas-border px-4 py-3 transition-colors ${
+                        n.read ? "bg-transparent" : "bg-violet-500/10"
                       }`}
                     >
                       <div className="flex gap-3">
@@ -85,10 +85,10 @@ export default function NotificationCenter() {
                           </svg>
                         </div>
                         <div>
-                          <p className="text-sm font-semibold text-slate-900">
+                          <p className="text-sm font-semibold text-white">
                             {n.title}
                           </p>
-                          <p className="mt-0.5 text-xs text-slate-600">
+                          <p className="mt-0.5 text-xs text-slate-300">
                             {n.message}
                           </p>
                           <p className="mt-1 text-[10px] text-slate-400">
