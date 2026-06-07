@@ -23,8 +23,19 @@ export default function LandingHero() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 pb-20 pt-20 text-center">
-        <h1 className="mx-auto max-w-5xl text-4xl font-bold uppercase tracking-[0.06em] text-white sm:text-5xl lg:text-6xl">
-          Startup Hackathon – AI for Mittelhessen
+        <h1 className="mx-auto max-w-5xl">
+          <span className="block text-xs font-semibold uppercase tracking-[0.35em] text-violet-300/90 sm:text-sm">
+            Startup Hackathon
+          </span>
+          <span className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:gap-5">
+            <span className="inline-flex -rotate-3 items-center rounded-xl border border-violet-400/35 bg-gradient-to-br from-violet-600/50 to-blue-600/35 px-4 py-1.5 text-4xl font-black tabular-nums text-white shadow-xl shadow-violet-950/60 backdrop-blur-sm sm:px-5 sm:py-2 sm:text-5xl lg:text-6xl">
+              2026
+            </span>
+            <span className="text-left text-3xl font-bold uppercase leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.65)] sm:text-4xl lg:text-5xl">
+              <span className="block saas-gradient-text">AI for</span>
+              <span className="block text-white">Mittelhessen</span>
+            </span>
+          </span>
         </h1>
 
         <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-400 sm:text-base">
