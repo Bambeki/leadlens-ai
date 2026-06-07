@@ -8,22 +8,22 @@ export default function LandingHero() {
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-violet-500/10 via-saas-bg to-saas-bg" />
       <div className="relative mx-auto max-w-6xl px-6 pb-20 pt-20 text-center">
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full bg-violet-500/15 px-4 py-1.5 text-sm font-medium text-violet-400 ring-1 ring-violet-500/20">
-          <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-violet-400 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-violet-500" />
-          </span>
-          Live Demo
+        <div className="mb-3 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300 ring-1 ring-white/5">
+          Startup Hackathon – AI for Mittelhessen
         </div>
 
-        <h1 className="mx-auto max-w-4xl text-5xl font-bold tracking-tight text-white sm:text-6xl">
+        <p className="text-sm text-slate-500">
+          Challenge inspired by Weimar Beschriftung
+        </p>
+
+        <h1 className="mx-auto mt-8 max-w-4xl text-5xl font-bold tracking-tight text-white sm:text-6xl">
           AI-Powered B2B Lead Discovery for{" "}
           <span className="saas-gradient-text">Vehicle Branding</span>
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-300">
-          Discover logistics prospects, score vehicle branding gaps, send outreach,
-          and book meetings — all in one platform.
+          Discover vehicle branding opportunities, qualify high-value business
+          leads, generate outreach, and book meetings — all in one platform.
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
