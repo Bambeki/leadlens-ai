@@ -1,18 +1,33 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { DemoModeButton } from "./DemoMode";
+
+const HERO_BACKGROUND = "/images/hero/background.jpg";
 
 export default function LandingHero() {
   return (
     <section className="relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-violet-500/10 via-saas-bg to-saas-bg" />
-      <div className="relative mx-auto max-w-6xl px-6 pb-20 pt-20 text-center">
+      <div className="absolute inset-0" aria-hidden>
+        <Image
+          src={HERO_BACKGROUND}
+          alt=""
+          fill
+          priority
+          className="object-cover object-center"
+          sizes="100vw"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-saas-bg/88 to-saas-bg" />
+        <div className="absolute inset-0 bg-violet-950/25" />
+      </div>
+
+      <div className="relative z-10 mx-auto max-w-6xl px-6 pb-20 pt-20 text-center">
         <h1 className="mx-auto max-w-5xl text-4xl font-bold uppercase tracking-[0.06em] text-white sm:text-5xl lg:text-6xl">
           Startup Hackathon – AI for Mittelhessen
         </h1>
 
-        <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-500 sm:text-base">
+        <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-400 sm:text-base">
           Challenge inspired by Weimar Beschriftung
         </p>
 

@@ -22,6 +22,10 @@
 
 # misc
 .DS_Store
+public/images/hero/*.tiff
+public/images/hero/*.tif
+*.tiff
+*.tif
 *.pem
 
 # debug
