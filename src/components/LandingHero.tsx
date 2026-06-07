@@ -8,20 +8,20 @@ export default function LandingHero() {
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-violet-500/10 via-saas-bg to-saas-bg" />
       <div className="relative mx-auto max-w-6xl px-6 pb-20 pt-20 text-center">
-        <div className="mb-3 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-7 py-3 text-base font-semibold uppercase tracking-[0.1em] text-slate-200 ring-1 ring-white/10 sm:px-8 sm:py-3.5 sm:text-lg">
+        <h1 className="mx-auto max-w-5xl text-4xl font-bold uppercase tracking-[0.06em] text-white sm:text-5xl lg:text-6xl">
           Startup Hackathon – AI for Mittelhessen
-        </div>
+        </h1>
 
-        <p className="text-sm text-slate-500">
+        <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-500 sm:text-base">
           Challenge inspired by Weimar Beschriftung
         </p>
 
-        <h1 className="mx-auto mt-8 max-w-4xl text-5xl font-bold tracking-tight text-white sm:text-6xl">
+        <h2 className="mx-auto mt-10 max-w-3xl text-2xl font-bold tracking-tight text-slate-200 sm:text-3xl">
           AI-Powered B2B Lead Discovery for{" "}
           <span className="saas-gradient-text">Vehicle Branding</span>
-        </h1>
+        </h2>
 
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-slate-300">
+        <p className="mx-auto mt-4 max-w-2xl text-base text-slate-400 sm:text-lg">
           Discover vehicle branding opportunities, qualify high-value business
           leads, generate outreach, and book meetings — all in one platform.
         </p>
