@@ -262,12 +262,18 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t border-saas-border bg-saas-card py-8">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6">
-          <p className="text-sm text-slate-500">
-            © 2026 LeadLens AI
-          </p>
-          <p className="text-sm text-slate-500">
-            Built for vehicle wrap & vehicle branding companies
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-slate-500">
+              © 2026 LeadLens AI
+            </p>
+            <p className="text-sm text-slate-500">
+              Built for vehicle wrap & vehicle branding companies
+            </p>
+          </div>
+          <p className="mt-6 text-center text-xs leading-relaxed text-slate-500">
+            Inspired by real-world vehicle branding businesses such as Weimar
+            Beschriftung.
           </p>
         </div>
       </footer>
