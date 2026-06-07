@@ -48,7 +48,7 @@ function SchedulePickerSkeleton() {
     <div className="flex min-h-screen items-center justify-center bg-saas-bg p-6">
       <div className="w-full max-w-lg rounded-2xl border border-saas-border bg-saas-card p-8 shadow-lg">
         <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
-          FleetBrand Pro
+          LeadLens AI
         </p>
         <h1 className="mt-2 text-2xl font-bold text-white">
           Choose a meeting time
@@ -173,7 +173,7 @@ export default function RespondClient({
       <div className="flex min-h-screen items-center justify-center bg-saas-bg p-6">
         <div className="w-full max-w-lg rounded-2xl border border-saas-border bg-saas-card p-8 shadow-lg">
           <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
-            FleetBrand Pro
+            LeadLens AI
           </p>
           <h1 className="mt-2 text-2xl font-bold text-white">
             Choose a meeting time
@@ -222,7 +222,7 @@ export default function RespondClient({
             Meeting confirmed
           </h1>
           <p className="mt-2 text-slate-300">
-            Thanks, {lead.contact.name}! Your meeting with FleetBrand Pro is
+            Thanks, {lead.contact.name}! Your meeting with LeadLens AI is
             scheduled for <strong>{confirmedSlot}</strong>.
           </p>
           <p className="mt-4 text-sm text-slate-400">
@@ -242,8 +242,9 @@ export default function RespondClient({
             Thanks for your response!
           </h1>
           <p className="mt-3 text-slate-300">
-            We received your interest, {lead.contact.name}. Marcus from FleetBrand
-            Pro will call <strong>{lead.businessName}</strong> shortly.
+            We received your interest, {lead.contact.name}. The{" "}
+            <strong>LeadLens AI</strong> team will reach out to{" "}
+            <strong>{lead.businessName}</strong> shortly.
           </p>
           <p className="mt-4 text-sm font-medium text-emerald-400">
             ✓ Your response updated our CRM automatically.
@@ -274,7 +275,7 @@ export default function RespondClient({
     <div className="flex min-h-screen items-center justify-center bg-saas-bg p-6">
       <div className="max-w-md rounded-2xl border border-saas-border bg-saas-card p-8 text-center shadow-lg">
         <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
-          FleetBrand Pro × {lead.businessName}
+          LeadLens AI × {lead.businessName}
         </p>
         <h1 className="mt-2 text-2xl font-bold text-white">
           Thanks for your response

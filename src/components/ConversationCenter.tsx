@@ -38,9 +38,10 @@ import {
 } from "@/lib/conversation-store";
 import { processEmailSent, simulateWebhookEvent } from "@/lib/event-automation";
 import { useHasMounted } from "@/hooks/useHasMounted";
+import { LEADLENS_BRAND } from "@/lib/branding";
 import Button from "./ui/Button";
 
-const SENDER_NAME = "Marcus Weber · FleetBrand Pro";
+const SENDER_NAME = LEADLENS_BRAND.senderLabel;
 
 const MEETING_BUTTONS: { type: MeetingType; label: string }[] = [
   { type: "consultation-15", label: "Suggest 15-minute call" },
@@ -281,7 +282,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
       return;
     }
     setSendError(null);
-    const replyBody = `Hi Marcus,\n\nThank you for reaching out about vehicle branding for ${lead.businessName}. We're interested in vehicle wraps and would like to schedule a call to discuss options.\n\nCould we find a time next week?\n\nBest regards,\n${lead.contact.name}\n${lead.contact.role}`;
+    const replyBody = `Hi ${LEADLENS_BRAND.senderLabel},\n\nThank you for reaching out about vehicle branding for ${lead.businessName}. We're interested in vehicle wraps and would like to schedule a call to discuss options.\n\nCould we find a time next week?\n\nBest regards,\n${lead.contact.name}\n${lead.contact.role}`;
 
     simulateWebhookEvent(lead, "customer_replied");
     addSimulatedCustomerReply(lead.id, {

@@ -1,3 +1,4 @@
+import { LEADLENS_BRAND } from "./branding";
 import { getCustomerResponseUrls } from "./customer-response";
 
 export type EmailCtaId = "consultation" | "audit" | "discovery";
@@ -209,13 +210,14 @@ export function buildHtmlEmail(options: HtmlEmailOptions): string {
     leadId,
     baseUrl,
     ctaConfig = DEFAULT_EMAIL_CTA_CONFIG,
-    companyName = "FleetBrand Pro",
+    companyName = LEADLENS_BRAND.name,
   } = options;
 
   const bodyHtml = bodyTextToHtml(body);
   const ctaHtml = renderCtaButtons(leadId, baseUrl, ctaConfig);
   const safeHeadline = escapeHtml(headline);
   const safeCompany = escapeHtml(companyName);
+  const safeTagline = escapeHtml(LEADLENS_BRAND.tagline);
   const declinedUrl = escapeHtml(
     getCustomerResponseUrls(leadId, baseUrl).declined
   );
@@ -260,13 +262,13 @@ export function buildHtmlEmail(options: HtmlEmailOptions): string {
                 <tr>
                   <td>
                     <div style="display:inline-block;width:40px;height:40px;background-color:rgba(255,255,255,0.2);border-radius:10px;text-align:center;line-height:40px;font-size:20px;margin-bottom:12px;">
-                      🚐
+                      ◉
                     </div>
                     <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:22px;font-weight:700;color:${BRAND.white};letter-spacing:-0.02em;">
                       ${safeCompany}
                     </p>
                     <p style="margin:4px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:rgba(255,255,255,0.85);">
-                      Vehicle Branding &amp; Wraps
+                      ${safeTagline}
                     </p>
                   </td>
                 </tr>
@@ -300,7 +302,7 @@ export function buildHtmlEmail(options: HtmlEmailOptions): string {
           <tr>
             <td style="padding:20px 32px 28px 32px;background-color:#f1f5f9;border-top:1px solid #e2e8f0;">
               <p style="margin:0 0 8px 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${BRAND.slate};text-align:center;">
-                Powered by LeadLens AI Vehicle Branding Intelligence
+                ${safeCompany} — ${safeTagline}
               </p>
               <p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#94a3b8;text-align:center;">
                 © ${new Date().getFullYear()} ${safeCompany}. All rights reserved.

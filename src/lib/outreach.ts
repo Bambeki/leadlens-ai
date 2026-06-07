@@ -1,3 +1,4 @@
+import { LEADLENS_BRAND } from "./branding";
 import type { Lead } from "./types";
 
 const VALUE_PROPS: Record<string, string> = {
@@ -36,7 +37,7 @@ Dear ${lead.businessName} Team,
 
 ${openingLine}
 
-At FleetBrand Pro, we specialize in vehicle branding intelligence for ${lead.industry.toLowerCase()} businesses. ${valueProp}
+At ${LEADLENS_BRAND.name}, we specialize in vehicle branding intelligence for ${lead.industry.toLowerCase()} businesses. ${valueProp}
 
 Based on our Vehicle Branding Audit, we recommend:
 
@@ -50,11 +51,10 @@ Would you be available for a brief 15-minute call next week? I can share before/
 
 Best regards,
 
-Marcus Weber
-Senior Account Manager
-FleetBrand Pro
-📞 +49 89 123 4567
-✉️ marcus.weber@fleetbrandpro.de
+${LEADLENS_BRAND.senderLabel}
+${LEADLENS_BRAND.tagline}
+📞 ${LEADLENS_BRAND.phone}
+✉️ ${LEADLENS_BRAND.email}
 
 P.S. — We're offering 10% off first vehicle wraps for companies adding 3+ vehicles this quarter.`;
 }
