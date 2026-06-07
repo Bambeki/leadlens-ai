@@ -28,8 +28,7 @@ export default function LandingHero() {
             Startup Hackathon 2026
           </span>
           <span className="mt-4 block text-3xl font-bold uppercase leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.65)] sm:text-4xl lg:text-5xl">
-            <span className="saas-gradient-text">AI for</span>{" "}
-            <span className="text-white">Mittelhessen</span>
+            AI for Mittelhessen
           </span>
         </h1>
 
@@ -37,9 +36,8 @@ export default function LandingHero() {
           Challenge inspired by Weimar Beschriftung
         </p>
 
-        <h2 className="mx-auto mt-10 max-w-3xl text-2xl font-bold tracking-tight text-slate-200 sm:text-3xl">
-          AI-Powered B2B Lead Discovery for{" "}
-          <span className="saas-gradient-text">Vehicle Branding</span>
+        <h2 className="mx-auto mt-10 max-w-3xl text-2xl font-bold tracking-tight text-white sm:text-3xl">
+          AI-Powered B2B Lead Discovery for Vehicle Branding
         </h2>
 
         <p className="mx-auto mt-4 max-w-2xl text-base text-slate-400 sm:text-lg">
