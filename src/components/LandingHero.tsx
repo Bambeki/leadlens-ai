@@ -8,7 +8,7 @@ export default function LandingHero() {
     <section className="relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-violet-500/10 via-saas-bg to-saas-bg" />
       <div className="relative mx-auto max-w-6xl px-6 pb-20 pt-20 text-center">
-        <div className="mb-3 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-300 ring-1 ring-white/5">
+        <div className="mb-3 inline-flex items-center rounded-full border border-white/10 bg-white/5 px-7 py-3 text-base font-semibold uppercase tracking-[0.1em] text-slate-200 ring-1 ring-white/10 sm:px-8 sm:py-3.5 sm:text-lg">
           Startup Hackathon – AI for Mittelhessen
         </div>
 
