@@ -11,6 +11,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/email-center": "Email Center",
   "/roi-calculator": "ROI Calculator",
   "/lead-import": "Lead Import",
+  "/data-sources": "Data Sources",
   "/analyzer": "Vehicle Branding Audit",
 };
 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import StatCard from "@/components/StatCard";
 import LeadsTable from "@/components/LeadsTable";
+import DataPipelineFlow from "@/components/DataPipelineFlow";
 import FeaturedCustomerStory from "@/components/FeaturedCustomerStory";
 import UpcomingMeetingsWidget from "@/components/UpcomingMeetingsWidget";
 import { useAllLeads } from "@/hooks/useAllLeads";
@@ -35,6 +36,10 @@ export default function DashboardClient({ baseLeads }: { baseLeads: Lead[] }) {
           <Link href="/pipeline" className="font-medium text-violet-400 hover:text-violet-300">
             view pipeline
           </Link>
+          {" · "}
+          <Link href="/data-sources" className="font-medium text-violet-400 hover:text-violet-300">
+            data sources
+          </Link>
         </p>
       </div>
 
@@ -43,6 +48,24 @@ export default function DashboardClient({ baseLeads }: { baseLeads: Lead[] }) {
         <StatCard label="Qualified Leads" value={stats.qualified} accent="emerald" icon={<CheckIcon />} />
         <StatCard label="Outreach Sent" value={stats.outreachSent} accent="amber" icon={<MailIcon />} />
         <StatCard label="Meetings Booked" value={stats.meetingsBooked} accent="violet" icon={<CalendarIcon />} />
+      </div>
+
+      <div className="mb-8">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h2 className="text-lg font-semibold text-white">Where data comes from</h2>
+            <p className="mt-1 text-sm text-slate-400">
+              Google Maps, websites, LinkedIn, social, email enrichment, and vehicle imagery
+            </p>
+          </div>
+          <Link
+            href="/data-sources"
+            className="text-sm font-medium text-violet-400 hover:text-violet-300"
+          >
+            View all sources →
+          </Link>
+        </div>
+        <DataPipelineFlow />
       </div>
 
       <FeaturedCustomerStory />

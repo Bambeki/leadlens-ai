@@ -234,9 +234,9 @@ export default function DataSourcesPage() {
           </div>
         </div>
         <p className="mt-6 rounded-lg border border-violet-500/20 bg-saas-card px-4 py-3 text-sm text-slate-400">
-          <span className="font-semibold text-slate-300">Hackathon note:</span>{" "}
-          This prototype simulates all enrichment layers with realistic mock
-          data — no live API keys required for the demo.
+          <span className="font-semibold text-slate-300">Demo note:</span>{" "}
+          This live demo simulates enrichment layers with realistic mock data so
+          you can explore the full workflow without API keys.
         </p>
       </div>
     </div>
