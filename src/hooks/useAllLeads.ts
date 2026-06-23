@@ -8,14 +8,13 @@ import {
 } from "@/lib/imported-leads";
 
 export function useAllLeads(baseLeads: Lead[]) {
-  const [imported, setImported] = useState<Lead[]>([]);
+  const [imported, setImported] = useState<Lead[]>(() => getImportedLeads());
 
   const refresh = useCallback(() => {
     setImported(getImportedLeads());
   }, []);
 
   useEffect(() => {
-    refresh();
     window.addEventListener(LEADS_UPDATED_EVENT, refresh);
     return () => window.removeEventListener(LEADS_UPDATED_EVENT, refresh);
   }, [refresh]);

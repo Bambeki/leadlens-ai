@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { DemoModeButton } from "./DemoMode";
 
 const navItems = [
   {
     href: "/dashboard",
-    label: "Dashboard",
+    label: "Opportunities",
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z" />
@@ -25,7 +24,7 @@ const navItems = [
   },
   {
     href: "/lead-import",
-    label: "Lead Import",
+    label: "Customer Import",
     icon: (
       <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3-3M6.75 19.5h10.5A2.25 2.25 0 0 0 19.5 17.25v-7.5A2.25 2.25 0 0 0 17.25 7.5H6.75A2.25 2.25 0 0 0 4.5 9.75v7.5A2.25 2.25 0 0 0 6.75 19.5Z" />
@@ -93,7 +92,7 @@ export default function Sidebar() {
         </div>
         <div>
           <p className="text-sm font-bold text-white">LeadLens AI</p>
-          <p className="text-xs text-slate-500">Vehicle Branding Intel</p>
+          <p className="text-xs text-slate-500">Opportunity Discovery</p>
         </div>
       </div>
 
@@ -121,7 +120,6 @@ export default function Sidebar() {
       </nav>
 
       <div className="space-y-3 border-t border-saas-border p-4">
-        <DemoModeButton variant="sidebar" />
         <Link
           href="/"
           className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-500 transition-colors hover:bg-white/5 hover:text-slate-300"

@@ -5,12 +5,12 @@ import { usePathname } from "next/navigation";
 import NotificationCenter from "./NotificationCenter";
 
 const PAGE_TITLES: Record<string, string> = {
-  "/pipeline": "Pipeline",
-  "/dashboard": "Dashboard",
+  "/pipeline": "Opportunity Pipeline",
+  "/dashboard": "Customer Opportunity Dashboard",
   "/meetings": "Meetings",
   "/email-center": "Email Center",
   "/roi-calculator": "ROI Calculator",
-  "/lead-import": "Lead Import",
+  "/lead-import": "Customer Import",
   "/data-sources": "Data Sources",
   "/analyzer": "Vehicle Branding Audit",
 };
@@ -18,14 +18,14 @@ const PAGE_TITLES: Record<string, string> = {
 const MOBILE_NAV = [
   { href: "/pipeline", label: "Pipeline" },
   { href: "/lead-import", label: "Import" },
-  { href: "/dashboard", label: "Leads" },
+  { href: "/dashboard", label: "Opportunities" },
 ];
 
 export default function AppHeader() {
   const pathname = usePathname();
   const title =
     PAGE_TITLES[pathname] ??
-    (pathname.startsWith("/leads/") ? "Lead Details" : "LeadLens AI");
+    (pathname.startsWith("/leads/") ? "Opportunity Details" : "LeadLens AI");
 
   return (
     <>

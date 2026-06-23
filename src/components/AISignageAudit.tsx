@@ -1,5 +1,4 @@
 import type { SignageAudit } from "@/lib/types";
-import { formatCurrency } from "@/lib/scoring";
 
 function ScoreGauge({
   score,
@@ -253,22 +252,22 @@ export default function AISignageAudit({ audit }: { audit: SignageAudit }) {
         </div>
       </div>
 
-      {/* Revenue & Confidence footer */}
+      {/* Opportunity review footer */}
       <div className="grid gap-0 border-t border-saas-border bg-saas-card sm:grid-cols-3">
         <div className="border-b border-saas-border p-6 sm:border-b-0 sm:border-r">
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Minimum Value
+            Opportunity Value
           </p>
-          <p className="mt-1 text-2xl font-bold text-white">
-            {formatCurrency(audit.estimatedValue.min)}
+          <p className="mt-1 text-lg font-bold text-white">
+            Analysis pending
           </p>
         </div>
         <div className="border-b border-saas-border p-6 sm:border-b-0 sm:border-r">
           <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Maximum Value
+            Next Review Step
           </p>
-          <p className="mt-1 text-2xl font-bold text-violet-400">
-            {formatCurrency(audit.estimatedValue.max)}
+          <p className="mt-1 text-lg font-bold text-violet-400">
+            Confirm source evidence
           </p>
         </div>
         <div className="bg-gradient-to-br from-violet-500/10 to-blue-500/10 p-6">

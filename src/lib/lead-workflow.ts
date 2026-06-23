@@ -57,7 +57,7 @@ const RESPONDED_OUTREACH: OutreachStatus[] = [
   "Meeting Scheduled",
 ];
 
-/** Single entry point for scheduling a meeting — keeps CRM, outreach, meeting, and timeline in sync. */
+/** Single entry point for scheduling a meeting to keep status, outreach, meeting, and timeline in sync. */
 export function completeMeetingSchedule(
   lead: Lead,
   options: {
@@ -91,7 +91,11 @@ export function completeMeetingSchedule(
   }
 
   updateCrmStatus(lead.id, "Meeting Scheduled");
-  addActivity(lead.id, "crm_meeting_scheduled", "CRM moved to Meeting Scheduled");
+  addActivity(
+    lead.id,
+    "crm_meeting_scheduled",
+    "Opportunity status moved to Meeting Scheduled"
+  );
 
   return meeting;
 }
@@ -117,7 +121,7 @@ export function getLeadWorkflowState(leadId: string): LeadWorkflowState {
   };
 }
 
-/** Reconcile stored meeting with CRM/outreach when lead detail loads. */
+/** Reconcile stored meeting with opportunity status/outreach when detail loads. */
 export function syncMeetingWorkflowState(leadId: string): void {
   const meeting = getMeetingByLeadId(leadId);
   if (!meeting) return;

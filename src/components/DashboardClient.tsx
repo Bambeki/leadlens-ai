@@ -13,6 +13,7 @@ import type { Lead } from "@/lib/types";
 export default function DashboardClient({ baseLeads }: { baseLeads: Lead[] }) {
   const { allLeads } = useAllLeads(baseLeads);
   const leadsWithCrm = useLeadsWithCrm(allLeads);
+  const hasCustomerData = leadsWithCrm.length > 0;
 
   const stats = {
     total: leadsWithCrm.length,
@@ -30,9 +31,9 @@ export default function DashboardClient({ baseLeads }: { baseLeads: Lead[] }) {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-white">Customer Opportunity Dashboard</h1>
         <p className="mt-1 text-slate-400">
-          Vehicle branding pipeline at a glance —{" "}
+          Customer opportunities at a glance —{" "}
           <Link href="/pipeline" className="font-medium text-violet-400 hover:text-violet-300">
             view pipeline
           </Link>
@@ -44,16 +45,40 @@ export default function DashboardClient({ baseLeads }: { baseLeads: Lead[] }) {
       </div>
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total Leads" value={stats.total} accent="violet" icon={<UsersIcon />} />
-        <StatCard label="Qualified Leads" value={stats.qualified} accent="emerald" icon={<CheckIcon />} />
-        <StatCard label="Outreach Sent" value={stats.outreachSent} accent="amber" icon={<MailIcon />} />
-        <StatCard label="Meetings Booked" value={stats.meetingsBooked} accent="violet" icon={<CalendarIcon />} />
+        <StatCard
+          label="Customer Opportunities"
+          value={hasCustomerData ? stats.total : "No data available yet"}
+          helperText={hasCustomerData ? undefined : "Import customers to begin"}
+          accent="violet"
+          icon={<UsersIcon />}
+        />
+        <StatCard
+          label="Qualified Opportunities"
+          value={hasCustomerData ? stats.qualified : "Analysis pending"}
+          helperText={hasCustomerData ? undefined : "Customer opportunities will appear here"}
+          accent="emerald"
+          icon={<CheckIcon />}
+        />
+        <StatCard
+          label="Personalized Outreach"
+          value={hasCustomerData ? stats.outreachSent : "Analysis pending"}
+          helperText={hasCustomerData ? undefined : "Import customers to begin"}
+          accent="amber"
+          icon={<MailIcon />}
+        />
+        <StatCard
+          label="Conversations Started"
+          value={hasCustomerData ? stats.meetingsBooked : "No data available yet"}
+          helperText={hasCustomerData ? undefined : "Customer opportunities will appear here"}
+          accent="violet"
+          icon={<CalendarIcon />}
+        />
       </div>
 
       <div className="mb-8">
         <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-lg font-semibold text-white">Where data comes from</h2>
+            <h2 className="text-lg font-semibold text-white">Where opportunity data comes from</h2>
             <p className="mt-1 text-sm text-slate-400">
               Google Maps, websites, LinkedIn, social, email enrichment, and vehicle imagery
             </p>
@@ -68,11 +93,11 @@ export default function DashboardClient({ baseLeads }: { baseLeads: Lead[] }) {
         <DataPipelineFlow />
       </div>
 
-      <FeaturedCustomerStory />
+      {hasCustomerData && <FeaturedCustomerStory lead={leadsWithCrm[0]} />}
 
       <UpcomingMeetingsWidget />
 
-      <LeadsTable leads={leadsWithCrm} title="Active Leads" />
+      <LeadsTable leads={leadsWithCrm} title="Active Customer Opportunities" />
     </div>
   );
 }

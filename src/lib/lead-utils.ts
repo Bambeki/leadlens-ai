@@ -107,7 +107,7 @@ export function sortLeads(
 }
 
 export const FILTER_TABS: { id: LeadFilter; label: string; group: "priority" | "crm" | "all" }[] = [
-  { id: "all", label: "All Leads", group: "all" },
+  { id: "all", label: "All Opportunities", group: "all" },
   { id: "High", label: "High Priority", group: "priority" },
   { id: "Medium", label: "Medium Priority", group: "priority" },
   { id: "Low", label: "Low Priority", group: "priority" },

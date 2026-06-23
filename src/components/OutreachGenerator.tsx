@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Lead } from "@/lib/types";
 import { generateOutreachEmail } from "@/lib/outreach";
 import {
@@ -91,7 +91,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
     saveOutreachDraft(lead.id, { ...parsed, ctaConfig });
   }
 
-  function refreshWorkflow() {
+  const refreshWorkflow = useCallback(() => {
     const saved = getOutreachStatus(lead.id);
     if (saved) {
       const step = outreachToWorkflowStep(saved);
@@ -110,21 +110,24 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
       }
     }
     setWorkflowState(getLeadWorkflowState(lead.id));
-  }
+  }, [lead.id]);
 
   useEffect(() => {
     if (!hasMounted) return;
-    setTestEmail(getSavedTestEmail());
+    const timeout = window.setTimeout(() => {
+      setTestEmail(getSavedTestEmail());
+      refreshWorkflow();
+    }, 0);
     fetchSystemStatus().then((s) => setResendConfigured(s.resendReady));
-    refreshWorkflow();
 
     window.addEventListener(CRM_UPDATED_EVENT, refreshWorkflow);
     window.addEventListener(MEETINGS_UPDATED_EVENT, refreshWorkflow);
     return () => {
+      window.clearTimeout(timeout);
       window.removeEventListener(CRM_UPDATED_EVENT, refreshWorkflow);
       window.removeEventListener(MEETINGS_UPDATED_EVENT, refreshWorkflow);
     };
-  }, [lead.id, hasMounted]);
+  }, [hasMounted, refreshWorkflow]);
 
   function runGenerate(isRegenerate: boolean) {
     setIsGenerating(true);
@@ -209,7 +212,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
       : lead.contact.email;
 
     if (!recipient) {
-      setSendError("Enter your test email address to send during the demo.");
+      setSendError("Enter your test email address before sending.");
       return;
     }
 
@@ -350,7 +353,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
       {draftReady && workflowStep === "approved" && !delivery && (
         <div className="mt-5 rounded-lg border border-violet-500/20 bg-violet-500/10 p-4">
           <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
-            Demo: Send test to your email
+            Send test to your email
           </p>
           <label className="mt-3 flex items-center gap-2 text-sm text-slate-300">
             <input
@@ -359,7 +362,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
               onChange={(e) => setUseTestEmail(e.target.checked)}
               className="rounded border-slate-300"
             />
-            Send to my test address (recommended for demo)
+            Send to my test address
           </label>
           {useTestEmail ? (
             <input

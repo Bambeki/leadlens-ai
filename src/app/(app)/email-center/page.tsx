@@ -11,9 +11,9 @@ import {
 const WORKFLOW_STEPS = [
   { id: "drafted", label: "Drafted", description: "AI generates personalized outreach" },
   { id: "approved", label: "Approved", description: "Review and approve before sending" },
-  { id: "sent", label: "Sent", description: "Email delivered to prospect" },
-  { id: "opened", label: "Opened", description: "Prospect opened your message" },
-  { id: "replied", label: "Replied", description: "Prospect responded — CRM updated" },
+  { id: "sent", label: "Sent", description: "Email delivered to the customer contact" },
+  { id: "opened", label: "Opened", description: "Customer contact opened your message" },
+  { id: "replied", label: "Replied", description: "Customer responded and status updated" },
 ];
 
 const EMAIL_PROVIDERS = [
@@ -65,7 +65,7 @@ export default function EmailCenterPage() {
       <div className="mb-8 overflow-hidden rounded-2xl border border-saas-border bg-gradient-to-br from-violet-500/10 via-saas-card to-saas-card p-6">
         <h2 className="text-lg font-semibold text-white">Outreach Workflow</h2>
         <p className="mt-1 text-sm text-slate-400">
-          Every email follows a clear CRM path from draft to reply
+          Every email follows a clear opportunity path from draft to reply
         </p>
         <div className="mt-6 flex flex-wrap items-center gap-2">
           {WORKFLOW_STEPS.map((step, i) => (
@@ -152,7 +152,7 @@ export default function EmailCenterPage() {
       <div className="mt-8 rounded-xl border border-saas-border bg-white/5 p-6">
         <h2 className="font-semibold text-white">Start Outreach</h2>
         <p className="mt-1 text-sm text-slate-400">
-          Open any lead to draft, approve, and send personalized vehicle branding emails.
+          Open any customer opportunity to draft, approve, and send personalized vehicle branding emails.
         </p>
         <Link href="/pipeline" className="mt-4 inline-block">
           <Button variant="secondary" size="sm">

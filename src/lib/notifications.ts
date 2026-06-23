@@ -69,7 +69,7 @@ export const INITIAL_NOTIFICATIONS: AppNotification[] = [
   {
     id: "n5",
     type: "crm_updated",
-    title: "CRM status updated",
+    title: "Opportunity status updated",
     message: "Hausarztpraxis am See moved to Meeting Scheduled.",
     timestamp: "5 hrs ago",
     read: true,
@@ -86,7 +86,7 @@ export function createNotification(
     email_replied: "Customer replied",
     meeting_requested: "Meeting requested",
     meeting_scheduled: "Meeting scheduled",
-    crm_updated: "CRM status updated",
+    crm_updated: "Opportunity status updated",
   };
   return {
     id: uniqueId("n-"),

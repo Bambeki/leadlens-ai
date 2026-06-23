@@ -10,9 +10,9 @@ export default function CrmFunnel({
 
   return (
     <div className="saas-card p-6">
-      <h2 className="text-lg font-semibold text-white">CRM Pipeline</h2>
+      <h2 className="text-lg font-semibold text-white">Opportunity Status</h2>
       <p className="mt-1 text-sm text-slate-400">
-        Lead status across acquisition funnel
+        Customer opportunity progress across the discovery funnel
       </p>
       <div className="mt-5 space-y-3">
         {breakdown.map(({ status, count }) => {

@@ -58,8 +58,8 @@ export default function CustomerResponsePanel({ lead }: { lead: Lead }) {
         Customer Response Links
       </h3>
       <p className="mt-1 text-sm text-slate-300">
-        Share these links in demo emails — judges click them to update CRM
-        automatically (no manual simulation needed).
+        Share these links in outreach emails so customer responses can update
+        opportunity status automatically.
       </p>
 
       <div className="mt-4 space-y-2">

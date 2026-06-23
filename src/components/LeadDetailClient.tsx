@@ -8,6 +8,7 @@ import OutreachGenerator from "@/components/OutreachGenerator";
 import ConversationCenter from "@/components/ConversationCenter";
 import OpportunityInsights from "@/components/OpportunityInsights";
 import DiscoverySourceCard from "@/components/DiscoverySourceCard";
+import EvidenceSources from "@/components/EvidenceSources";
 import AISignageAudit from "@/components/AISignageAudit";
 import ContactDiscovery from "@/components/ContactDiscovery";
 import CRMStatusTracker from "@/components/CRMStatusTracker";
@@ -16,7 +17,7 @@ import CRMStatusBadge from "@/components/CRMStatusBadge";
 import ActivityTimeline from "@/components/ActivityTimeline";
 import { useLeadById } from "@/hooks/useAllLeads";
 import { useCrmOverrides } from "@/hooks/useCrmOverrides";
-import { leads as baseLeads } from "@/lib/mock-data";
+import { leads as baseLeads } from "@/lib/base-data";
 import { PIPELINE_STAGE_DEFS } from "@/lib/pipeline";
 
 type LeadTab = "overview" | "conversation";
@@ -26,7 +27,7 @@ export default function LeadDetailClient({ id }: { id: string }) {
   const lead = useLeadById(baseLeads, id);
   const leadIdList = useMemo(
     () => (lead ? [lead.id] : []),
-    [lead?.id]
+    [lead]
   );
   const overrides = useCrmOverrides(leadIdList);
   const crmStatus = lead
@@ -53,13 +54,13 @@ export default function LeadDetailClient({ id }: { id: string }) {
         <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
         </svg>
-        Back to Pipeline
+        Back to Opportunity Pipeline
       </Link>
 
       {lead.imported && (
         <div className="mb-4 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2">
           <span className="text-sm text-emerald-300">
-            Imported prospect — vehicle branding opportunity identified
+            Imported customer opportunity identified for vehicle branding review
           </span>
         </div>
       )}
@@ -108,7 +109,7 @@ export default function LeadDetailClient({ id }: { id: string }) {
         </div>
         <div className="saas-glow-card px-5 py-3 text-center">
           <p className="text-xs font-medium uppercase tracking-wide text-violet-400">
-            Lead Score
+            Opportunity Score
           </p>
           <p className="text-3xl font-bold text-white">
             {lead.scoreBreakdown.total}
@@ -157,6 +158,7 @@ export default function LeadDetailClient({ id }: { id: string }) {
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
             <DiscoverySourceCard discovery={lead.discovery} />
+            <EvidenceSources sources={lead.evidenceSources ?? []} />
             <OpportunityInsights insights={lead.opportunityInsights} />
             <AISignageAudit audit={lead.signageAudit} />
             <ContactDiscovery contact={lead.contact} />

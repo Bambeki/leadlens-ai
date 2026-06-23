@@ -1,5 +1,5 @@
 import type { Lead } from "./types";
-import { leads as baseLeads } from "./mock-data";
+import { leads as baseLeads } from "./base-data";
 import { getImportedLeads } from "./imported-leads";
 
 export function findLeadById(id: string): Lead | undefined {

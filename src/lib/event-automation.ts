@@ -31,10 +31,10 @@ export function processEmailSent(
   updateOutreachStatus(leadId, "Sent");
   addActivity(leadId, "email_sent", "Email sent");
   updateCrmStatus(leadId, "Contacted");
-  addActivity(leadId, "crm_contacted", "CRM moved to Contacted");
+  addActivity(leadId, "crm_contacted", "Opportunity status moved to Contacted");
 
   notify("email_sent", `Email delivered to ${recipient} via Resend.`);
-  notify("crm_updated", "CRM updated to Contacted");
+  notify("crm_updated", "Opportunity status updated to Contacted");
 }
 
 export function simulateWebhookEvent(
@@ -62,12 +62,12 @@ export function simulateWebhookEvent(
       updateOutreachStatus(lead.id, "Replied");
       addActivity(lead.id, "email_replied", "Customer replied");
       updateCrmStatus(lead.id, "Responded");
-      addActivity(lead.id, "crm_responded", "CRM moved to Responded");
+      addActivity(lead.id, "crm_responded", "Opportunity status moved to Responded");
       notify(
         "email_replied",
         `${lead.contact.name} at ${name} replied (Resend inbound webhook).`
       );
-      notify("crm_updated", "Lead moved to Responded");
+      notify("crm_updated", "Opportunity status moved to Responded");
       return { ok: true };
     }
 
@@ -87,10 +87,10 @@ export function simulateWebhookEvent(
       updateOutreachStatus(lead.id, "Meeting Declined");
       addActivity(lead.id, "meeting_declined", "Meeting declined");
       updateCrmStatus(lead.id, "Lost");
-      addActivity(lead.id, "crm_lost", "CRM moved to Lost");
+      addActivity(lead.id, "crm_lost", "Opportunity status moved to Lost");
       notify(
         "crm_updated",
-        `${name} declined the meeting — CRM moved to Lost.`
+        `${name} declined the meeting — opportunity status moved to Lost.`
       );
       return { ok: true };
     }
@@ -99,10 +99,10 @@ export function simulateWebhookEvent(
       updateOutreachStatus(lead.id, "Bounced");
       addActivity(lead.id, "email_bounced", "Email bounced");
       updateCrmStatus(lead.id, "Lost");
-      addActivity(lead.id, "crm_lost", "CRM moved to Lost");
+      addActivity(lead.id, "crm_lost", "Opportunity status moved to Lost");
       notify(
         "crm_updated",
-        `Email to ${name} bounced — CRM moved to Lost.`
+        `Email to ${name} bounced — opportunity status moved to Lost.`
       );
       return { ok: true };
     }

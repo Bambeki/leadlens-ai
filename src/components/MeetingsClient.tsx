@@ -42,7 +42,7 @@ export default function MeetingsClient() {
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-white">Meetings</h1>
           <p className="mt-1 text-slate-400">
-            Scheduled via customer response links — synced with CRM automatically
+            Scheduled via customer response links and synced with opportunity status
           </p>
         </div>
         <div className="rounded-xl border border-saas-border bg-saas-card p-8">
@@ -61,7 +61,7 @@ export default function MeetingsClient() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">Meetings</h1>
         <p className="mt-1 text-slate-400">
-          Scheduled via customer response links — synced with CRM automatically
+          Scheduled via customer response links and synced with opportunity status
         </p>
       </div>
 
@@ -76,7 +76,7 @@ export default function MeetingsClient() {
             href="/dashboard"
             className="mt-4 inline-block text-sm font-semibold text-violet-400 hover:text-violet-300"
           >
-            Go to leads →
+            Go to opportunities →
           </Link>
         </div>
       ) : (
@@ -89,7 +89,7 @@ export default function MeetingsClient() {
                 <th className="px-4 py-3 font-semibold text-slate-300">Date / Time</th>
                 <th className="px-4 py-3 font-semibold text-slate-300">Type</th>
                 <th className="px-4 py-3 font-semibold text-slate-300">Status</th>
-                <th className="px-4 py-3 font-semibold text-slate-300">CRM</th>
+                <th className="px-4 py-3 font-semibold text-slate-300">Opportunity Status</th>
                 <th className="px-4 py-3 font-semibold text-slate-300">Score</th>
                 <th className="px-4 py-3 font-semibold text-slate-300" />
               </tr>
@@ -129,7 +129,7 @@ export default function MeetingsClient() {
                   <td className="px-4 py-4">
                     <Link href={`/leads/${m.leadId}`}>
                       <Button size="sm" variant="secondary">
-                        Open Lead
+                        Open Opportunity
                       </Button>
                     </Link>
                   </td>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { Lead } from "@/lib/types";
 import { generateOutreachEmail } from "@/lib/outreach";
 import {
@@ -118,10 +118,9 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
   const [useTestEmail, setUseTestEmail] = useState(true);
   const [resendReady, setResendReady] = useState(false);
   const [fromEmail, setFromEmail] = useState<string | null>(null);
-  const [replyToEmail, setReplyToEmail] = useState<string | null>(null);
   const [activeMeeting, setActiveMeeting] = useState<MeetingType | null>(null);
 
-  function refreshState() {
+  const refreshState = useCallback(() => {
     setMessages(getConversationMessages(lead.id));
     const status = getOutreachStatus(lead.id);
     setOutreachStatus(status);
@@ -135,29 +134,31 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
       setSubject(draft.subject);
       setBody(draft.body);
     }
-  }
+  }, [lead.id]);
 
   useEffect(() => {
     if (!hasMounted) return;
-    setTestEmail(getSavedTestEmail());
+    const timeout = window.setTimeout(() => {
+      setTestEmail(getSavedTestEmail());
+      refreshState();
+    }, 0);
     fetchSystemStatus().then((s) => setResendReady(s.resendReady));
     fetch("/api/email/status", { cache: "no-store" })
       .then((r) => r.json())
       .then((d) => {
         setFromEmail(d.fromEmail ?? null);
-        setReplyToEmail(d.replyToEmail ?? null);
       })
       .catch(() => {});
-    refreshState();
 
     const onUpdate = () => refreshState();
     window.addEventListener(CRM_UPDATED_EVENT, onUpdate);
     window.addEventListener(CONVERSATION_UPDATED_EVENT, onUpdate);
     return () => {
+      window.clearTimeout(timeout);
       window.removeEventListener(CRM_UPDATED_EVENT, onUpdate);
       window.removeEventListener(CONVERSATION_UPDATED_EVENT, onUpdate);
     };
-  }, [lead.id, hasMounted]);
+  }, [hasMounted, refreshState]);
 
   const statusFlags = getStatusFlags(outreachStatus);
   const isEditable = composerStep === "draft";
@@ -202,7 +203,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
 
     const recipient = useTestEmail ? testEmail.trim() : lead.contact.email;
     if (!recipient) {
-      setSendError("Enter a test email address for the demo send.");
+      setSendError("Enter a test email address before sending.");
       return;
     }
 
@@ -521,7 +522,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
                     onChange={(e) => setUseTestEmail(e.target.checked)}
                     className="rounded border-slate-300"
                   />
-                  Send to my test address (demo)
+                  Send to my test address
                 </label>
                 {useTestEmail && (
                   <input
@@ -572,11 +573,11 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
         {composerStep === "sent" && (
           <div className="mt-6 rounded-lg border border-dashed border-violet-500/25 bg-violet-500/10 p-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
-              Simulated inbox
+              Response preview
             </p>
             <p className="mt-1 text-sm text-slate-300">
-              Demo customer responses appear in the thread above — no external
-              inbox required.
+              Preview response events in the thread above without requiring an
+              external inbox.
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Button size="sm" variant="secondary" onClick={handleSimulateOpened}>

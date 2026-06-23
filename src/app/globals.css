@@ -156,25 +156,6 @@ tr {
   animation: pipeline-flow 3s linear infinite;
 }
 
-/* Demo mode cinematic */
-@keyframes demo-fade-in {
-  from { opacity: 0; transform: translateY(16px) scale(0.98); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-@keyframes demo-glow-pulse {
-  0%, 100% { box-shadow: 0 0 40px rgba(124, 58, 237, 0.2); }
-  50% { box-shadow: 0 0 80px rgba(124, 58, 237, 0.35); }
-}
-
-.demo-step-enter {
-  animation: demo-fade-in 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.demo-cinematic-glow {
-  animation: demo-glow-pulse 4s ease-in-out infinite;
-}
-
 /* Table zebra */
 .saas-table tbody tr:nth-child(even) {
   background: rgba(255, 255, 255, 0.02);

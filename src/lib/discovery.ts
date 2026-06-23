@@ -44,6 +44,9 @@ export function generateDiscoverySource(lead: DiscoveryInput): DiscoverySource {
     reviewCount,
     categories: industryCategories[lead.industry] ?? [lead.industry],
     method: "Automated regional scan — 25 km radius",
+    sourceUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+      `${lead.businessName} ${lead.city}`
+    )}`,
   };
 }
 

@@ -32,7 +32,7 @@ type WizardStep =
 const WIZARD_STEPS: { id: WizardStep; label: string }[] = [
   { id: "location", label: "1. Choose location" },
   { id: "types", label: "2. Select business types" },
-  { id: "discover", label: "3. Discover leads" },
+  { id: "discover", label: "3. Discover opportunities" },
   { id: "review", label: "4. Import to pipeline" },
 ];
 
@@ -69,10 +69,13 @@ export default function LeadImport() {
   const [importedCount, setImportedCount] = useState(0);
   const [error, setError] = useState("");
   const [scrapeProgress, setScrapeProgress] = useState("");
-  const [sessions, setSessions] = useState<ImportSession[]>([]);
+  const [sessions, setSessions] = useState<ImportSession[]>(() => getImportSessions());
 
   useEffect(() => {
-    setSessions(getImportSessions());
+    const timeout = window.setTimeout(() => {
+      setSessions(getImportSessions());
+    }, 0);
+    return () => window.clearTimeout(timeout);
   }, [step, importedCount]);
 
   async function handleUseLocation() {
@@ -476,7 +479,7 @@ export default function LeadImport() {
       {/* Step 3: Discover */}
       {(step === "discover" || step === "scraping") && (
         <div className="rounded-2xl border border-saas-border bg-saas-card p-6 shadow-sm sm:p-8">
-          <h2 className="text-lg font-bold text-white">Discover leads</h2>
+          <h2 className="text-lg font-bold text-white">Discover customer opportunities</h2>
           <p className="mt-1 text-sm text-slate-400">
             Search within a radius of {city}
             {advancedMode && keyword.trim()
@@ -512,7 +515,7 @@ export default function LeadImport() {
           <div className="mt-8 rounded-xl border border-violet-500/20 bg-gradient-to-br from-violet-500/10 to-blue-500/10 p-6 text-center">
             <p className="text-sm text-slate-300">
               One click runs multiple Google Maps searches, removes duplicates,
-              scores every business, and ranks the best leads first.
+              scores every business, and ranks the strongest customer opportunities first.
             </p>
             <div className="mt-5">
               <Button
@@ -526,10 +529,10 @@ export default function LeadImport() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                     </svg>
-                    Discovering leads…
+                    Discovering opportunities…
                   </>
                 ) : (
-                  "Find B2B Leads Near Me"
+                  "Find Customer Opportunities Near Me"
                 )}
               </Button>
             </div>
@@ -566,7 +569,7 @@ export default function LeadImport() {
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-saas-border px-6 py-4">
             <div>
               <h2 className="text-lg font-semibold text-white">
-                Ranked leads — best first
+                Ranked customer opportunities — best first
               </h2>
               <p className="text-sm text-slate-400">
                 {results.length} businesses found ({searchLabel}) within {radiusKm} km
@@ -666,11 +669,11 @@ export default function LeadImport() {
             </svg>
           </div>
           <h2 className="mt-4 text-2xl font-bold text-white">
-            {importedCount} Leads Imported
+            {importedCount} Customer Opportunities Imported
           </h2>
           <p className="mt-2 text-slate-300">
             Businesses from {searchLabel} near {city} are now in your LeadLens
-            pipeline — scored, enriched, and ready for outreach.
+            pipeline — scored, enriched, and ready for evidence review.
           </p>
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link href="/dashboard">

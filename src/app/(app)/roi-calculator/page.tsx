@@ -6,7 +6,7 @@ export default function ROICalculatorPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">ROI Calculator</h1>
         <p className="mt-1 text-slate-400">
-          Model revenue impact and time savings from AI-powered lead acquisition
+          Model potential revenue impact and time savings from opportunity discovery
         </p>
       </div>
       <ROICalculator />

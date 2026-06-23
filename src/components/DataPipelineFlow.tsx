@@ -40,7 +40,7 @@ export default function DataPipelineFlow() {
       <div className="mb-6">
         <h2 className="text-lg font-bold text-white">Data Pipeline</h2>
         <p className="mt-1 text-sm text-indigo-300">
-          How raw business data becomes qualified, actionable leads
+          How raw business data becomes qualified customer opportunities
         </p>
       </div>
 

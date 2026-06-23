@@ -8,9 +8,9 @@ import {
 } from "@/lib/roi-calculator";
 
 const DEFAULTS = {
-  averageProjectValue: 8500,
-  leadsContacted: 40,
-  conversionRate: 12,
+  averageProjectValue: 0,
+  leadsContacted: 0,
+  conversionRate: 0,
 };
 
 function RevenueBarChart({
@@ -156,7 +156,7 @@ function TimeComparisonChart({
           <span className="text-lg font-bold text-emerald-400">{formatHours(saved)}</span>
         </div>
         <p className="mt-1 text-xs text-emerald-400/80">
-          ~37 min saved per lead (research, scoring, outreach drafting)
+          ~37 min saved per opportunity (research, scoring, outreach drafting)
         </p>
       </div>
     </div>
@@ -205,7 +205,7 @@ export default function ROICalculator() {
                 </div>
                 <input
                   type="range"
-                  min={2000}
+                  min={0}
                   max={50000}
                   step={500}
                   value={averageProjectValue}
@@ -216,7 +216,7 @@ export default function ROICalculator() {
                 />
                 <input
                   type="number"
-                  min={2000}
+                  min={0}
                   max={50000}
                   step={500}
                   value={averageProjectValue}
@@ -230,7 +230,7 @@ export default function ROICalculator() {
               <div>
                 <div className="flex items-center justify-between">
                   <label className="text-sm font-medium text-slate-300">
-                    Leads contacted / month
+                    Opportunities contacted / month
                   </label>
                   <span className="text-sm font-bold text-violet-400">
                     {leadsContacted}
@@ -238,7 +238,7 @@ export default function ROICalculator() {
                 </div>
                 <input
                   type="range"
-                  min={5}
+                  min={0}
                   max={200}
                   step={5}
                   value={leadsContacted}
@@ -247,7 +247,7 @@ export default function ROICalculator() {
                 />
                 <input
                   type="number"
-                  min={5}
+                  min={0}
                   max={200}
                   value={leadsContacted}
                   onChange={(e) =>
@@ -268,7 +268,7 @@ export default function ROICalculator() {
                 </div>
                 <input
                   type="range"
-                  min={1}
+                  min={0}
                   max={50}
                   step={1}
                   value={conversionRate}
@@ -277,7 +277,7 @@ export default function ROICalculator() {
                 />
                 <input
                   type="number"
-                  min={1}
+                  min={0}
                   max={50}
                   value={conversionRate}
                   onChange={(e) =>
@@ -295,7 +295,7 @@ export default function ROICalculator() {
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="saas-glow-card border-violet-500/25 bg-gradient-to-br from-violet-500/15 to-saas-card p-5">
               <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
-                Monthly Revenue
+                Monthly Revenue Projection
               </p>
               <p className="mt-2 text-2xl font-bold text-white">
                 {formatCurrency(results.monthlyRevenue)}
@@ -307,7 +307,7 @@ export default function ROICalculator() {
             </div>
             <div className="saas-glow-card border-emerald-500/25 bg-gradient-to-br from-emerald-500/15 to-saas-card p-5">
               <p className="text-xs font-semibold uppercase tracking-wide text-emerald-400">
-                Annual Revenue
+                Annual Revenue Projection
               </p>
               <p className="mt-2 text-2xl font-bold text-white">
                 {formatCurrency(results.annualRevenue)}
@@ -352,7 +352,7 @@ export default function ROICalculator() {
         <div className="saas-card p-6">
           <h3 className="font-semibold text-white">Conversion Funnel</h3>
           <p className="mt-1 text-sm text-slate-400">
-            Leads contacted vs deals won
+            Opportunities contacted vs deals won
           </p>
           <div className="mt-6">
             <ConversionDonut

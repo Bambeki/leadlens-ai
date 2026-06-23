@@ -101,10 +101,10 @@ export default function DataSourcesPage() {
               Data Sources & Enrichment
             </h1>
             <p className="mt-3 text-lg leading-relaxed text-slate-300">
-              LeadLens AI aggregates data from six external sources, enriches
+              LeadLens AI aggregates data from connected sources, enriches
               each business profile with AI analysis, and transforms raw
-              listings into qualified vehicle branding opportunities with verified
-              contacts.
+              listings into evidence-backed customer opportunities with contact
+              context.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-3">
@@ -228,15 +228,14 @@ export default function DataSourcesPage() {
           <div>
             <p className="text-sm font-semibold text-violet-400">3. Act</p>
             <p className="mt-1 text-sm text-slate-300">
-              AI scores each lead, runs Vehicle Branding Audits, generates outreach, and
-              tracks progress through your CRM pipeline.
+              AI scores each opportunity, runs Vehicle Branding Audits, generates
+              outreach, and tracks progress through the opportunity pipeline.
             </p>
           </div>
         </div>
         <p className="mt-6 rounded-lg border border-violet-500/20 bg-saas-card px-4 py-3 text-sm text-slate-400">
-          <span className="font-semibold text-slate-300">Demo note:</span>{" "}
-          This live demo simulates enrichment layers with realistic mock data so
-          you can explore the full workflow without API keys.
+          Source records should include name, type, URL, evidence summary,
+          collection date, and confidence score before customer outreach begins.
         </p>
       </div>
     </div>

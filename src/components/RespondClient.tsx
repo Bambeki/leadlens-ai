@@ -92,57 +92,61 @@ export default function RespondClient({
   useEffect(() => {
     if (!hasMounted) return;
 
-    const found = findLeadById(leadId);
-    setLead(found);
+    const timeout = window.setTimeout(() => {
+      const found = findLeadById(leadId);
+      setLead(found);
 
-    if (!found) {
-      setReady(true);
-      return;
-    }
+      if (!found) {
+        setReady(true);
+        return;
+      }
 
-    if (action === "schedule" && !slotId) {
-      setSlots(getMeetingSlotOptions());
-      setReady(true);
-      return;
-    }
+      if (action === "schedule" && !slotId) {
+        setSlots(getMeetingSlotOptions());
+        setReady(true);
+        return;
+      }
 
-    if (!hasAction) {
-      setReady(true);
-      return;
-    }
+      if (!hasAction) {
+        setReady(true);
+        return;
+      }
 
-    const key = `${action ?? ""}-${slotId ?? ""}`;
-    if (appliedRef.current === key) {
-      setReady(true);
-      return;
-    }
+      const key = `${action ?? ""}-${slotId ?? ""}`;
+      if (appliedRef.current === key) {
+        setReady(true);
+        return;
+      }
 
-    if (action === "interested") {
-      processCustomerInterested(found);
-      appliedRef.current = key;
-      setProcessed(true);
-      setReady(true);
-      return;
-    }
-
-    if (action === "declined") {
-      processCustomerDeclined(found);
-      appliedRef.current = key;
-      setProcessed(true);
-      setReady(true);
-      return;
-    }
-
-    if (action === "schedule" && slotId) {
-      const slot = getMeetingSlotOptions().find((s) => s.id === slotId);
-      if (slot) {
-        processCustomerMeetingScheduled(found, slot);
+      if (action === "interested") {
+        processCustomerInterested(found);
         appliedRef.current = key;
         setProcessed(true);
-        setConfirmedSlot(slot.label);
+        setReady(true);
+        return;
       }
-      setReady(true);
-    }
+
+      if (action === "declined") {
+        processCustomerDeclined(found);
+        appliedRef.current = key;
+        setProcessed(true);
+        setReady(true);
+        return;
+      }
+
+      if (action === "schedule" && slotId) {
+        const slot = getMeetingSlotOptions().find((s) => s.id === slotId);
+        if (slot) {
+          processCustomerMeetingScheduled(found, slot);
+          appliedRef.current = key;
+          setProcessed(true);
+          setConfirmedSlot(slot.label);
+        }
+        setReady(true);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timeout);
   }, [hasMounted, leadId, action, slotId, hasAction]);
 
   if (!hasMounted || !ready) {
@@ -226,8 +230,8 @@ export default function RespondClient({
             scheduled for <strong>{confirmedSlot}</strong>.
           </p>
           <p className="mt-4 text-sm text-slate-400">
-            A calendar invite will be sent to your email. CRM updated
-            automatically in LeadLens AI.
+            A calendar invite will be sent to your email. Opportunity status
+            is updated automatically in LeadLens AI.
           </p>
         </div>
       </div>
@@ -247,7 +251,7 @@ export default function RespondClient({
             <strong>{lead.businessName}</strong> shortly.
           </p>
           <p className="mt-4 text-sm font-medium text-emerald-400">
-            ✓ Your response updated our CRM automatically.
+            ✓ Your response updated the opportunity automatically.
           </p>
         </div>
       </div>

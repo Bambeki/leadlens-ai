@@ -52,7 +52,7 @@ export default function ActivityTimeline({ leadId }: { leadId: string }) {
       <div className="saas-card p-6">
         <h3 className="text-lg font-semibold text-white">Activity Timeline</h3>
         <p className="mt-1 text-sm text-slate-400">
-          Outreach and CRM events for this lead
+          Outreach and opportunity events for this customer
         </p>
         <div className="mt-6 space-y-4">
           {[1, 2, 3].map((n) => (
@@ -73,7 +73,7 @@ export default function ActivityTimeline({ leadId }: { leadId: string }) {
     <div className="saas-card p-6">
       <h3 className="text-lg font-semibold text-white">Activity Timeline</h3>
       <p className="mt-1 text-sm text-slate-400">
-        Outreach and CRM events for this lead
+        Outreach and opportunity events for this customer
       </p>
 
       {events.length === 0 ? (

@@ -1,11 +1,9 @@
 import Sidebar from "@/components/Sidebar";
 import AppHeader from "@/components/AppHeader";
-import DemoSeedProvider from "@/components/DemoSeedProvider";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen bg-saas-bg">
-      <DemoSeedProvider />
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <AppHeader />

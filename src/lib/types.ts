@@ -48,6 +48,23 @@ export interface OpportunityInsight {
   source: string;
 }
 
+export type EvidenceSourceType =
+  | "Business Profile"
+  | "Website"
+  | "Social Profile"
+  | "Image Analysis"
+  | "Contact Enrichment"
+  | "Import";
+
+export interface EvidenceSource {
+  sourceName: string;
+  sourceType: EvidenceSourceType;
+  sourceUrl?: string;
+  evidenceSummary: string;
+  dateCollected: string;
+  confidenceScore: "High" | "Medium" | "Low";
+}
+
 export interface DiscoverySource {
   platform: "Google Maps";
   collectedAt: string;
@@ -56,6 +73,7 @@ export interface DiscoverySource {
   reviewCount: number;
   categories: string[];
   method: string;
+  sourceUrl?: string;
 }
 
 export interface BrandingAssessment {
@@ -97,6 +115,7 @@ export interface Lead {
   valuableReasons: string[];
   opportunityInsights: OpportunityInsight[];
   discovery: DiscoverySource;
+  evidenceSources: EvidenceSource[];
   signageAudit: SignageAudit;
   contact: Contact;
   crmStatus: CRMStatus;

@@ -17,7 +17,7 @@ const PROCESS_STEPS = [
     id: "email_sent",
     label: "Outreach Sent",
     detail: (s: LeadWorkflowState) =>
-      s.emailSent ? "Email delivered to lead" : "Send outreach to begin",
+      s.emailSent ? "Email delivered to customer contact" : "Send outreach to begin",
   },
   {
     id: "customer_responded",
@@ -35,7 +35,7 @@ const PROCESS_STEPS = [
     detail: (s: LeadWorkflowState) => {
       if (!s.meeting) {
         return s.meetingScheduled
-          ? "CRM updated — meeting confirmed"
+          ? "Opportunity status updated — meeting confirmed"
           : "Awaiting customer to pick a time";
       }
       return `${formatMeetingDate(s.meeting.scheduledAt)} at ${formatMeetingTime(s.meeting.scheduledAt)}`;
@@ -66,7 +66,7 @@ function ProcessTrackerSkeleton() {
             Process Tracker
           </h3>
           <p className="mt-1 text-sm text-slate-400">
-            Auto-updates from outreach, CRM, and saved meetings
+            Auto-updates from outreach, opportunity status, and saved meetings
           </p>
         </div>
         <span className="h-6 w-28 animate-pulse rounded-full bg-white/10" />
@@ -120,7 +120,7 @@ export default function LeadProcessTracker({ leadId }: { leadId: string }) {
             Process Tracker
           </h3>
           <p className="mt-1 text-sm text-slate-400">
-            Auto-updates from outreach, CRM, and saved meetings
+            Auto-updates from outreach, opportunity status, and saved meetings
           </p>
         </div>
         {state.meetingScheduled && (

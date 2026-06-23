@@ -1,8 +1,7 @@
 import Link from "next/link";
 import LandingHero from "@/components/LandingHero";
-import { DemoModeButton } from "@/components/DemoMode";
 
-function MockDashboard() {
+function OpportunityDashboardPreview() {
   return (
     <div className="overflow-hidden rounded-xl border border-saas-border bg-saas-card shadow-2xl">
       <div className="flex items-center gap-2 border-b border-saas-border bg-white/5 px-4 py-2.5">
@@ -25,14 +24,19 @@ function MockDashboard() {
         </div>
         <div className="flex-1 p-4">
           <div className="mb-4 grid grid-cols-4 gap-2">
-            {["5", "4", "3", "2"].map((val, i) => (
+            {[
+              "No data",
+              "Pending",
+              "Pending",
+              "Pending",
+            ].map((val, i) => (
               <div
-                key={val}
+                key={`${val}-${i}`}
                 className="rounded-lg border border-saas-border p-2"
               >
                 <div className="h-2 w-8 rounded bg-white/10" />
                 <div
-                  className={`mt-1 text-lg font-bold ${
+                  className={`mt-1 text-xs font-bold ${
                     i === 0
                       ? "text-violet-400"
                       : i === 1
@@ -51,32 +55,22 @@ function MockDashboard() {
             <div className="border-b border-saas-border bg-white/5 px-3 py-2">
               <div className="h-2.5 w-16 rounded bg-white/15" />
             </div>
-            {[85, 72, 65, 58, 45].map((score) => (
-              <div
-                key={score}
-                className="flex items-center gap-2 border-b border-saas-border px-3 py-2 last:border-0"
-              >
-                <div className="h-2 w-20 rounded bg-white/10" />
-                <div className="h-2 w-12 rounded bg-white/10" />
-                <div className="ml-auto flex items-center gap-1">
-                  <div className="h-1.5 w-10 rounded-full bg-white/10">
-                    <div
-                      className={`h-full rounded-full ${
-                        score >= 70
-                          ? "bg-red-400"
-                          : score >= 40
-                            ? "bg-amber-400"
-                            : "bg-emerald-400"
-                      }`}
-                      style={{ width: `${score}%` }}
-                    />
+            {["Import customers", "Analysis pending", "Sources pending", "Outreach pending"].map(
+              (item) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-2 border-b border-saas-border px-3 py-2 last:border-0"
+                >
+                  <div className="h-2 w-20 rounded bg-white/10" />
+                  <div className="h-2 w-12 rounded bg-white/10" />
+                  <div className="ml-auto flex items-center gap-1">
+                    <span className="text-xs font-medium text-slate-300">
+                      {item}
+                    </span>
                   </div>
-                  <span className="text-xs font-medium text-slate-300">
-                    {score}
-                  </span>
                 </div>
-              </div>
-            ))}
+              )
+            )}
           </div>
         </div>
       </div>
@@ -84,7 +78,7 @@ function MockDashboard() {
   );
 }
 
-function MockAnalyzer() {
+function OpportunityAnalyzerPreview() {
   return (
     <div className="overflow-hidden rounded-xl border border-saas-border bg-saas-card shadow-2xl">
       <div className="flex items-center gap-2 border-b border-saas-border bg-white/5 px-4 py-2.5">
@@ -102,12 +96,12 @@ function MockAnalyzer() {
         <div className="grid grid-cols-2 gap-3">
           <div className="rounded-lg border border-saas-border p-3">
             <div className="text-xs text-slate-500">Vehicle Visibility</div>
-            <div className="mt-1 text-2xl font-bold text-red-500">58</div>
+            <div className="mt-1 text-lg font-bold text-slate-300">Analysis pending</div>
           </div>
           <div className="rounded-lg border border-saas-border p-3">
             <div className="text-xs text-slate-500">Opportunity</div>
-            <div className="mt-1 text-2xl font-bold text-violet-400">
-              €3,500
+            <div className="mt-1 text-lg font-bold text-violet-400">
+              Import customers
             </div>
           </div>
         </div>
@@ -118,9 +112,9 @@ function MockAnalyzer() {
 
 const benefits = [
   {
-    title: "Smart Lead Scoring",
+    title: "Opportunity Discovery",
     description:
-      "Prioritize construction, trades, delivery, landscaping, and logistics companies with AI vehicle branding scores.",
+      "Surface customer opportunities from market signals, business profiles, and vehicle branding indicators.",
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
@@ -128,9 +122,9 @@ const benefits = [
     ),
   },
   {
-    title: "AI Outreach Emails",
+    title: "Evidence-Based Recommendations",
     description:
-      "Generate personalized outreach emails tailored to each prospect's industry, location, and lead score.",
+      "Explain why each opportunity matters before a sales conversation begins.",
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
@@ -138,9 +132,9 @@ const benefits = [
     ),
   },
   {
-    title: "Vehicle Branding Audit",
+    title: "Contact Identification",
     description:
-      "Upload vehicle photos and get instant visibility scores, wrap gap detection, and project value estimates.",
+      "Identify the most relevant contact person and keep outreach tied to the opportunity context.",
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909M3.75 21h16.5A2.25 2.25 0 0 0 22.5 18.75V5.25A2.25 2.25 0 0 0 20.25 3H3.75A2.25 2.25 0 0 0 1.5 5.25v13.5A2.25 2.25 0 0 0 3.75 21Z" />
@@ -148,12 +142,32 @@ const benefits = [
     ),
   },
   {
-    title: "Wrap Recommendations",
+    title: "Source Transparency",
     description:
-      "Get tailored vehicle branding suggestions — full wraps, partial wraps, vehicle branding, truck and van graphics.",
+      "Show source names, URLs, evidence summaries, collection dates, and confidence scores.",
     icon: (
       <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
         <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+      </svg>
+    ),
+  },
+  {
+    title: "Personalized Outreach",
+    description:
+      "Prepare tailored outreach that references verified opportunity signals and business context.",
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.087.16 2.185.283 3.293.369V21l4.076-4.076a1.526 1.526 0 0 1 1.037-.443 48.282 48.282 0 0 0 5.68-.494c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0 0 12 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v11.18Z" />
+      </svg>
+    ),
+  },
+  {
+    title: "Opportunity Tracking",
+    description:
+      "Track discovered customer opportunities from import through outreach, response, and follow-up.",
+    icon: (
+      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25m-4.5-13.5h16.5m0 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.25-3 1 3" />
       </svg>
     ),
   },
@@ -174,7 +188,6 @@ export default function LandingPage() {
             <span className="text-lg font-bold text-white">LeadLens AI</span>
           </div>
           <div className="flex items-center gap-3">
-            <DemoModeButton variant="primary" />
             <Link
               href="/dashboard"
               className="rounded-lg border border-saas-border px-4 py-2 text-sm font-semibold text-slate-300 transition-colors hover:bg-white/5"
@@ -191,15 +204,15 @@ export default function LandingPage() {
         <div className="grid gap-8 lg:grid-cols-2">
           <div>
             <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-violet-400">
-              Lead Dashboard
+              Customer Opportunity Dashboard
             </p>
-            <MockDashboard />
+            <OpportunityDashboardPreview />
           </div>
           <div className="lg:mt-12">
             <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-violet-400">
               Vehicle Branding Audit
             </p>
-            <MockAnalyzer />
+            <OpportunityAnalyzerPreview />
           </div>
         </div>
       </section>
@@ -208,10 +221,10 @@ export default function LandingPage() {
         <div className="mx-auto max-w-6xl px-6">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-white">
-              Everything your sales team needs
+              Everything needed to discover the right customer opportunities
             </h2>
             <p className="mt-3 text-lg text-slate-300">
-              From discovery to outreach — powered by AI, built for vehicle
+              From opportunity discovery to outreach — powered by AI, built for vehicle
               branding professionals.
             </p>
           </div>
@@ -243,11 +256,10 @@ export default function LandingPage() {
             Ready to find your next big client?
           </h2>
           <p className="mt-4 text-lg text-slate-300">
-            Explore pre-qualified vehicle branding leads, generate outreach emails, and
-            run vehicle branding audits — all in one demo.
+            Import customers, review source-backed recommendations, identify the
+            right contact person, and prepare timely outreach.
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
-            <DemoModeButton variant="hero" />
             <Link
               href="/dashboard"
               className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-indigo-600/25 transition-all hover:bg-violet-500"

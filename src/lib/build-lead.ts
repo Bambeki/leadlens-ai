@@ -4,7 +4,7 @@ import { generateOpportunityInsights } from "./insights";
 import { generateDiscoverySource } from "./discovery";
 import { generateContact } from "./contacts";
 import { generateSignageAudit } from "./signage-audit";
-import { assignInitialCrmStatus } from "./crm";
+import { generateEvidenceSources } from "./evidence-sources";
 
 export interface RawLeadInput {
   id: string;
@@ -46,14 +46,23 @@ export function buildLead(raw: RawLeadInput): Lead {
     ...generateDiscoverySource(raw),
     ...raw.discoveryOverrides,
   };
+  const opportunityInsights = generateOpportunityInsights(raw);
+  const signageAudit = generateSignageAudit(raw);
 
   return {
     ...raw,
     scoreBreakdown,
     priority: getPriority(scoreBreakdown.total, raw.industry),
-    opportunityInsights: generateOpportunityInsights(raw),
+    opportunityInsights,
     discovery,
-    signageAudit: generateSignageAudit(raw),
+    evidenceSources: generateEvidenceSources({
+      businessName: raw.businessName,
+      website: raw.website,
+      discovery,
+      opportunityInsights,
+      signageAudit,
+    }),
+    signageAudit,
     contact: generateContact(raw),
     crmStatus: "Not Contacted",
   };
@@ -138,6 +147,9 @@ export function buildLeadFromScraped(
       reviewCount: scraped.reviewCount,
       method: "Apify Google Maps Scraper",
       categories: [scraped.category],
+      sourceUrl: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+        `${scraped.businessName} ${scraped.city}`
+      )}`,
     },
   });
 }

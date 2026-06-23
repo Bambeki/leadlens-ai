@@ -17,7 +17,7 @@ export const DATA_PIPELINE_STEPS = [
   {
     id: "score",
     label: "Score",
-    description: "Prioritize vehicle branding leads with 100-point scoring model",
+    description: "Prioritize customer opportunities with a 100-point scoring model",
   },
   {
     id: "contact",
@@ -27,7 +27,7 @@ export const DATA_PIPELINE_STEPS = [
   {
     id: "track",
     label: "Track",
-    description: "CRM pipeline from first touch to close",
+    description: "Opportunity pipeline from discovery to follow-up",
   },
 ] as const;
 
@@ -49,7 +49,7 @@ export const DATA_SOURCES = [
       "Reviews",
       "Category",
     ],
-    usedFor: "Lead discovery & qualification",
+    usedFor: "Opportunity discovery & qualification",
   },
   {
     id: "website",
@@ -100,7 +100,7 @@ export const DATA_SOURCES = [
       "Job-site vehicles",
       "Branding quality",
     ],
-    usedFor: "Opportunity insights & lead scoring",
+    usedFor: "Opportunity insights & scoring",
   },
   {
     id: "email",
@@ -126,6 +126,6 @@ export const DATA_SOURCES = [
       "Wrap quality",
       "Vehicle branding gaps",
     ],
-    usedFor: "Vehicle Branding Audit & revenue estimates",
+    usedFor: "Vehicle Branding Audit & evidence review",
   },
 ] as const;

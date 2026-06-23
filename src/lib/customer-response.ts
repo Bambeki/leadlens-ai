@@ -111,7 +111,7 @@ export function processCustomerInterested(lead: Lead): void {
   updateOutreachStatus(lead.id, "Replied");
   addActivity(lead.id, "email_replied", "Customer clicked Request a Call");
   updateCrmStatus(lead.id, "Responded");
-  addActivity(lead.id, "crm_responded", "CRM moved to Responded");
+  addActivity(lead.id, "crm_responded", "Opportunity status moved to Responded");
   notify(
     "email_replied",
     `${lead.businessName} is interested — requested a call.`
@@ -123,7 +123,7 @@ export function processCustomerDeclined(lead: Lead): void {
   updateOutreachStatus(lead.id, "Meeting Declined");
   addActivity(lead.id, "meeting_declined", "Customer clicked Not Interested");
   updateCrmStatus(lead.id, "Lost");
-  addActivity(lead.id, "crm_lost", "CRM moved to Lost");
+  addActivity(lead.id, "crm_lost", "Opportunity status moved to Lost");
   notify("crm_updated", `${lead.businessName} declined the offer.`);
 }
 

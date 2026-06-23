@@ -15,7 +15,7 @@ export const PIPELINE_STAGE_DEFS = [
   {
     id: "opportunity" as const,
     label: "Opportunity Analysis",
-    description: "Vehicle branding gaps and revenue potential",
+    description: "Vehicle branding gaps and source evidence",
   },
   {
     id: "outreach" as const,
@@ -30,7 +30,7 @@ export const PIPELINE_STAGE_DEFS = [
   {
     id: "won" as const,
     label: "Won",
-    description: "Deals closed and revenue booked",
+    description: "Customer opportunity converted",
   },
 ];
 

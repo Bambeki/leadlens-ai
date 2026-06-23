@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { DemoModeButton } from "./DemoMode";
 
 const HERO_BACKGROUND = "/images/hero/background.jpg";
 
@@ -25,33 +24,34 @@ export default function LandingHero() {
       <div className="relative z-10 mx-auto max-w-6xl px-6 pb-20 pt-20 text-center">
         <h1 className="mx-auto max-w-5xl">
           <span className="block text-xs font-semibold uppercase tracking-[0.35em] text-violet-300/90 sm:text-sm">
-            Startup Hackathon 2026
+            Customer Opportunity Discovery Platform
           </span>
           <span className="mt-4 block text-3xl font-bold uppercase leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.65)] sm:text-4xl lg:text-5xl">
-            AI for Mittelhessen
+            Find the Right Customers Before Your Competitors Do
           </span>
         </h1>
 
         <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-400 sm:text-base">
-          Challenge inspired by Weimar Beschriftung
+          Built for professional vehicle branding teams preparing customer
+          outreach with better timing, evidence, and context.
         </p>
 
         <h2 className="mx-auto mt-10 max-w-3xl text-2xl font-bold tracking-tight text-white sm:text-3xl">
-          AI-Powered B2B Lead Discovery for Vehicle Branding
+          Opportunity discovery for vehicle branding businesses
         </h2>
 
         <p className="mx-auto mt-4 max-w-2xl text-base text-slate-400 sm:text-lg">
-          Discover vehicle branding opportunities, qualify high-value business
-          leads, generate outreach, and book meetings — all in one platform.
+          LeadLens AI discovers customer opportunities, explains why they matter,
+          identifies the right contact person, and helps businesses start
+          conversations at the right time.
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <DemoModeButton variant="hero" />
           <Link
             href="/dashboard"
             className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-3.5 text-base font-semibold text-white shadow-lg shadow-violet-600/25 transition-all hover:bg-violet-500 hover:shadow-xl hover:shadow-violet-600/30"
           >
-            Launch Dashboard
+            Open Opportunity Dashboard
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
             </svg>

@@ -1,8 +1,9 @@
 interface StatCardProps {
   label: string;
-  value: number;
+  value: number | string;
   icon: React.ReactNode;
   accent?: "violet" | "red" | "amber" | "emerald" | "slate";
+  helperText?: string;
 }
 
 const accentStyles = {
@@ -26,6 +27,7 @@ export default function StatCard({
   value,
   icon,
   accent = "violet",
+  helperText,
 }: StatCardProps) {
   return (
     <div
@@ -34,9 +36,12 @@ export default function StatCard({
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm font-medium text-slate-400">{label}</p>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-white">
+          <p className="mt-2 text-2xl font-bold tracking-tight text-white">
             {value}
           </p>
+          {helperText && (
+            <p className="mt-1 text-xs text-slate-500">{helperText}</p>
+          )}
         </div>
         <div
           className={`flex h-12 w-12 items-center justify-center rounded-xl ring-1 ring-inset ${accentStyles[accent]}`}

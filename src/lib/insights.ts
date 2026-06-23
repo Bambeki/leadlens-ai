@@ -42,29 +42,24 @@ function openingInsight(lead: InsightInput): OpportunityInsight {
 }
 
 function socialInsight(lead: InsightInput): OpportunityInsight {
-  const followers = 400 + (hash(lead.id, 3) % 20) * 100;
-  const postsPerWeek = 2 + (hash(lead.id, 4) % 5);
   const handle = slugify(lead.businessName);
 
   return {
     id: `${lead.id}-social`,
     category: "social",
     finding: "Active social media presence",
-    evidence: `@${handle} — ${followers.toLocaleString("de-DE")} followers with ${postsPerWeek} posts/week. Recent posts show unbranded vans and job-site photos — strong signal of growth without vehicle graphics investment.`,
+    evidence: `@${handle} public profile reviewed. Recent posts should be checked for vehicles, job-site photos, and branding consistency before outreach.`,
     scoreImpact: SCORE_WEIGHTS.activeSocialMedia,
     source: "Instagram · Social Signal AI",
   };
 }
 
 function locationsInsight(lead: InsightInput): OpportunityInsight {
-  const count = 2 + (hash(lead.id, 5) % 4);
-  const cities = [lead.city, "regional service area"].slice(0, Math.min(2, count - 1));
-
   return {
     id: `${lead.id}-locations`,
     category: "locations",
     finding: "Multi-vehicle / multi-site operation",
-    evidence: `${count} vehicles or depots identified across ${cities.join(" and ")}. Vehicle graphics inconsistent between units — partial wraps on some vans, plain white on others. Multi-vehicle operators typically budget €8K–€25K for unified vehicle branding.`,
+    evidence: `Business appears to operate across ${lead.city} and the surrounding service area. Confirm vehicle count, depot locations, and branding consistency before estimating opportunity value.`,
     scoreImpact: SCORE_WEIGHTS.multipleLocations,
     source: "Fleet Registry · Web Crawl",
   };
@@ -88,7 +83,7 @@ function brandingInsight(lead: InsightInput): OpportunityInsight {
     Plumbers:
       "Competing plumbing fleets use bold van wraps that dominate neighborhood drive-bys.",
     "Delivery Services":
-      "Delivery brands with wrapped fleets report 3× brand recall vs plain vehicles.",
+      "Delivery teams often rely on visible, consistent vehicles as part of route-based brand recognition.",
     "Landscaping Businesses":
       "Landscaping crews with truck graphics win more curb-appeal referrals from visible job sites.",
     "Logistics Companies":
@@ -99,14 +94,13 @@ function brandingInsight(lead: InsightInput): OpportunityInsight {
     id: `${lead.id}-branding`,
     category: "branding",
     finding: "Weak vehicle branding detected",
-    evidence: `Vehicle Vision AI: ${problem}. ${industryContext[lead.industry] ?? "Local competitors invest in professional vehicle wraps."} Branded vehicles generate an estimated 30–50K daily impressions per vehicle in urban routes.`,
+    evidence: `Vehicle Vision AI: ${problem}. ${industryContext[lead.industry] ?? "Local competitors invest in professional vehicle wraps."} Treat this as a review signal until source imagery is verified.`,
     scoreImpact: SCORE_WEIGHTS.brandingOpportunity,
     source: "Vehicle Vision AI · Vehicle Analysis",
   };
 }
 
 function visibilityInsight(lead: InsightInput): OpportunityInsight {
-  const distance = 3 + (hash(lead.id, 7) % 10);
   const routes = [
     "high-traffic commercial routes",
     "dense residential service corridors",
@@ -119,7 +113,7 @@ function visibilityInsight(lead: InsightInput): OpportunityInsight {
     id: `${lead.id}-visibility`,
     category: "visibility",
     finding: "High mobile visibility zone",
-    evidence: `${lead.location} operates in ${route} across ${lead.city}. Base is ${distance} km inside your service radius. Estimated ${(2.5 + (hash(lead.id, 9) % 6) * 0.5).toFixed(1)}K daily vehicle impressions — strong ROI for wrap investment.`,
+    evidence: `${lead.location} appears connected to ${route} across ${lead.city}. Confirm route density and visible vehicle usage before projecting ROI.`,
     scoreImpact: SCORE_WEIGHTS.regionalProximity,
     source: "Geo Intelligence · Route Data",
   };

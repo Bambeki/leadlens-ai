@@ -19,12 +19,16 @@ export default function CRMStatusTracker({
   leadId: string;
   initialStatus: CRMStatus;
 }) {
-  const [status, setStatus] = useState<CRMStatus>(initialStatus);
+  const [status, setStatus] = useState<CRMStatus>(
+    () => getCrmOverride(leadId) ?? initialStatus
+  );
 
   useEffect(() => {
-    const saved = getCrmOverride(leadId);
-    if (saved) setStatus(saved);
-  }, [leadId]);
+    const timeout = window.setTimeout(() => {
+      setStatus(getCrmOverride(leadId) ?? initialStatus);
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [leadId, initialStatus]);
 
   useEffect(() => {
     function onUpdate(e: Event) {
@@ -43,13 +47,13 @@ export default function CRMStatusTracker({
 
   function handleChange(next: CRMStatus) {
     updateCrmStatus(leadId, next);
-    addActivity(leadId, "crm_manual_update", `CRM changed to ${next}`);
+    addActivity(leadId, "crm_manual_update", `Opportunity status changed to ${next}`);
     setStatus(next);
     window.dispatchEvent(
       new CustomEvent("leadlens-notification", {
         detail: createNotification(
           "crm_updated",
-          `Lead status changed to ${next}.`
+          `Opportunity status changed to ${next}.`
         ),
       })
     );
@@ -61,7 +65,7 @@ export default function CRMStatusTracker({
     <div className="saas-card p-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-lg font-semibold text-white">CRM Tracking</h2>
+          <h2 className="text-lg font-semibold text-white">Opportunity Tracking</h2>
           <p className="text-sm text-slate-400">Pipeline status management</p>
         </div>
         <CRMStatusBadge status={status} />
@@ -99,7 +103,7 @@ export default function CRMStatusTracker({
         />
       </div>
       <p className="mt-2 text-xs text-slate-400">
-        Click a status to update CRM stage — saved locally for demo
+        Click a status to update the opportunity stage. Changes are saved locally.
       </p>
     </div>
   );

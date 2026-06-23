@@ -7,7 +7,8 @@ export function useHasMounted(): boolean {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {
-    setHasMounted(true);
+    const timeout = window.setTimeout(() => setHasMounted(true), 0);
+    return () => window.clearTimeout(timeout);
   }, []);
 
   return hasMounted;

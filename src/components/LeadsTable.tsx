@@ -3,19 +3,16 @@
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Lead } from "@/lib/types";
-import type { CRMStatus } from "@/lib/types";
 import PriorityBadge from "./PriorityBadge";
 import CRMStatusBadge from "./CRMStatusBadge";
 import {
   FILTER_TABS,
   filterLeads,
   sortLeads,
-  getEstimatedRevenue,
   type LeadFilter,
   type SortField,
   type SortDirection,
 } from "@/lib/lead-utils";
-import { formatCurrency } from "@/lib/scoring";
 import { useCrmOverrides } from "@/hooks/useCrmOverrides";
 
 function SortHeader({
@@ -47,7 +44,7 @@ function SortHeader({
 
 export default function LeadsTable({
   leads,
-  title = "Leads",
+  title = "Customer Opportunities",
 }: {
   leads: Lead[];
   title?: string;
@@ -57,10 +54,9 @@ export default function LeadsTable({
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState<SortField>("score");
   const [sortDir, setSortDir] = useState<SortDirection>("desc");
-  const leadsIdsKey = leads.map((l) => l.id).join(",");
   const leadIds = useMemo(
     () => leads.map((l) => l.id),
-    [leadsIdsKey]
+    [leads]
   );
   const crmOverrides = useCrmOverrides(leadIds);
 
@@ -86,7 +82,7 @@ export default function LeadsTable({
           <div>
             <h2 className="text-lg font-semibold text-white">{title}</h2>
             <p className="mt-0.5 text-sm text-slate-400">
-              {displayed.length} of {leads.length} leads · click any row to open
+              {displayed.length} of {leads.length} opportunities · click any row to open
             </p>
           </div>
           <div className="relative w-full sm:w-72">
@@ -141,13 +137,13 @@ export default function LeadsTable({
                 <SortHeader label="Score" field="score" activeField={sortField} direction={sortDir} onSort={handleSort} />
               </th>
               <th className="px-4 py-3">
-                <SortHeader label="Revenue" field="revenue" activeField={sortField} direction={sortDir} onSort={handleSort} />
+                Assessment
               </th>
               <th className="px-4 py-3">
                 <SortHeader label="Priority" field="priority" activeField={sortField} direction={sortDir} onSort={handleSort} />
               </th>
               <th className="px-4 py-3">
-                <SortHeader label="CRM" field="crmStatus" activeField={sortField} direction={sortDir} onSort={handleSort} />
+                <SortHeader label="Status" field="crmStatus" activeField={sortField} direction={sortDir} onSort={handleSort} />
               </th>
               <th className="px-4 py-3">Contact</th>
             </tr>
@@ -162,9 +158,9 @@ export default function LeadsTable({
                         <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
                       </svg>
                     </div>
-                    <p className="mt-4 font-medium text-white">No leads found</p>
+                    <p className="mt-4 font-medium text-white">No customer opportunities found</p>
                     <p className="mt-1 text-sm text-slate-400">
-                      Try adjusting your filters or search query.
+                      Import customers to begin, or adjust your filters and search query.
                     </p>
                     <button
                       onClick={() => {
@@ -217,7 +213,7 @@ export default function LeadsTable({
                       </div>
                     </td>
                     <td className="px-4 py-4 font-medium text-slate-300">
-                      {formatCurrency(getEstimatedRevenue(lead))}
+                      Analysis pending
                     </td>
                     <td className="px-4 py-4">
                       <PriorityBadge priority={lead.priority} />

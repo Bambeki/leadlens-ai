@@ -95,11 +95,11 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
             Event Automation Simulator
           </h3>
           <p className="mt-1 text-sm text-slate-300">
-            Trigger webhook events to update outreach and CRM status automatically
+            Trigger webhook events to update outreach and opportunity status automatically
           </p>
         </div>
         <span className="rounded-full bg-violet-500/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-violet-300">
-          Demo event simulator — production uses Resend and Calendar webhooks
+          Webhook preview — production uses Resend and Calendar webhooks
         </span>
       </div>
 
@@ -149,7 +149,7 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
 
       {lastEvent && !error && (
         <p className="mt-4 text-sm font-medium text-emerald-400">
-          ✓ Webhook event processed — CRM and timeline updated across the app.
+          ✓ Webhook event processed — opportunity status and timeline updated.
         </p>
       )}
     </div>
