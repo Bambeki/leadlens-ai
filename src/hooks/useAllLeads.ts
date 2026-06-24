@@ -6,15 +6,21 @@ import {
   getImportedLeads,
   LEADS_UPDATED_EVENT,
 } from "@/lib/imported-leads";
+import { fetchOpportunitiesFromApi } from "@/lib/opportunity-api";
 
 export function useAllLeads(baseLeads: Lead[]) {
   const [imported, setImported] = useState<Lead[]>(() => getImportedLeads());
 
   const refresh = useCallback(() => {
-    setImported(getImportedLeads());
+    fetchOpportunitiesFromApi()
+      .then(setImported)
+      .catch(() => {
+        setImported(getImportedLeads());
+      });
   }, []);
 
   useEffect(() => {
+    refresh();
     window.addEventListener(LEADS_UPDATED_EVENT, refresh);
     return () => window.removeEventListener(LEADS_UPDATED_EVENT, refresh);
   }, [refresh]);

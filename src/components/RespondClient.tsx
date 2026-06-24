@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Lead } from "@/lib/types";
-import { findLeadById } from "@/lib/lead-lookup";
+import { findLeadByIdFromApi } from "@/lib/lead-lookup";
 import {
   getMeetingSlotOptions,
   processCustomerInterested,
@@ -92,8 +92,8 @@ export default function RespondClient({
   useEffect(() => {
     if (!hasMounted) return;
 
-    const timeout = window.setTimeout(() => {
-      const found = findLeadById(leadId);
+    const timeout = window.setTimeout(async () => {
+      const found = await findLeadByIdFromApi(leadId);
       setLead(found);
 
       if (!found) {

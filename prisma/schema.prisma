@@ -1,0 +1,199 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum OpportunityStatus {
+  NOT_CONTACTED
+  CONTACTED
+  RESPONDED
+  MEETING_SCHEDULED
+  WON
+  LOST
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum EvidenceSourceType {
+  BUSINESS_PROFILE
+  WEBSITE
+  SOCIAL_PROFILE
+  IMAGE_ANALYSIS
+  CONTACT_ENRICHMENT
+  IMPORT
+}
+
+enum ConfidenceScore {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum OutreachDirection {
+  OUTBOUND
+  INBOUND
+}
+
+model User {
+  id             String       @id @default(cuid())
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name           String
+  email          String       @unique
+  password_hash  String
+  role_text      String?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Organization {
+  id              String                  @id @default(cuid())
+  name            String
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+  users           User[]
+  companyProfiles CompanyProfile[]
+  opportunities   Opportunity[]
+  statusHistory   PipelineStatusHistory[]
+}
+
+model CompanyProfile {
+  id              String       @id @default(cuid())
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  name            String
+  description     String
+  industryFocus   String       @default("Vehicle Branding and Fleet Graphics")
+  targetRegion    String?
+  targetCustomer  String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([organizationId])
+}
+
+model Opportunity {
+  id                  String                  @id @default(cuid())
+  organizationId      String
+  organization        Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  businessName        String
+  industry            String
+  location            String
+  city                String
+  score               Int
+  priority            Priority
+  status              OpportunityStatus       @default(NOT_CONTACTED)
+  phone               String?
+  website             String?
+  recommendedServices String[]                @default([])
+  valuableReasons     String[]                @default([])
+  scoringFactors      Json
+  scoreBreakdown      Json
+  opportunityInsights Json
+  discovery           Json
+  signageAudit        Json
+  estimatedValueMin   Int?
+  estimatedValueMax   Int?
+  imported            Boolean                 @default(false)
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+  evidenceSources     EvidenceSource[]
+  contacts            Contact[]
+  outreachMessages    OutreachMessage[]
+  meetings            Meeting[]
+  statusHistory       PipelineStatusHistory[]
+
+  @@index([organizationId, status])
+  @@index([organizationId, city])
+}
+
+model EvidenceSource {
+  id              String             @id @default(cuid())
+  opportunityId   String
+  opportunity     Opportunity        @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  sourceName      String
+  sourceType      EvidenceSourceType
+  sourceUrl       String?
+  evidenceSummary String
+  dateCollected   DateTime
+  confidenceScore ConfidenceScore
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  @@index([opportunityId])
+}
+
+model Contact {
+  id             String      @id @default(cuid())
+  opportunityId  String
+  opportunity    Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  name           String
+  email          String
+  role           String
+  linkedIn       String?
+  confidence     ConfidenceScore
+  selectionReason String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([opportunityId])
+}
+
+model OutreachMessage {
+  id             String            @id @default(cuid())
+  opportunityId  String
+  opportunity    Opportunity       @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  direction      OutreachDirection @default(OUTBOUND)
+  subject        String?
+  body           String
+  html           String?
+  recipientEmail String?
+  provider       String?
+  providerMessageId String?
+  statusText     String?
+  sentAt         DateTime?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  @@index([opportunityId])
+}
+
+model Meeting {
+  id             String      @id @default(cuid())
+  opportunityId  String
+  opportunity    Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  contactName    String
+  contactRole    String
+  scheduledAt    DateTime
+  displayTime    String
+  meetingType    String
+  autoScheduled  Boolean     @default(false)
+  scheduledBy    String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  @@index([opportunityId])
+  @@index([scheduledAt])
+}
+
+model PipelineStatusHistory {
+  id             String            @id @default(cuid())
+  organizationId String
+  organization   Organization      @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  opportunityId  String
+  opportunity    Opportunity       @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  fromStatus      OpportunityStatus?
+  toStatus        OpportunityStatus
+  note            String?
+  createdAt       DateTime          @default(now())
+
+  @@index([organizationId])
+  @@index([opportunityId])
+}

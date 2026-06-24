@@ -1,4 +1,5 @@
 import { uniqueId } from "./unique-id";
+import { saveOutreachMessageToApi } from "./opportunity-api";
 
 export type ConversationMessageDirection = "outbound" | "inbound";
 
@@ -58,6 +59,16 @@ export function addConversationMessage(
 
   const existing = getConversationMessages(leadId);
   saveMessages(leadId, [...existing, entry]);
+  saveOutreachMessageToApi(leadId, {
+    direction: entry.direction,
+    subject: entry.subject,
+    body: entry.body,
+    providerMessageId: entry.messageId,
+    statusText: entry.direction === "outbound" ? "Sent" : "Received",
+    sentAt: entry.timestamp,
+  }).catch(() => {
+    // TODO: Surface database sync errors once app-level error handling exists.
+  });
   return entry;
 }
 

@@ -1,5 +1,6 @@
 import type { CRMStatus } from "./types";
 import { uniqueId } from "./unique-id";
+import { saveMeetingToApi } from "./opportunity-api";
 
 export type MeetingScheduleSource = "customer" | "simulator";
 
@@ -39,6 +40,17 @@ export function saveScheduledMeeting(meeting: ScheduledMeeting): void {
   if (!isBrowser()) return;
   const existing = getScheduledMeetings().filter((m) => m.leadId !== meeting.leadId);
   localStorage.setItem(MEETINGS_KEY, JSON.stringify([meeting, ...existing]));
+  saveMeetingToApi(meeting.leadId, {
+    contactName: meeting.contactName,
+    contactRole: meeting.contactRole,
+    scheduledAt: meeting.scheduledAt,
+    displayTime: meeting.displayTime,
+    meetingType: meeting.meetingType,
+    autoScheduled: meeting.autoScheduled,
+    scheduledBy: meeting.scheduledBy,
+  }).catch(() => {
+    // TODO: Surface database sync errors once app-level error handling exists.
+  });
   window.dispatchEvent(new CustomEvent(MEETINGS_UPDATED_EVENT));
 }
 

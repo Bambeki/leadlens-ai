@@ -16,6 +16,7 @@ import {
   type DetectedLocation,
 } from "@/lib/location-detection";
 import { importBusinessesToPipeline, getImportSessions } from "@/lib/imported-leads";
+import { saveOpportunitiesToApi } from "@/lib/opportunity-api";
 import type { ImportSession } from "@/lib/types";
 import { createNotification } from "@/lib/notifications";
 import PriorityBadge from "./PriorityBadge";
@@ -198,11 +199,16 @@ export default function LeadImport() {
     }
   }
 
-  function handleImport() {
+  async function handleImport() {
     const toImport = results.filter((r) => selected.has(r.id)) as ScrapedBusiness[];
     const label =
       advancedMode && keyword.trim() ? keyword.trim() : "Multi-category discovery";
     const imported = importBusinessesToPipeline(toImport, label, city);
+    try {
+      await saveOpportunitiesToApi(imported);
+    } catch {
+      // TODO: Surface database persistence failures in a pilot admin/status panel.
+    }
     setImportedCount(imported.length);
     setStep("imported");
 

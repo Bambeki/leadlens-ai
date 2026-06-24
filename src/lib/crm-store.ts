@@ -2,6 +2,7 @@ import type { CRMStatus, Lead } from "./types";
 import { CRM_STATUSES } from "./crm";
 import { getImportedLeads, saveImportedLeads } from "./imported-leads";
 import { uniqueId } from "./unique-id";
+import { updateOpportunityStatusInApi } from "./opportunity-api";
 
 export const CRM_UPDATED_EVENT = "leadlens-crm-updated";
 
@@ -121,6 +122,11 @@ export function updateCrmStatus(leadId: string, status: CRMStatus): void {
 
   localStorage.setItem(crmKey(leadId), status);
   syncImportedLeadCrm(leadId, status);
+  updateOpportunityStatusInApi(leadId, status, "Status updated from app").catch(
+    () => {
+      // TODO: Show database sync errors once app-level toast/error handling exists.
+    }
+  );
 
   window.dispatchEvent(
     new CustomEvent(CRM_UPDATED_EVENT, {
