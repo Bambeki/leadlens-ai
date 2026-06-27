@@ -9,7 +9,7 @@ import {
 import { fetchOpportunitiesFromApi } from "@/lib/opportunity-api";
 
 export function useAllLeads(baseLeads: Lead[]) {
-  const [imported, setImported] = useState<Lead[]>(() => getImportedLeads());
+  const [imported, setImported] = useState<Lead[]>([]);
 
   const refresh = useCallback(() => {
     fetchOpportunitiesFromApi()

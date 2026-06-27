@@ -5,14 +5,17 @@ import CrmFunnel from "@/components/CrmFunnel";
 import LeadsTable from "@/components/LeadsTable";
 import { useAllLeads } from "@/hooks/useAllLeads";
 import { useLeadsWithCrm } from "@/hooks/useCrmOverrides";
+import { useHasMounted } from "@/hooks/useHasMounted";
 import { getPipelineStages, getCrmBreakdown, getPipelineValue } from "@/lib/pipeline";
 import { formatCurrency } from "@/lib/scoring";
 import type { Lead } from "@/lib/types";
 
 export default function PipelineClient({ baseLeads }: { baseLeads: Lead[] }) {
+  const hasMounted = useHasMounted();
   const { allLeads } = useAllLeads(baseLeads);
   const leadsWithCrm = useLeadsWithCrm(allLeads);
   const stages = getPipelineStages(leadsWithCrm);
+  const visibleStages = hasMounted ? stages : getPipelineStages(baseLeads);
   const crmBreakdown = getCrmBreakdown(leadsWithCrm);
   const pipelineValue = getPipelineValue(leadsWithCrm);
   const hasCustomerData = leadsWithCrm.length > 0;
@@ -30,7 +33,7 @@ export default function PipelineClient({ baseLeads }: { baseLeads: Lead[] }) {
         </p>
       </div>
 
-      <PipelineVisualization stages={stages} />
+      <PipelineVisualization stages={visibleStages} />
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="saas-glow-card p-5">
