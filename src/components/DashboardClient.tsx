@@ -7,12 +7,11 @@ import DataPipelineFlow from "@/components/DataPipelineFlow";
 import FeaturedCustomerStory from "@/components/FeaturedCustomerStory";
 import UpcomingMeetingsWidget from "@/components/UpcomingMeetingsWidget";
 import { useAllLeads } from "@/hooks/useAllLeads";
-import { useLeadsWithCrm } from "@/hooks/useCrmOverrides";
 import type { Lead } from "@/lib/types";
 
 export default function DashboardClient({ baseLeads }: { baseLeads: Lead[] }) {
   const { allLeads } = useAllLeads(baseLeads);
-  const leadsWithCrm = useLeadsWithCrm(allLeads);
+  const leadsWithCrm = allLeads;
   const hasCustomerData = leadsWithCrm.length > 0;
 
   const stats = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Lead } from "@/lib/types";
 import PriorityBadge from "./PriorityBadge";
@@ -13,7 +13,6 @@ import {
   type SortField,
   type SortDirection,
 } from "@/lib/lead-utils";
-import { useCrmOverrides } from "@/hooks/useCrmOverrides";
 
 function SortHeader({
   label,
@@ -54,12 +53,6 @@ export default function LeadsTable({
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState<SortField>("score");
   const [sortDir, setSortDir] = useState<SortDirection>("desc");
-  const leadIds = useMemo(
-    () => leads.map((l) => l.id),
-    [leads]
-  );
-  const crmOverrides = useCrmOverrides(leadIds);
-
   function handleSort(field: SortField) {
     if (sortField === field) {
       setSortDir((d) => (d === "asc" ? "desc" : "asc"));
@@ -69,10 +62,11 @@ export default function LeadsTable({
     }
   }
 
-  const displayed = useMemo(() => {
-    const filtered = filterLeads(leads, filter, search, crmOverrides);
-    return sortLeads(filtered, sortField, sortDir, crmOverrides);
-  }, [leads, filter, search, sortField, sortDir, crmOverrides]);
+  const displayed = sortLeads(
+    filterLeads(leads, filter, search),
+    sortField,
+    sortDir
+  );
 
   return (
     <div className="saas-card overflow-hidden transition-shadow hover:shadow-lg hover:shadow-violet-500/5">
@@ -176,7 +170,7 @@ export default function LeadsTable({
               </tr>
             ) : (
               displayed.map((lead) => {
-                const crmStatus = crmOverrides[lead.id] ?? lead.crmStatus;
+                const crmStatus = lead.crmStatus;
                 return (
                   <tr
                     key={lead.id}

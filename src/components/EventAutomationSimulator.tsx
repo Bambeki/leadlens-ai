@@ -76,15 +76,19 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
     return () => window.removeEventListener(CRM_UPDATED_EVENT, refresh);
   }, [lead.id]);
 
-  function handleSimulate(event: WebhookEvent) {
+  async function handleSimulate(event: WebhookEvent) {
     setError(null);
-    const result = simulateWebhookEvent(lead, event);
-    if (!result.ok) {
-      setError(result.reason);
-      return;
+    try {
+      const result = await simulateWebhookEvent(lead, event);
+      if (!result.ok) {
+        setError(result.reason);
+        return;
+      }
+      setLastEvent(event);
+      setOutreachStatus(getOutreachStatus(lead.id));
+    } catch {
+      setError("Could not save webhook event to the database.");
     }
-    setLastEvent(event);
-    setOutreachStatus(getOutreachStatus(lead.id));
   }
 
   return (

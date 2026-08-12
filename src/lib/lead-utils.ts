@@ -44,7 +44,7 @@ export function filterLeads(
   leads: Lead[],
   filter: LeadFilter,
   search: string,
-  crmOverrides: Record<string, CRMStatus>
+  crmOverrides: Record<string, CRMStatus> = {}
 ): Lead[] {
   let result = leads.map((lead) => ({
     ...lead,
@@ -77,7 +77,7 @@ export function sortLeads(
   leads: Lead[],
   field: SortField,
   direction: SortDirection,
-  crmOverrides: Record<string, CRMStatus>
+  crmOverrides: Record<string, CRMStatus> = {}
 ): Lead[] {
   const sorted = [...leads].sort((a, b) => {
     let cmp = 0;

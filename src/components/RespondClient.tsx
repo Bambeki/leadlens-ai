@@ -82,6 +82,7 @@ export default function RespondClient({
   const [processed, setProcessed] = useState(false);
   const [confirmedSlot, setConfirmedSlot] = useState<string | null>(null);
   const [slots, setSlots] = useState<MeetingSlot[]>([]);
+  const [processError, setProcessError] = useState<string | null>(null);
   const appliedRef = useRef<string | null>(null);
 
   const hasAction =
@@ -118,30 +119,35 @@ export default function RespondClient({
         return;
       }
 
-      if (action === "interested") {
-        processCustomerInterested(found);
-        appliedRef.current = key;
-        setProcessed(true);
-        setReady(true);
-        return;
-      }
-
-      if (action === "declined") {
-        processCustomerDeclined(found);
-        appliedRef.current = key;
-        setProcessed(true);
-        setReady(true);
-        return;
-      }
-
-      if (action === "schedule" && slotId) {
-        const slot = getMeetingSlotOptions().find((s) => s.id === slotId);
-        if (slot) {
-          processCustomerMeetingScheduled(found, slot);
+      try {
+        if (action === "interested") {
+          await processCustomerInterested(found);
           appliedRef.current = key;
           setProcessed(true);
-          setConfirmedSlot(slot.label);
+          setReady(true);
+          return;
         }
+
+        if (action === "declined") {
+          await processCustomerDeclined(found);
+          appliedRef.current = key;
+          setProcessed(true);
+          setReady(true);
+          return;
+        }
+
+        if (action === "schedule" && slotId) {
+          const slot = getMeetingSlotOptions().find((s) => s.id === slotId);
+          if (slot) {
+            await processCustomerMeetingScheduled(found, slot);
+            appliedRef.current = key;
+            setProcessed(true);
+            setConfirmedSlot(slot.label);
+          }
+          setReady(true);
+        }
+      } catch {
+        setProcessError("We could not save your response. Please try again.");
         setReady(true);
       }
     }, 0);
@@ -167,6 +173,20 @@ export default function RespondClient({
           <p className="mt-2 text-sm text-slate-400">
             This response link is invalid or the lead no longer exists.
           </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (processError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-saas-bg p-6">
+        <div className="max-w-md rounded-2xl border border-red-500/30 bg-saas-card p-8 text-center shadow-lg">
+          <h1 className="text-2xl font-bold text-white">Response not saved</h1>
+          <p className="mt-3 text-slate-300">{processError}</p>
+          <Link href={`/respond/${leadId}`} className="mt-5 inline-block">
+            <Button>Try Again</Button>
+          </Link>
         </div>
       </div>
     );

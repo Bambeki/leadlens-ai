@@ -5,7 +5,7 @@ import { CRM_UPDATED_EVENT, type OutreachStatus } from "@/lib/crm-store";
 import { MEETINGS_UPDATED_EVENT } from "@/lib/meetings";
 import {
   EMPTY_LEAD_WORKFLOW_STATE,
-  getLeadWorkflowState,
+  getLeadWorkflowStateFromDb,
   syncMeetingWorkflowState,
   type LeadWorkflowState,
 } from "@/lib/lead-workflow";
@@ -94,7 +94,7 @@ export default function LeadProcessTracker({ leadId }: { leadId: string }) {
   useEffect(() => {
     if (!hasMounted) return;
     syncMeetingWorkflowState(leadId);
-    const refresh = () => setState(getLeadWorkflowState(leadId));
+    const refresh = async () => setState(await getLeadWorkflowStateFromDb(leadId));
     refresh();
     window.addEventListener(CRM_UPDATED_EVENT, refresh);
     window.addEventListener(MEETINGS_UPDATED_EVENT, refresh);

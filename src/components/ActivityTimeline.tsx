@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   CRM_UPDATED_EVENT,
-  getActivityTimeline,
+  getActivityTimelineFromDb,
   type ActivityEvent,
 } from "@/lib/crm-store";
 import { useHasMounted } from "@/hooks/useHasMounted";
@@ -41,7 +41,7 @@ export default function ActivityTimeline({ leadId }: { leadId: string }) {
 
   useEffect(() => {
     if (!hasMounted) return;
-    const load = () => setEvents(getActivityTimeline(leadId));
+    const load = async () => setEvents(await getActivityTimelineFromDb(leadId));
     load();
     window.addEventListener(CRM_UPDATED_EVENT, load);
     return () => window.removeEventListener(CRM_UPDATED_EVENT, load);

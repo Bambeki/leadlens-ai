@@ -6,6 +6,7 @@ import {
   addActivity,
   getCrmOverride,
   getOutreachStatus,
+  getOutreachStatusFromDb,
   hasOutreachBeenSent,
   type OutreachStatus,
 } from "./crm-store";
@@ -14,6 +15,7 @@ import {
   createMeetingRecord,
   saveScheduledMeeting,
   getMeetingByLeadId,
+  getScheduledMeetingsFromDb,
   type ScheduledMeeting,
   type MeetingScheduleSource,
 } from "./meetings";
@@ -64,7 +66,7 @@ export function completeMeetingSchedule(
     slot: MeetingSlotInput;
     source: MeetingScheduleSource;
   }
-): ScheduledMeeting {
+): Promise<ScheduledMeeting> {
   const meeting = createMeetingRecord(
     lead,
     options.slot.label,
@@ -75,29 +77,28 @@ export function completeMeetingSchedule(
       scheduledBy: options.source,
     }
   );
-  saveScheduledMeeting(meeting);
+  return saveScheduledMeeting(meeting).then(async (saved) => {
+    await updateOutreachStatus(lead.id, "Meeting Scheduled");
 
-  updateOutreachStatus(lead.id, "Meeting Scheduled");
+    if (options.source === "customer") {
+      addActivity(lead.id, "meeting_scheduled", "Customer selected meeting time");
+      notify("meeting_scheduled", "Meeting scheduled automatically");
+    } else {
+      addActivity(lead.id, "meeting_accepted", "Meeting accepted");
+      notify(
+        "meeting_scheduled",
+        `New meeting scheduled with ${lead.businessName}`
+      );
+    }
 
-  if (options.source === "customer") {
-    addActivity(lead.id, "meeting_scheduled", "Customer selected meeting time");
-    notify("meeting_scheduled", "Meeting scheduled automatically");
-  } else {
-    addActivity(lead.id, "meeting_accepted", "Meeting accepted");
-    notify(
-      "meeting_scheduled",
-      `New meeting scheduled with ${lead.businessName}`
+    addActivity(
+      lead.id,
+      "crm_meeting_scheduled",
+      "Opportunity status moved to Meeting Scheduled"
     );
-  }
 
-  updateCrmStatus(lead.id, "Meeting Scheduled");
-  addActivity(
-    lead.id,
-    "crm_meeting_scheduled",
-    "Opportunity status moved to Meeting Scheduled"
-  );
-
-  return meeting;
+    return saved;
+  });
 }
 
 export function getLeadWorkflowState(leadId: string): LeadWorkflowState {
@@ -121,17 +122,47 @@ export function getLeadWorkflowState(leadId: string): LeadWorkflowState {
   };
 }
 
+export async function getLeadWorkflowStateFromDb(
+  leadId: string
+): Promise<LeadWorkflowState> {
+  try {
+    const [outreachStatus, meetings] = await Promise.all([
+      getOutreachStatusFromDb(leadId),
+      getScheduledMeetingsFromDb(),
+    ]);
+    const meeting = meetings.find((item) => item.leadId === leadId);
+    const crmStatus = meeting?.crmStatus ?? getCrmOverride(leadId);
+    const emailSent = hasOutreachBeenSent(leadId) || outreachStatus === "Sent";
+    const customerResponded =
+      (outreachStatus != null && RESPONDED_OUTREACH.includes(outreachStatus)) ||
+      meeting != null;
+    const meetingScheduled =
+      meeting != null || crmStatus === "Meeting Scheduled";
+
+    return {
+      outreachStatus,
+      crmStatus,
+      meeting,
+      emailSent,
+      customerResponded,
+      meetingScheduled,
+    };
+  } catch {
+    return getLeadWorkflowState(leadId);
+  }
+}
+
 /** Reconcile stored meeting with opportunity status/outreach when detail loads. */
 export function syncMeetingWorkflowState(leadId: string): void {
   const meeting = getMeetingByLeadId(leadId);
   if (!meeting) return;
 
   if (getCrmOverride(leadId) !== "Meeting Scheduled") {
-    updateCrmStatus(leadId, "Meeting Scheduled");
+    updateCrmStatus(leadId, "Meeting Scheduled").catch(() => {});
   }
 
   const outreach = getOutreachStatus(leadId);
   if (outreach !== "Meeting Scheduled") {
-    updateOutreachStatus(leadId, "Meeting Scheduled");
+    updateOutreachStatus(leadId, "Meeting Scheduled").catch(() => {});
   }
 }

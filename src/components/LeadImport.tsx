@@ -69,6 +69,7 @@ export default function LeadImport() {
   const [searchLabel, setSearchLabel] = useState("");
   const [importedCount, setImportedCount] = useState(0);
   const [error, setError] = useState("");
+  const [saveError, setSaveError] = useState("");
   const [scrapeProgress, setScrapeProgress] = useState("");
   const [sessions, setSessions] = useState<ImportSession[]>(() => getImportSessions());
 
@@ -200,6 +201,7 @@ export default function LeadImport() {
   }
 
   async function handleImport() {
+    setSaveError("");
     const toImport = results.filter((r) => selected.has(r.id)) as ScrapedBusiness[];
     const label =
       advancedMode && keyword.trim() ? keyword.trim() : "Multi-category discovery";
@@ -207,7 +209,9 @@ export default function LeadImport() {
     try {
       await saveOpportunitiesToApi(imported);
     } catch {
-      // TODO: Surface database persistence failures in a pilot admin/status panel.
+      setSaveError(
+        "Imported locally, but saving to Supabase failed. Please retry before using this pilot data."
+      );
     }
     setImportedCount(imported.length);
     setStep("imported");
@@ -229,6 +233,7 @@ export default function LeadImport() {
     setKeyword("");
     setAdvancedMode(false);
     setError("");
+    setSaveError("");
     setSearchLabel("");
   }
 
@@ -681,6 +686,11 @@ export default function LeadImport() {
             Businesses from {searchLabel} near {city} are now in your LeadLens
             pipeline — scored, enriched, and ready for evidence review.
           </p>
+          {saveError && (
+            <p className="mx-auto mt-4 max-w-2xl rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm font-medium text-red-300">
+              {saveError}
+            </p>
+          )}
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Link href="/dashboard">
               <Button>View in Dashboard</Button>

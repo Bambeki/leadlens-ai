@@ -42,5 +42,8 @@ export async function POST(
   }
 
   const meeting = await createMeeting(id, body);
+  if (!meeting) {
+    return NextResponse.json({ error: "Opportunity not found" }, { status: 404 });
+  }
   return NextResponse.json({ meeting }, { status: 201 });
 }

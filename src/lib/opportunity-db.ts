@@ -13,6 +13,8 @@ import type {
   Lead,
   Priority,
 } from "./types";
+import type { ScheduledMeeting } from "./meetings";
+import type { ActivityEvent, ActivityType } from "./crm-store";
 import { prisma } from "./prisma";
 import { getPilotOrganization } from "./pilot-context";
 
@@ -102,6 +104,64 @@ function dateOrNow(value: string): Date {
 
 function toJsonInput(value: unknown): Prisma.InputJsonValue {
   return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
+}
+
+function meetingToScheduledMeeting(
+  meeting: Prisma.MeetingGetPayload<{ include: { opportunity: true } }>
+): ScheduledMeeting {
+  return {
+    id: meeting.id,
+    leadId: meeting.opportunityId,
+    businessName: meeting.opportunity.businessName,
+    contactName: meeting.contactName,
+    contactRole: meeting.contactRole,
+    scheduledAt: meeting.scheduledAt.toISOString(),
+    displayTime: meeting.displayTime,
+    meetingType: meeting.meetingType,
+    crmStatus: statusFromDb[meeting.opportunity.status],
+    leadScore: meeting.opportunity.score,
+    autoScheduled: meeting.autoScheduled,
+    scheduledBy:
+      meeting.scheduledBy === "customer" || meeting.scheduledBy === "simulator"
+        ? meeting.scheduledBy
+        : undefined,
+  };
+}
+
+function statusHistoryToActivity(
+  history: Prisma.PipelineStatusHistoryGetPayload<Record<string, never>>
+): ActivityEvent {
+  const label =
+    history.note ??
+    `Opportunity status moved to ${statusFromDb[history.toStatus]}`;
+  return {
+    id: history.id,
+    type: "crm_manual_update",
+    label,
+    timestamp: history.createdAt.toISOString(),
+  };
+}
+
+function outreachToActivity(
+  message: Prisma.OutreachMessageGetPayload<Record<string, never>>
+): ActivityEvent | null {
+  if (!message.statusText) return null;
+  if (message.statusText.startsWith("activity:")) {
+    const type = message.statusText.replace("activity:", "") as ActivityType;
+    return {
+      id: message.id,
+      type,
+      label: message.body,
+      timestamp: message.createdAt.toISOString(),
+    };
+  }
+
+  return {
+    id: message.id,
+    type: message.direction === OutreachDirection.INBOUND ? "email_replied" : "email_sent",
+    label: message.statusText,
+    timestamp: (message.sentAt ?? message.createdAt).toISOString(),
+  };
 }
 
 function toLead(opportunity: OpportunityWithRelations): Lead {
@@ -368,11 +428,13 @@ export async function createOutreachMessage(
   });
 }
 
-export async function listMeetings(opportunityId?: string) {
-  return prisma.meeting.findMany({
+export async function listMeetings(opportunityId?: string): Promise<ScheduledMeeting[]> {
+  const meetings = await prisma.meeting.findMany({
     where: opportunityId ? { opportunityId } : undefined,
+    include: { opportunity: true },
     orderBy: { scheduledAt: "asc" },
   });
+  return meetings.map(meetingToScheduledMeeting);
 }
 
 export async function createMeeting(
@@ -387,18 +449,45 @@ export async function createMeeting(
     scheduledBy?: string;
   }
 ) {
-  return prisma.meeting.create({
-    data: {
-      opportunityId,
-      contactName: meeting.contactName,
-      contactRole: meeting.contactRole,
-      scheduledAt: dateOrNow(meeting.scheduledAt),
-      displayTime: meeting.displayTime,
-      meetingType: meeting.meetingType,
-      autoScheduled: Boolean(meeting.autoScheduled),
-      scheduledBy: meeting.scheduledBy,
-    },
+  const organization = await getPilotOrganization();
+  const current = await prisma.opportunity.findFirst({
+    where: { id: opportunityId, organizationId: organization.id },
   });
+
+  if (!current) return null;
+
+  const created = await prisma.$transaction(async (tx) => {
+    await tx.opportunity.update({
+      where: { id: opportunityId },
+      data: {
+        status: OpportunityStatus.MEETING_SCHEDULED,
+        statusHistory: {
+          create: {
+            organizationId: organization.id,
+            fromStatus: current.status,
+            toStatus: OpportunityStatus.MEETING_SCHEDULED,
+            note: "Meeting scheduled",
+          },
+        },
+      },
+    });
+
+    return tx.meeting.create({
+      data: {
+        opportunityId,
+        contactName: meeting.contactName,
+        contactRole: meeting.contactRole,
+        scheduledAt: dateOrNow(meeting.scheduledAt),
+        displayTime: meeting.displayTime,
+        meetingType: meeting.meetingType,
+        autoScheduled: Boolean(meeting.autoScheduled),
+        scheduledBy: meeting.scheduledBy,
+      },
+      include: { opportunity: true },
+    });
+  });
+
+  return meetingToScheduledMeeting(created);
 }
 
 export async function updateOpportunityStatus(
@@ -430,4 +519,31 @@ export async function updateOpportunityStatus(
   });
 
   return toLead(updated);
+}
+
+export async function listStatusHistory(opportunityId: string): Promise<ActivityEvent[]> {
+  const organization = await getPilotOrganization();
+  const history = await prisma.pipelineStatusHistory.findMany({
+    where: { opportunityId, organizationId: organization.id },
+    orderBy: { createdAt: "desc" },
+  });
+  return history.map(statusHistoryToActivity);
+}
+
+export async function listOpportunityActivity(opportunityId: string): Promise<ActivityEvent[]> {
+  const [history, outreachMessages] = await Promise.all([
+    listStatusHistory(opportunityId),
+    prisma.outreachMessage.findMany({
+      where: { opportunityId },
+      orderBy: { createdAt: "desc" },
+    }),
+  ]);
+
+  const outreachActivity = outreachMessages
+    .map(outreachToActivity)
+    .filter((event): event is ActivityEvent => Boolean(event));
+
+  return [...history, ...outreachActivity].sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  );
 }

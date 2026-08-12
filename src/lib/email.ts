@@ -1,5 +1,10 @@
 import type { EmailCtaConfig } from "./email-template";
 import { DEFAULT_EMAIL_CTA_CONFIG } from "./email-template";
+import {
+  fetchOutreachDraftFromApi,
+  saveOutreachDraftToApi,
+} from "./opportunity-api";
+import type { OutreachStatus } from "./crm-store";
 
 export interface ParsedEmail {
   subject: string;
@@ -125,6 +130,29 @@ export function saveOutreachDraft(
   localStorage.setItem(outreachDraftKey(leadId), JSON.stringify(payload));
 }
 
+export async function saveOutreachDraftToDb(
+  leadId: string,
+  draft: { subject: string; body: string; ctaConfig?: EmailCtaConfig },
+  status: Extract<OutreachStatus, "Drafted" | "Approved"> = "Drafted"
+): Promise<OutreachDraft> {
+  const existing = getOutreachDraft(leadId);
+  const payload: OutreachDraft = {
+    subject: draft.subject,
+    body: draft.body,
+    ctaConfig: draft.ctaConfig ?? existing?.ctaConfig ?? DEFAULT_EMAIL_CTA_CONFIG,
+    updatedAt: new Date().toISOString(),
+  };
+  await saveOutreachDraftToApi(leadId, {
+    subject: payload.subject,
+    body: payload.body,
+    status,
+  });
+  if (typeof window !== "undefined") {
+    localStorage.setItem(outreachDraftKey(leadId), JSON.stringify(payload));
+  }
+  return payload;
+}
+
 export function getOutreachDraft(leadId: string): OutreachDraft | null {
   if (typeof window === "undefined") return null;
   try {
@@ -132,6 +160,26 @@ export function getOutreachDraft(leadId: string): OutreachDraft | null {
     return raw ? (JSON.parse(raw) as OutreachDraft) : null;
   } catch {
     return null;
+  }
+}
+
+export async function getOutreachDraftFromDb(
+  leadId: string
+): Promise<OutreachDraft | null> {
+  try {
+    const draft = await fetchOutreachDraftFromApi(leadId);
+    if (draft && typeof window !== "undefined") {
+      const existing = getOutreachDraft(leadId);
+      const payload = {
+        ...draft,
+        ctaConfig: existing?.ctaConfig ?? DEFAULT_EMAIL_CTA_CONFIG,
+      };
+      localStorage.setItem(outreachDraftKey(leadId), JSON.stringify(payload));
+      return payload;
+    }
+    return draft ?? getOutreachDraft(leadId);
+  } catch {
+    return getOutreachDraft(leadId);
   }
 }
 

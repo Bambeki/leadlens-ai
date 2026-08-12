@@ -6,13 +6,12 @@ import {
   formatMeetingCountdown,
   formatMeetingDate,
   formatMeetingTime,
-  getUpcomingMeetings,
+  getUpcomingMeetingsFromDb,
   MEETINGS_UPDATED_EVENT,
   type ScheduledMeeting,
 } from "@/lib/meetings";
-import { CRM_UPDATED_EVENT, getCrmOverride } from "@/lib/crm-store";
+import { CRM_UPDATED_EVENT } from "@/lib/crm-store";
 import CRMStatusBadge from "@/components/CRMStatusBadge";
-import type { CRMStatus } from "@/lib/types";
 import { useHasMounted } from "@/hooks/useHasMounted";
 
 export default function UpcomingMeetingsWidget() {
@@ -22,12 +21,13 @@ export default function UpcomingMeetingsWidget() {
 
   useEffect(() => {
     if (!hasMounted) return;
-    const load = () => {
-      const upcoming = getUpcomingMeetings().map((m) => ({
-        ...m,
-        crmStatus: (getCrmOverride(m.leadId) ?? m.crmStatus) as CRMStatus,
-      }));
-      setMeetings(upcoming);
+    const load = async () => {
+      try {
+        const upcoming = await getUpcomingMeetingsFromDb();
+        setMeetings(upcoming);
+      } catch {
+        setMeetings([]);
+      }
     };
     load();
     window.addEventListener(MEETINGS_UPDATED_EVENT, load);

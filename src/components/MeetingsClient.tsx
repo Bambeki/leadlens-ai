@@ -3,29 +3,30 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  getScheduledMeetings,
+  getScheduledMeetingsFromDb,
   MEETINGS_UPDATED_EVENT,
   type ScheduledMeeting,
 } from "@/lib/meetings";
-import { CRM_UPDATED_EVENT, getCrmOverride } from "@/lib/crm-store";
+import { CRM_UPDATED_EVENT } from "@/lib/crm-store";
 import CRMStatusBadge from "./CRMStatusBadge";
 import Button from "./ui/Button";
-import type { CRMStatus } from "@/lib/types";
 import { useHasMounted } from "@/hooks/useHasMounted";
 
 export default function MeetingsClient() {
   const hasMounted = useHasMounted();
   const [meetings, setMeetings] = useState<ScheduledMeeting[]>([]);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!hasMounted) return;
-    const load = () => {
-      const all = getScheduledMeetings().map((m) => ({
-        ...m,
-        crmStatus: (getCrmOverride(m.leadId) ??
-          m.crmStatus) as CRMStatus,
-      }));
-      setMeetings(all);
+    const load = async () => {
+      try {
+        const all = await getScheduledMeetingsFromDb();
+        setMeetings(all);
+        setLoadError(null);
+      } catch {
+        setLoadError("Could not load meetings from the database.");
+      }
     };
     load();
     window.addEventListener(MEETINGS_UPDATED_EVENT, load);
@@ -63,6 +64,9 @@ export default function MeetingsClient() {
         <p className="mt-1 text-slate-400">
           Scheduled via customer response links and synced with opportunity status
         </p>
+        {loadError && (
+          <p className="mt-2 text-sm font-medium text-red-400">{loadError}</p>
+        )}
       </div>
 
       {meetings.length === 0 ? (

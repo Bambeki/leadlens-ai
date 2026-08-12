@@ -2,7 +2,13 @@ import type { CRMStatus, Lead } from "./types";
 import { CRM_STATUSES } from "./crm";
 import { getImportedLeads, saveImportedLeads } from "./imported-leads";
 import { uniqueId } from "./unique-id";
-import { updateOpportunityStatusInApi } from "./opportunity-api";
+import {
+  fetchOpportunityActivityFromApi,
+  fetchOutreachStatusFromApi,
+  saveActivityToApi,
+  saveOutreachMessageToApi,
+  updateOpportunityStatusInApi,
+} from "./opportunity-api";
 
 export const CRM_UPDATED_EVENT = "leadlens-crm-updated";
 
@@ -116,17 +122,14 @@ function syncImportedLeadCrm(leadId: string, status: CRMStatus) {
   return true;
 }
 
-export function updateCrmStatus(leadId: string, status: CRMStatus): void {
+export async function updateCrmStatus(leadId: string, status: CRMStatus): Promise<void> {
   if (!isBrowser()) return;
   if (!CRM_STATUSES.includes(status)) return;
 
+  await updateOpportunityStatusInApi(leadId, status, "Status updated from app");
+
   localStorage.setItem(crmKey(leadId), status);
   syncImportedLeadCrm(leadId, status);
-  updateOpportunityStatusInApi(leadId, status, "Status updated from app").catch(
-    () => {
-      // TODO: Show database sync errors once app-level toast/error handling exists.
-    }
-  );
 
   window.dispatchEvent(
     new CustomEvent(CRM_UPDATED_EVENT, {
@@ -149,11 +152,30 @@ export function getOutreachStatus(leadId: string): OutreachStatus | null {
     : null;
 }
 
-export function updateOutreachStatus(
+export async function getOutreachStatusFromDb(
+  leadId: string
+): Promise<OutreachStatus | null> {
+  try {
+    const status = await fetchOutreachStatusFromApi(leadId);
+    if (status) {
+      localStorage.setItem(outreachKey(leadId), status);
+    }
+    return status ?? getOutreachStatus(leadId);
+  } catch {
+    return getOutreachStatus(leadId);
+  }
+}
+
+export async function updateOutreachStatus(
   leadId: string,
   status: OutreachStatus
-): void {
+): Promise<void> {
   if (!isBrowser()) return;
+  await saveOutreachMessageToApi(leadId, {
+    direction: "outbound",
+    body: status,
+    statusText: status,
+  });
   localStorage.setItem(outreachKey(leadId), status);
   window.dispatchEvent(
     new CustomEvent(CRM_UPDATED_EVENT, {
@@ -169,6 +191,20 @@ export function getActivityTimeline(leadId: string): ActivityEvent[] {
     return raw ? (JSON.parse(raw) as ActivityEvent[]) : [];
   } catch {
     return [];
+  }
+}
+
+export async function getActivityTimelineFromDb(
+  leadId: string
+): Promise<ActivityEvent[]> {
+  try {
+    const events = await fetchOpportunityActivityFromApi(leadId);
+    if (events.length > 0 && isBrowser()) {
+      localStorage.setItem(activityKey(leadId), JSON.stringify(events));
+    }
+    return events.length > 0 ? events : getActivityTimeline(leadId);
+  } catch {
+    return getActivityTimeline(leadId);
   }
 }
 
@@ -191,6 +227,9 @@ export function addActivity(
     activityKey(leadId),
     JSON.stringify([...existing, event])
   );
+  saveActivityToApi(leadId, event).catch(() => {
+    // Activity is non-critical UI context; status updates surface their own DB errors.
+  });
 
   window.dispatchEvent(
     new CustomEvent(CRM_UPDATED_EVENT, {

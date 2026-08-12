@@ -4,7 +4,6 @@ import PipelineVisualization from "@/components/PipelineVisualization";
 import CrmFunnel from "@/components/CrmFunnel";
 import LeadsTable from "@/components/LeadsTable";
 import { useAllLeads } from "@/hooks/useAllLeads";
-import { useLeadsWithCrm } from "@/hooks/useCrmOverrides";
 import { useHasMounted } from "@/hooks/useHasMounted";
 import { getPipelineStages, getCrmBreakdown, getPipelineValue } from "@/lib/pipeline";
 import { formatCurrency } from "@/lib/scoring";
@@ -13,7 +12,7 @@ import type { Lead } from "@/lib/types";
 export default function PipelineClient({ baseLeads }: { baseLeads: Lead[] }) {
   const hasMounted = useHasMounted();
   const { allLeads } = useAllLeads(baseLeads);
-  const leadsWithCrm = useLeadsWithCrm(allLeads);
+  const leadsWithCrm = allLeads;
   const stages = getPipelineStages(leadsWithCrm);
   const visibleStages = hasMounted ? stages : getPipelineStages(baseLeads);
   const crmBreakdown = getCrmBreakdown(leadsWithCrm);

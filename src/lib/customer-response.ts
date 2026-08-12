@@ -107,10 +107,10 @@ function notify(type: Parameters<typeof createNotification>[0], message: string)
   );
 }
 
-export function processCustomerInterested(lead: Lead): void {
-  updateOutreachStatus(lead.id, "Replied");
+export async function processCustomerInterested(lead: Lead): Promise<void> {
+  await updateOutreachStatus(lead.id, "Replied");
   addActivity(lead.id, "email_replied", "Customer clicked Request a Call");
-  updateCrmStatus(lead.id, "Responded");
+  await updateCrmStatus(lead.id, "Responded");
   addActivity(lead.id, "crm_responded", "Opportunity status moved to Responded");
   notify(
     "email_replied",
@@ -119,19 +119,19 @@ export function processCustomerInterested(lead: Lead): void {
   notify("crm_updated", "Customer is interested");
 }
 
-export function processCustomerDeclined(lead: Lead): void {
-  updateOutreachStatus(lead.id, "Meeting Declined");
+export async function processCustomerDeclined(lead: Lead): Promise<void> {
+  await updateOutreachStatus(lead.id, "Meeting Declined");
   addActivity(lead.id, "meeting_declined", "Customer clicked Not Interested");
-  updateCrmStatus(lead.id, "Lost");
+  await updateCrmStatus(lead.id, "Lost");
   addActivity(lead.id, "crm_lost", "Opportunity status moved to Lost");
   notify("crm_updated", `${lead.businessName} declined the offer.`);
 }
 
-export function processCustomerMeetingScheduled(
+export async function processCustomerMeetingScheduled(
   lead: Lead,
   slot: MeetingSlot
-): void {
-  completeMeetingSchedule(lead, {
+): Promise<void> {
+  await completeMeetingSchedule(lead, {
     slot: { label: slot.label, scheduledAt: slot.scheduledAt },
     source: "customer",
   });

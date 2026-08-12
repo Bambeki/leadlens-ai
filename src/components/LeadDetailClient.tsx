@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import PriorityBadge from "@/components/PriorityBadge";
 import ScoreBreakdown from "@/components/ScoreBreakdown";
@@ -16,7 +16,6 @@ import LeadProcessTracker from "@/components/LeadProcessTracker";
 import CRMStatusBadge from "@/components/CRMStatusBadge";
 import ActivityTimeline from "@/components/ActivityTimeline";
 import { useLeadById } from "@/hooks/useAllLeads";
-import { useCrmOverrides } from "@/hooks/useCrmOverrides";
 import { leads as baseLeads } from "@/lib/base-data";
 import { PIPELINE_STAGE_DEFS } from "@/lib/pipeline";
 
@@ -25,14 +24,7 @@ type LeadTab = "overview" | "conversation";
 export default function LeadDetailClient({ id }: { id: string }) {
   const [tab, setTab] = useState<LeadTab>("overview");
   const lead = useLeadById(baseLeads, id);
-  const leadIdList = useMemo(
-    () => (lead ? [lead.id] : []),
-    [lead]
-  );
-  const overrides = useCrmOverrides(leadIdList);
-  const crmStatus = lead
-    ? overrides[lead.id] ?? lead.crmStatus
-    : null;
+  const crmStatus = lead ? lead.crmStatus : null;
 
   if (!lead || !crmStatus) {
     return (

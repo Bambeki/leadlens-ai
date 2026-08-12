@@ -13,8 +13,8 @@ import {
   sendEmailViaApi,
   getSavedTestEmail,
   saveTestEmail,
-  saveOutreachDraft,
-  getOutreachDraft,
+  getOutreachDraftFromDb,
+  saveOutreachDraftToDb,
   composeOutreachEmail,
 } from "@/lib/email";
 import {
@@ -27,7 +27,7 @@ import EmailPreview from "./EmailPreview";
 import { fetchSystemStatus } from "@/lib/system-status-client";
 import {
   CRM_UPDATED_EVENT,
-  getOutreachStatus,
+  getOutreachStatusFromDb,
   updateOutreachStatus,
   addActivity,
   SENT_OUTREACH_STATUSES,
@@ -36,9 +36,10 @@ import {
 import { MEETINGS_UPDATED_EVENT } from "@/lib/meetings";
 import {
   EMPTY_LEAD_WORKFLOW_STATE,
-  getLeadWorkflowState,
+  getLeadWorkflowStateFromDb,
 } from "@/lib/lead-workflow";
 import { processEmailSent } from "@/lib/event-automation";
+import { generateOutreachDraftFromApi } from "@/lib/opportunity-api";
 import { useHasMounted } from "@/hooks/useHasMounted";
 import Button from "./ui/Button";
 
@@ -60,6 +61,7 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
   const hasMounted = useHasMounted();
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
+  const [followUp, setFollowUp] = useState("");
   const [draftReady, setDraftReady] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [workflowStep, setWorkflowStep] = useState<WorkflowStep | null>(null);
@@ -83,16 +85,19 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
   const isEditable = workflowStep === "drafted" && !delivery;
   const isSent = workflowStep === "sent" || delivery !== null;
 
-  function applyGeneratedEmail(generated: string) {
-    const parsed = parseOutreachEmail(generated);
-    setSubject(parsed.subject);
-    setBody(parsed.body);
+  function applyGeneratedDraft(draft: {
+    subject: string;
+    body: string;
+    followUp?: string;
+  }) {
+    setSubject(draft.subject);
+    setBody(draft.body);
+    setFollowUp(draft.followUp ?? "");
     setDraftReady(true);
-    saveOutreachDraft(lead.id, { ...parsed, ctaConfig });
   }
 
-  const refreshWorkflow = useCallback(() => {
-    const saved = getOutreachStatus(lead.id);
+  const refreshWorkflow = useCallback(async () => {
+    const saved = await getOutreachStatusFromDb(lead.id);
     if (saved) {
       const step = outreachToWorkflowStep(saved);
       setWorkflowStep(step);
@@ -100,16 +105,17 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
         setDelivery({ messageId: "saved", sentTo: "Previously sent" });
       }
       if (saved === "Drafted" || saved === "Approved") {
-        const draft = getOutreachDraft(lead.id);
+        const draft = await getOutreachDraftFromDb(lead.id);
         if (draft) {
           setSubject(draft.subject);
           setBody(draft.body);
+          setFollowUp("");
           setCtaConfig(draft.ctaConfig ?? DEFAULT_EMAIL_CTA_CONFIG);
           setDraftReady(true);
         }
       }
     }
-    setWorkflowState(getLeadWorkflowState(lead.id));
+    setWorkflowState(await getLeadWorkflowStateFromDb(lead.id));
   }, [lead.id]);
 
   useEffect(() => {
@@ -137,21 +143,25 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
       setSendError(null);
       setDelivery(null);
     }
-    setTimeout(() => {
-      applyGeneratedEmail(
-        generateOutreachEmail(
-          lead,
-          typeof window !== "undefined" ? window.location.origin : undefined
-        )
-      );
-      setWorkflowStep("drafted");
-      updateOutreachStatus(lead.id, "Drafted");
-      addActivity(
-        lead.id,
-        "email_drafted",
-        isRegenerate ? "Email regenerated" : "Email drafted"
-      );
-      setIsGenerating(false);
+    setTimeout(async () => {
+      try {
+        const draft = await generateOutreachDraftFromApi(lead.id);
+        applyGeneratedDraft(draft);
+        setWorkflowStep("drafted");
+        addActivity(
+          lead.id,
+          "email_drafted",
+          isRegenerate
+            ? "Email regenerated and saved to database"
+            : "Email drafted and saved to database"
+        );
+        setSaveFeedback(true);
+        setTimeout(() => setSaveFeedback(false), 2000);
+      } catch {
+        setSendError("Could not generate outreach. Please try again.");
+      } finally {
+        setIsGenerating(false);
+      }
     }, 1200);
   }
 
@@ -163,19 +173,27 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
     runGenerate(true);
   }
 
-  function handleSaveEdits() {
+  async function handleSaveEdits() {
     if (!draftReady) return;
-    saveOutreachDraft(lead.id, { subject, body, ctaConfig });
-    setSaveFeedback(true);
-    setTimeout(() => setSaveFeedback(false), 2000);
+    try {
+      await saveOutreachDraftToDb(lead.id, { subject, body, ctaConfig }, "Drafted");
+      setSaveFeedback(true);
+      setTimeout(() => setSaveFeedback(false), 2000);
+    } catch {
+      setSendError("Could not save outreach edits to the database.");
+    }
   }
 
   function handleCtaConfigChange(config: EmailCtaConfig) {
     setCtaConfig(config);
-    saveOutreachDraft(lead.id, { subject, body, ctaConfig: config });
+    saveOutreachDraftToDb(lead.id, { subject, body, ctaConfig: config }, "Drafted").catch(() =>
+      setSendError("Could not save CTA settings to the database.")
+    );
     if (workflowStep === "approved") {
       setWorkflowStep("drafted");
-      updateOutreachStatus(lead.id, "Drafted");
+      updateOutreachStatus(lead.id, "Drafted").catch(() =>
+        setSendError("Could not save outreach status to the database.")
+      );
     }
   }
 
@@ -183,7 +201,9 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
     setSubject(value);
     if (workflowStep === "approved") {
       setWorkflowStep("drafted");
-      updateOutreachStatus(lead.id, "Drafted");
+      updateOutreachStatus(lead.id, "Drafted").catch(() =>
+        setSendError("Could not save outreach status to the database.")
+      );
     }
   }
 
@@ -191,17 +211,23 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
     setBody(value);
     if (workflowStep === "approved") {
       setWorkflowStep("drafted");
-      updateOutreachStatus(lead.id, "Drafted");
+      updateOutreachStatus(lead.id, "Drafted").catch(() =>
+        setSendError("Could not save outreach status to the database.")
+      );
     }
   }
 
-  function handleApprove() {
+  async function handleApprove() {
     if (!draftReady || workflowStep !== "drafted") return;
-    saveOutreachDraft(lead.id, { subject, body, ctaConfig });
-    setWorkflowStep("approved");
     setSendError(null);
-    updateOutreachStatus(lead.id, "Approved");
-    addActivity(lead.id, "email_approved", "Email approved");
+    try {
+      await saveOutreachDraftToDb(lead.id, { subject, body, ctaConfig }, "Approved");
+      await updateOutreachStatus(lead.id, "Approved");
+      setWorkflowStep("approved");
+      addActivity(lead.id, "email_approved", "Email approved");
+    } catch {
+      setSendError("Could not save approval to the database.");
+    }
   }
 
   async function handleSend() {
@@ -238,9 +264,8 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
       leadName: lead.businessName,
     });
 
-    setIsSending(false);
-
     if (!result.success) {
+      setIsSending(false);
       setSendError(result.error ?? "Send failed");
       return;
     }
@@ -251,10 +276,16 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
       sentTo: recipient,
     });
 
-    processEmailSent(lead.id, recipient);
+    try {
+      await processEmailSent(lead.id, recipient);
+    } catch {
+      setSendError("Email was sent, but workflow status could not be saved to the database.");
+    } finally {
+      setIsSending(false);
+    }
   }
 
-  function handleMeeting(type: MeetingType) {
+  async function handleMeeting(type: MeetingType) {
     if (!draftReady || isSent) return;
     const baseContent = activeMeeting
       ? generateOutreachEmail(
@@ -266,11 +297,17 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
     const parsed = parseOutreachEmail(updated);
     setSubject(parsed.subject);
     setBody(parsed.body);
-    saveOutreachDraft(lead.id, { ...parsed, ctaConfig });
+    try {
+      await saveOutreachDraftToDb(lead.id, { ...parsed, ctaConfig }, "Drafted");
+    } catch {
+      setSendError("Could not save meeting suggestion to the database.");
+    }
     setActiveMeeting(type);
     if (workflowStep === "approved") {
       setWorkflowStep("drafted");
-      updateOutreachStatus(lead.id, "Drafted");
+      updateOutreachStatus(lead.id, "Drafted").catch(() =>
+        setSendError("Could not save outreach status to the database.")
+      );
     }
   }
 
@@ -302,6 +339,11 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
 
       {draftReady && (
         <div className="mt-6">
+          {saveFeedback && (
+            <p className="mb-4 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-sm font-medium text-emerald-300">
+              Outreach draft generated and saved to the database.
+            </p>
+          )}
           <div className="flex flex-wrap items-center gap-2">
             {CORE_STEPS.map((step, i) => {
               const stepIdx = CORE_STEPS.findIndex((s) => s.id === workflowStep);
@@ -589,6 +631,17 @@ export default function OutreachGenerator({ lead }: { lead: Lead }) {
                 send. Use Preview to see the HTML email.
               </p>
             </>
+          )}
+
+          {followUp && (
+            <div className="mt-4 rounded-lg border border-saas-border bg-white/5 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
+                Optional follow-up generated
+              </p>
+              <pre className="mt-2 whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-300">
+                {followUp}
+              </pre>
+            </div>
           )}
 
           {!isSent && (

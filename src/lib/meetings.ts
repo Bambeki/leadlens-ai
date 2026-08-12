@@ -1,6 +1,6 @@
 import type { CRMStatus } from "./types";
 import { uniqueId } from "./unique-id";
-import { saveMeetingToApi } from "./opportunity-api";
+import { fetchMeetingsFromApi, saveMeetingToApi } from "./opportunity-api";
 
 export type MeetingScheduleSource = "customer" | "simulator";
 
@@ -36,11 +36,21 @@ export function getScheduledMeetings(): ScheduledMeeting[] {
   }
 }
 
-export function saveScheduledMeeting(meeting: ScheduledMeeting): void {
-  if (!isBrowser()) return;
-  const existing = getScheduledMeetings().filter((m) => m.leadId !== meeting.leadId);
-  localStorage.setItem(MEETINGS_KEY, JSON.stringify([meeting, ...existing]));
-  saveMeetingToApi(meeting.leadId, {
+export async function getScheduledMeetingsFromDb(): Promise<ScheduledMeeting[]> {
+  try {
+    const meetings = await fetchMeetingsFromApi();
+    if (isBrowser()) {
+      localStorage.setItem(MEETINGS_KEY, JSON.stringify(meetings));
+    }
+    return meetings;
+  } catch {
+    return getScheduledMeetings();
+  }
+}
+
+export async function saveScheduledMeeting(meeting: ScheduledMeeting): Promise<ScheduledMeeting> {
+  if (!isBrowser()) throw new Error("Meetings can only be scheduled in the browser");
+  const saved = await saveMeetingToApi(meeting.leadId, {
     contactName: meeting.contactName,
     contactRole: meeting.contactRole,
     scheduledAt: meeting.scheduledAt,
@@ -48,10 +58,11 @@ export function saveScheduledMeeting(meeting: ScheduledMeeting): void {
     meetingType: meeting.meetingType,
     autoScheduled: meeting.autoScheduled,
     scheduledBy: meeting.scheduledBy,
-  }).catch(() => {
-    // TODO: Surface database sync errors once app-level error handling exists.
   });
+  const existing = getScheduledMeetings().filter((m) => m.leadId !== meeting.leadId);
+  localStorage.setItem(MEETINGS_KEY, JSON.stringify([saved, ...existing]));
   window.dispatchEvent(new CustomEvent(MEETINGS_UPDATED_EVENT));
+  return saved;
 }
 
 export function getMeetingByLeadId(leadId: string): ScheduledMeeting | undefined {
@@ -100,6 +111,17 @@ export function formatMeetingCountdown(scheduledAt: string): string {
 export function getUpcomingMeetings(): ScheduledMeeting[] {
   const now = Date.now();
   return getScheduledMeetings()
+    .filter((m) => new Date(m.scheduledAt).getTime() > now)
+    .sort(
+      (a, b) =>
+        new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime()
+    );
+}
+
+export async function getUpcomingMeetingsFromDb(): Promise<ScheduledMeeting[]> {
+  const now = Date.now();
+  const meetings = await getScheduledMeetingsFromDb();
+  return meetings
     .filter((m) => new Date(m.scheduledAt).getTime() > now)
     .sort(
       (a, b) =>

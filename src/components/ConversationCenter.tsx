@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Lead } from "@/lib/types";
-import { generateOutreachEmail } from "@/lib/outreach";
 import {
   MEETING_OPTIONS,
   insertMeetingSuggestionIntoBody,
@@ -12,8 +11,9 @@ import {
   sendEmailViaApi,
   getSavedTestEmail,
   saveTestEmail,
-  saveOutreachDraft,
   getOutreachDraft,
+  getOutreachDraftFromDb,
+  saveOutreachDraftToDb,
 } from "@/lib/email";
 import {
   DEFAULT_EMAIL_CTA_CONFIG,
@@ -22,7 +22,7 @@ import {
 import { fetchSystemStatus } from "@/lib/system-status-client";
 import {
   CRM_UPDATED_EVENT,
-  getOutreachStatus,
+  getOutreachStatusFromDb,
   updateOutreachStatus,
   addActivity,
   hasOutreachBeenSent,
@@ -31,12 +31,13 @@ import {
 } from "@/lib/crm-store";
 import {
   CONVERSATION_UPDATED_EVENT,
-  getConversationMessages,
+  getConversationMessagesFromDb,
   addOutboundSentMessage,
   addSimulatedCustomerReply,
   type ConversationMessage,
 } from "@/lib/conversation-store";
 import { processEmailSent, simulateWebhookEvent } from "@/lib/event-automation";
+import { generateOutreachDraftFromApi } from "@/lib/opportunity-api";
 import { useHasMounted } from "@/hooks/useHasMounted";
 import { LEADLENS_BRAND } from "@/lib/branding";
 import Button from "./ui/Button";
@@ -108,31 +109,34 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
   const hasMounted = useHasMounted();
   const [subject, setSubject] = useState("");
   const [body, setBody] = useState("");
+  const [followUp, setFollowUp] = useState("");
   const [composerStep, setComposerStep] = useState<ComposerStep>("draft");
   const [messages, setMessages] = useState<ConversationMessage[]>([]);
   const [outreachStatus, setOutreachStatus] = useState<OutreachStatus | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
+  const [generateSuccess, setGenerateSuccess] = useState(false);
   const [testEmail, setTestEmail] = useState("");
   const [useTestEmail, setUseTestEmail] = useState(true);
   const [resendReady, setResendReady] = useState(false);
   const [fromEmail, setFromEmail] = useState<string | null>(null);
   const [activeMeeting, setActiveMeeting] = useState<MeetingType | null>(null);
 
-  const refreshState = useCallback(() => {
-    setMessages(getConversationMessages(lead.id));
-    const status = getOutreachStatus(lead.id);
+  const refreshState = useCallback(async () => {
+    setMessages(await getConversationMessagesFromDb(lead.id));
+    const status = await getOutreachStatusFromDb(lead.id);
     setOutreachStatus(status);
 
     if (status === "Approved") setComposerStep("approved");
     else if (status && SENT_OUTREACH_STATUSES.includes(status)) setComposerStep("sent");
     else setComposerStep("draft");
 
-    const draft = getOutreachDraft(lead.id);
+    const draft = await getOutreachDraftFromDb(lead.id);
     if (draft && !(status && SENT_OUTREACH_STATUSES.includes(status))) {
       setSubject(draft.subject);
       setBody(draft.body);
+      setFollowUp("");
     }
   }, [lead.id]);
 
@@ -168,34 +172,36 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
   function handleGenerate() {
     setIsGenerating(true);
     setSendError(null);
-    setTimeout(() => {
-      const generated = generateOutreachEmail(
-        lead,
-        typeof window !== "undefined" ? window.location.origin : undefined
-      );
-      const subjectMatch = generated.match(/^Subject:\s*(.+)$/m);
-      const newSubject = subjectMatch
-        ? subjectMatch[1].trim()
-        : `Elevate ${lead.businessName}'s Brand Presence`;
-      const newBody = generated.replace(/^Subject:\s*.+\n*/m, "").trim();
-      setSubject(newSubject);
-      setBody(newBody);
-      setComposerStep("draft");
-      setActiveMeeting(null);
-      saveOutreachDraft(lead.id, { subject: newSubject, body: newBody });
-      updateOutreachStatus(lead.id, "Drafted");
-      addActivity(lead.id, "email_drafted", "Email drafted in Communication Center");
-      setIsGenerating(false);
+    setTimeout(async () => {
+      try {
+        const draft = await generateOutreachDraftFromApi(lead.id);
+        setSubject(draft.subject);
+        setBody(draft.body);
+        setFollowUp(draft.followUp);
+        setComposerStep("draft");
+        setActiveMeeting(null);
+        addActivity(lead.id, "email_drafted", "Email drafted in Communication Center");
+        setGenerateSuccess(true);
+        setTimeout(() => setGenerateSuccess(false), 2000);
+      } catch {
+        setSendError("Could not generate outreach. Please try again.");
+      } finally {
+        setIsGenerating(false);
+      }
     }, 900);
   }
 
-  function handleApprove() {
+  async function handleApprove() {
     if (!subject.trim() || !body.trim()) return;
-    saveOutreachDraft(lead.id, { subject, body });
-    setComposerStep("approved");
-    updateOutreachStatus(lead.id, "Approved");
-    addActivity(lead.id, "email_approved", "Email approved for sending");
     setSendError(null);
+    try {
+      await saveOutreachDraftToDb(lead.id, { subject, body }, "Approved");
+      await updateOutreachStatus(lead.id, "Approved");
+      setComposerStep("approved");
+      addActivity(lead.id, "email_approved", "Email approved for sending");
+    } catch {
+      setSendError("Could not save approval to the database.");
+    }
   }
 
   async function handleSend() {
@@ -237,34 +243,44 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
       leadName: lead.businessName,
     });
 
-    setIsSending(false);
-
     if (!result.success) {
+      setIsSending(false);
       setSendError(result.error ?? "Send failed");
       return;
     }
 
-    setComposerStep("sent");
-    processEmailSent(lead.id, recipient);
-    addOutboundSentMessage(lead.id, {
-      subject: subject.trim(),
-      body: body.trim(),
-      author: SENDER_NAME,
-      messageId: result.messageId,
-    });
-    setOutreachStatus(getOutreachStatus(lead.id));
-    setMessages(getConversationMessages(lead.id));
+    try {
+      await addOutboundSentMessage(lead.id, {
+        subject: subject.trim(),
+        body: body.trim(),
+        author: SENDER_NAME,
+        messageId: result.messageId,
+      });
+      await processEmailSent(lead.id, recipient);
+      setComposerStep("sent");
+      setOutreachStatus(await getOutreachStatusFromDb(lead.id));
+      setMessages(await getConversationMessagesFromDb(lead.id));
+    } catch {
+      setSendError("Email was sent, but LeadLens could not save the conversation to the database.");
+    } finally {
+      setIsSending(false);
+    }
   }
 
-  function handleMeetingProposal(type: MeetingType) {
+  async function handleMeetingProposal(type: MeetingType) {
     const updated = insertMeetingSuggestionIntoBody(body, type);
     setBody(updated);
     setActiveMeeting(type);
-    saveOutreachDraft(lead.id, { subject, body: updated });
-    updateOutreachStatus(lead.id, "Meeting Suggested");
-    addActivity(lead.id, "meeting_scheduled", `Meeting proposal added: ${MEETING_OPTIONS.find((m) => m.id === type)?.shortLabel}`);
-    if (composerStep === "approved") setComposerStep("draft");
-    setOutreachStatus("Meeting Suggested");
+    setSendError(null);
+    try {
+      await saveOutreachDraftToDb(lead.id, { subject, body: updated }, "Drafted");
+      await updateOutreachStatus(lead.id, "Meeting Suggested");
+      addActivity(lead.id, "meeting_scheduled", `Meeting proposal added: ${MEETING_OPTIONS.find((m) => m.id === type)?.shortLabel}`);
+      if (composerStep === "approved") setComposerStep("draft");
+      setOutreachStatus("Meeting Suggested");
+    } catch {
+      setSendError("Could not save the meeting proposal to the database.");
+    }
   }
 
   function handleSimulateOpened() {
@@ -273,8 +289,9 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
       return;
     }
     setSendError(null);
-    simulateWebhookEvent(lead, "email_opened");
-    setOutreachStatus(getOutreachStatus(lead.id));
+    simulateWebhookEvent(lead, "email_opened").then(async () => {
+      setOutreachStatus(await getOutreachStatusFromDb(lead.id));
+    }).catch(() => setSendError("Could not save opened event to the database."));
   }
 
   function handleSimulateReply() {
@@ -285,13 +302,18 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
     setSendError(null);
     const replyBody = `Hi ${LEADLENS_BRAND.senderLabel},\n\nThank you for reaching out about vehicle branding for ${lead.businessName}. We're interested in vehicle wraps and would like to schedule a call to discuss options.\n\nCould we find a time next week?\n\nBest regards,\n${lead.contact.name}\n${lead.contact.role}`;
 
-    simulateWebhookEvent(lead, "customer_replied");
-    addSimulatedCustomerReply(lead.id, {
-      author: `${lead.contact.name} · ${lead.businessName}`,
-      body: replyBody,
-    });
-    setMessages(getConversationMessages(lead.id));
-    setOutreachStatus(getOutreachStatus(lead.id));
+    simulateWebhookEvent(lead, "customer_replied")
+      .then(() =>
+        addSimulatedCustomerReply(lead.id, {
+          author: `${lead.contact.name} · ${lead.businessName}`,
+          body: replyBody,
+        })
+      )
+      .then(async () => {
+        setMessages(await getConversationMessagesFromDb(lead.id));
+        setOutreachStatus(await getOutreachStatusFromDb(lead.id));
+      })
+      .catch(() => setSendError("Could not save simulated reply to the database."));
   }
 
   if (!hasMounted) {
@@ -347,6 +369,11 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
         {resendReady && (
           <p className="mt-3 text-xs text-slate-400">
             Sending from {fromEmail ?? "your connected account"}
+          </p>
+        )}
+        {generateSuccess && (
+          <p className="mt-3 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-300">
+            Outreach draft generated and saved to the database.
           </p>
         )}
       </div>
@@ -492,6 +519,17 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
               Includes customer response links: Request a Call · Choose Meeting
               Time · Not Interested
             </p>
+
+            {followUp && (
+              <div className="mt-4 rounded-lg border border-saas-border bg-white/5 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
+                  Optional follow-up generated
+                </p>
+                <pre className="mt-2 whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-300">
+                  {followUp}
+                </pre>
+              </div>
+            )}
 
             {isEditable && (
               <div className="mt-4">

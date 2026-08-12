@@ -24,23 +24,23 @@ function notify(type: Parameters<typeof createNotification>[0], message: string)
   );
 }
 
-export function processEmailSent(
+export async function processEmailSent(
   leadId: string,
   recipient: string
-): void {
-  updateOutreachStatus(leadId, "Sent");
+): Promise<void> {
+  await updateOutreachStatus(leadId, "Sent");
   addActivity(leadId, "email_sent", "Email sent");
-  updateCrmStatus(leadId, "Contacted");
+  await updateCrmStatus(leadId, "Contacted");
   addActivity(leadId, "crm_contacted", "Opportunity status moved to Contacted");
 
   notify("email_sent", `Email delivered to ${recipient} via Resend.`);
   notify("crm_updated", "Opportunity status updated to Contacted");
 }
 
-export function simulateWebhookEvent(
+export async function simulateWebhookEvent(
   lead: Lead,
   event: WebhookEvent
-): { ok: true } | { ok: false; reason: string } {
+): Promise<{ ok: true } | { ok: false; reason: string }> {
   if (!hasOutreachBeenSent(lead.id)) {
     return {
       ok: false,
@@ -52,16 +52,16 @@ export function simulateWebhookEvent(
 
   switch (event) {
     case "email_opened": {
-      updateOutreachStatus(lead.id, "Opened");
+      await updateOutreachStatus(lead.id, "Opened");
       addActivity(lead.id, "email_opened", "Email opened");
       notify("email_opened", `${name} opened your email (Resend webhook).`);
       return { ok: true };
     }
 
     case "customer_replied": {
-      updateOutreachStatus(lead.id, "Replied");
+      await updateOutreachStatus(lead.id, "Replied");
       addActivity(lead.id, "email_replied", "Customer replied");
-      updateCrmStatus(lead.id, "Responded");
+      await updateCrmStatus(lead.id, "Responded");
       addActivity(lead.id, "crm_responded", "Opportunity status moved to Responded");
       notify(
         "email_replied",
@@ -73,7 +73,7 @@ export function simulateWebhookEvent(
 
     case "meeting_accepted": {
       const slot = getMeetingSlotOptions()[0];
-      completeMeetingSchedule(lead, {
+      await completeMeetingSchedule(lead, {
         slot: {
           label: slot?.label ?? "Discovery Call",
           scheduledAt: slot?.scheduledAt ?? new Date().toISOString(),
@@ -84,9 +84,9 @@ export function simulateWebhookEvent(
     }
 
     case "meeting_declined": {
-      updateOutreachStatus(lead.id, "Meeting Declined");
+      await updateOutreachStatus(lead.id, "Meeting Declined");
       addActivity(lead.id, "meeting_declined", "Meeting declined");
-      updateCrmStatus(lead.id, "Lost");
+      await updateCrmStatus(lead.id, "Lost");
       addActivity(lead.id, "crm_lost", "Opportunity status moved to Lost");
       notify(
         "crm_updated",
@@ -96,9 +96,9 @@ export function simulateWebhookEvent(
     }
 
     case "email_bounced": {
-      updateOutreachStatus(lead.id, "Bounced");
+      await updateOutreachStatus(lead.id, "Bounced");
       addActivity(lead.id, "email_bounced", "Email bounced");
-      updateCrmStatus(lead.id, "Lost");
+      await updateCrmStatus(lead.id, "Lost");
       addActivity(lead.id, "crm_lost", "Opportunity status moved to Lost");
       notify(
         "crm_updated",

@@ -5,7 +5,6 @@ import type { CRMStatus } from "@/lib/types";
 import { CRM_STATUSES, CRM_STATUS_STYLES } from "@/lib/crm";
 import {
   CRM_UPDATED_EVENT,
-  getCrmOverride,
   updateCrmStatus,
   addActivity,
 } from "@/lib/crm-store";
@@ -19,13 +18,13 @@ export default function CRMStatusTracker({
   leadId: string;
   initialStatus: CRMStatus;
 }) {
-  const [status, setStatus] = useState<CRMStatus>(
-    () => getCrmOverride(leadId) ?? initialStatus
-  );
+  const [status, setStatus] = useState<CRMStatus>(initialStatus);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   useEffect(() => {
     const timeout = window.setTimeout(() => {
-      setStatus(getCrmOverride(leadId) ?? initialStatus);
+      setStatus(initialStatus);
     }, 0);
     return () => window.clearTimeout(timeout);
   }, [leadId, initialStatus]);
@@ -36,27 +35,34 @@ export default function CRMStatusTracker({
         .detail;
       if (detail?.leadId === leadId && detail.status) {
         setStatus(detail.status);
-      } else if (detail?.leadId === leadId) {
-        const saved = getCrmOverride(leadId);
-        if (saved) setStatus(saved);
       }
     }
     window.addEventListener(CRM_UPDATED_EVENT, onUpdate);
     return () => window.removeEventListener(CRM_UPDATED_EVENT, onUpdate);
   }, [leadId]);
 
-  function handleChange(next: CRMStatus) {
-    updateCrmStatus(leadId, next);
-    addActivity(leadId, "crm_manual_update", `Opportunity status changed to ${next}`);
+  async function handleChange(next: CRMStatus) {
+    const previous = status;
+    setIsSaving(true);
+    setSaveError(null);
     setStatus(next);
-    window.dispatchEvent(
-      new CustomEvent("leadlens-notification", {
-        detail: createNotification(
-          "crm_updated",
-          `Opportunity status changed to ${next}.`
-        ),
-      })
-    );
+    try {
+      await updateCrmStatus(leadId, next);
+      addActivity(leadId, "crm_manual_update", `Opportunity status changed to ${next}`);
+      window.dispatchEvent(
+        new CustomEvent("leadlens-notification", {
+          detail: createNotification(
+            "crm_updated",
+            `Opportunity status changed to ${next}.`
+          ),
+        })
+      );
+    } catch {
+      setStatus(previous);
+      setSaveError("Could not save status to the database. Please try again.");
+    } finally {
+      setIsSaving(false);
+    }
   }
 
   const currentIndex = CRM_STATUSES.indexOf(status);
@@ -80,6 +86,7 @@ export default function CRMStatusTracker({
             <button
               key={s}
               onClick={() => handleChange(s)}
+              disabled={isSaving}
               className={`rounded-lg px-3 py-2 text-xs font-medium transition-all ${
                 isActive
                   ? `${style.bg} ${style.text} ring-2 ring-offset-1 ${style.ring}`
@@ -103,8 +110,13 @@ export default function CRMStatusTracker({
         />
       </div>
       <p className="mt-2 text-xs text-slate-400">
-        Click a status to update the opportunity stage. Changes are saved locally.
+        {isSaving
+          ? "Saving opportunity status to database..."
+          : "Click a status to update the opportunity stage. Changes are saved to Supabase."}
       </p>
+      {saveError && (
+        <p className="mt-2 text-xs font-medium text-red-400">{saveError}</p>
+      )}
     </div>
   );
 }

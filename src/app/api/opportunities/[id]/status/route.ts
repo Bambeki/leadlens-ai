@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { CRMStatus } from "@/lib/types";
-import { updateOpportunityStatus } from "@/lib/opportunity-db";
+import { listOpportunityActivity, updateOpportunityStatus } from "@/lib/opportunity-db";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +31,15 @@ export async function PATCH(
   }
 
   return NextResponse.json({ opportunity });
+}
+
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params;
+  const activity = await listOpportunityActivity(id);
+  return NextResponse.json({ activity });
 }
 
 export async function POST(

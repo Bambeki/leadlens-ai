@@ -1,5 +1,8 @@
 import { uniqueId } from "./unique-id";
-import { saveOutreachMessageToApi } from "./opportunity-api";
+import {
+  fetchOutreachMessagesFromApi,
+  saveOutreachMessageToApi,
+} from "./opportunity-api";
 
 export type ConversationMessageDirection = "outbound" | "inbound";
 
@@ -30,6 +33,18 @@ export function getConversationMessages(leadId: string): ConversationMessage[] {
   }
 }
 
+export async function getConversationMessagesFromDb(
+  leadId: string
+): Promise<ConversationMessage[]> {
+  try {
+    const messages = await fetchOutreachMessagesFromApi(leadId);
+    saveMessages(leadId, messages);
+    return messages;
+  } catch {
+    return getConversationMessages(leadId);
+  }
+}
+
 function saveMessages(leadId: string, messages: ConversationMessage[]): void {
   if (!isBrowser()) return;
   localStorage.setItem(CONVERSATION_KEY(leadId), JSON.stringify(messages));
@@ -44,7 +59,7 @@ export function addConversationMessage(
     id?: string;
     timestamp?: string;
   }
-): ConversationMessage {
+): Promise<ConversationMessage> {
   const entry: ConversationMessage = {
     id: message.id ?? uniqueId("msg-"),
     timestamp: message.timestamp ?? new Date().toISOString(),
@@ -55,21 +70,20 @@ export function addConversationMessage(
     messageId: message.messageId,
   };
 
-  if (!isBrowser()) return entry;
+  if (!isBrowser()) return Promise.resolve(entry);
 
-  const existing = getConversationMessages(leadId);
-  saveMessages(leadId, [...existing, entry]);
-  saveOutreachMessageToApi(leadId, {
+  return saveOutreachMessageToApi(leadId, {
     direction: entry.direction,
     subject: entry.subject,
     body: entry.body,
     providerMessageId: entry.messageId,
     statusText: entry.direction === "outbound" ? "Sent" : "Received",
     sentAt: entry.timestamp,
-  }).catch(() => {
-    // TODO: Surface database sync errors once app-level error handling exists.
+  }).then(() => {
+    const existing = getConversationMessages(leadId);
+    saveMessages(leadId, [...existing, entry]);
+    return entry;
   });
-  return entry;
 }
 
 export function addOutboundSentMessage(
@@ -80,7 +94,7 @@ export function addOutboundSentMessage(
     author: string;
     messageId?: string;
   }
-): ConversationMessage {
+): Promise<ConversationMessage> {
   return addConversationMessage(leadId, {
     direction: "outbound",
     subject: payload.subject,
@@ -93,7 +107,7 @@ export function addOutboundSentMessage(
 export function addSimulatedCustomerReply(
   leadId: string,
   payload: { author: string; body: string }
-): ConversationMessage {
+): Promise<ConversationMessage> {
   return addConversationMessage(leadId, {
     direction: "inbound",
     body: payload.body,
