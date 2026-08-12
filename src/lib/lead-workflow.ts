@@ -79,6 +79,7 @@ export function completeMeetingSchedule(
   );
   return saveScheduledMeeting(meeting).then(async (saved) => {
     await updateOutreachStatus(lead.id, "Meeting Scheduled");
+    await updateCrmStatus(lead.id, "Meeting Scheduled");
 
     if (options.source === "customer") {
       addActivity(lead.id, "meeting_scheduled", "Customer selected meeting time");

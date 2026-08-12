@@ -41,10 +41,23 @@ export default function ActivityTimeline({ leadId }: { leadId: string }) {
 
   useEffect(() => {
     if (!hasMounted) return;
-    const load = async () => setEvents(await getActivityTimelineFromDb(leadId));
-    load();
-    window.addEventListener(CRM_UPDATED_EVENT, load);
-    return () => window.removeEventListener(CRM_UPDATED_EVENT, load);
+    let isCurrent = true;
+    let loadQueue = Promise.resolve();
+
+    const load = async () => {
+      const timeline = await getActivityTimelineFromDb(leadId);
+      if (isCurrent) setEvents(timeline);
+    };
+    const queueLoad = () => {
+      loadQueue = loadQueue.catch(() => {}).then(load).catch(() => {});
+    };
+
+    queueLoad();
+    window.addEventListener(CRM_UPDATED_EVENT, queueLoad);
+    return () => {
+      isCurrent = false;
+      window.removeEventListener(CRM_UPDATED_EVENT, queueLoad);
+    };
   }, [leadId, hasMounted]);
 
   if (!hasMounted) {

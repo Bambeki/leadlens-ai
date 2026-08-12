@@ -21,21 +21,31 @@ export default function UpcomingMeetingsWidget() {
 
   useEffect(() => {
     if (!hasMounted) return;
+    let isCurrent = true;
+    let loadQueue = Promise.resolve();
+
     const load = async () => {
       try {
         const upcoming = await getUpcomingMeetingsFromDb();
+        if (!isCurrent) return;
         setMeetings(upcoming);
       } catch {
+        if (!isCurrent) return;
         setMeetings([]);
       }
     };
-    load();
-    window.addEventListener(MEETINGS_UPDATED_EVENT, load);
-    window.addEventListener(CRM_UPDATED_EVENT, load);
+    const queueLoad = () => {
+      loadQueue = loadQueue.catch(() => {}).then(load).catch(() => {});
+    };
+
+    queueLoad();
+    window.addEventListener(MEETINGS_UPDATED_EVENT, queueLoad);
+    window.addEventListener(CRM_UPDATED_EVENT, queueLoad);
     const interval = setInterval(() => setTick((t) => t + 1), 60_000);
     return () => {
-      window.removeEventListener(MEETINGS_UPDATED_EVENT, load);
-      window.removeEventListener(CRM_UPDATED_EVENT, load);
+      isCurrent = false;
+      window.removeEventListener(MEETINGS_UPDATED_EVENT, queueLoad);
+      window.removeEventListener(CRM_UPDATED_EVENT, queueLoad);
       clearInterval(interval);
     };
   }, [hasMounted]);

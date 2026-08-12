@@ -93,14 +93,25 @@ export default function LeadProcessTracker({ leadId }: { leadId: string }) {
 
   useEffect(() => {
     if (!hasMounted) return;
+    let isCurrent = true;
+    let refreshQueue = Promise.resolve();
+
     syncMeetingWorkflowState(leadId);
-    const refresh = async () => setState(await getLeadWorkflowStateFromDb(leadId));
-    refresh();
-    window.addEventListener(CRM_UPDATED_EVENT, refresh);
-    window.addEventListener(MEETINGS_UPDATED_EVENT, refresh);
+    const refresh = async () => {
+      const workflowState = await getLeadWorkflowStateFromDb(leadId);
+      if (isCurrent) setState(workflowState);
+    };
+    const queueRefresh = () => {
+      refreshQueue = refreshQueue.catch(() => {}).then(refresh).catch(() => {});
+    };
+
+    queueRefresh();
+    window.addEventListener(CRM_UPDATED_EVENT, queueRefresh);
+    window.addEventListener(MEETINGS_UPDATED_EVENT, queueRefresh);
     return () => {
-      window.removeEventListener(CRM_UPDATED_EVENT, refresh);
-      window.removeEventListener(MEETINGS_UPDATED_EVENT, refresh);
+      isCurrent = false;
+      window.removeEventListener(CRM_UPDATED_EVENT, queueRefresh);
+      window.removeEventListener(MEETINGS_UPDATED_EVENT, queueRefresh);
     };
   }, [leadId, hasMounted]);
 

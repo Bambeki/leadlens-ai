@@ -5,7 +5,7 @@ import type { Lead } from "@/lib/types";
 import {
   CRM_UPDATED_EVENT,
   hasOutreachBeenSent,
-  getOutreachStatus,
+  getOutreachStatusFromDb,
   type OutreachStatus,
 } from "@/lib/crm-store";
 import {
@@ -67,13 +67,25 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
   const [lastEvent, setLastEvent] = useState<string | null>(null);
 
   useEffect(() => {
-    function refresh() {
+    let isCurrent = true;
+    let refreshQueue = Promise.resolve();
+
+    async function refresh() {
+      const status = await getOutreachStatusFromDb(lead.id);
+      if (!isCurrent) return;
       setCanSimulate(hasOutreachBeenSent(lead.id));
-      setOutreachStatus(getOutreachStatus(lead.id));
+      setOutreachStatus(status);
     }
-    refresh();
-    window.addEventListener(CRM_UPDATED_EVENT, refresh);
-    return () => window.removeEventListener(CRM_UPDATED_EVENT, refresh);
+    const queueRefresh = () => {
+      refreshQueue = refreshQueue.catch(() => {}).then(refresh).catch(() => {});
+    };
+
+    queueRefresh();
+    window.addEventListener(CRM_UPDATED_EVENT, queueRefresh);
+    return () => {
+      isCurrent = false;
+      window.removeEventListener(CRM_UPDATED_EVENT, queueRefresh);
+    };
   }, [lead.id]);
 
   async function handleSimulate(event: WebhookEvent) {
@@ -85,7 +97,7 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
         return;
       }
       setLastEvent(event);
-      setOutreachStatus(getOutreachStatus(lead.id));
+      setOutreachStatus(await getOutreachStatusFromDb(lead.id));
     } catch {
       setError("Could not save webhook event to the database.");
     }
