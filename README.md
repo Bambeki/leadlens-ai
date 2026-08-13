@@ -1,21 +1,35 @@
 # LeadLens AI
 
-Customer Opportunity Discovery Platform for vehicle branding companies.
+Lead intelligence and sales workflow platform for discovering, evaluating and managing business opportunities.
+
+LeadLens AI is intended as a broader intelligent lead discovery, qualification, outreach, and CRM workflow platform. The product vision is to help businesses discover potential leads, organize relevant lead information, analyze opportunities, score and prioritize prospects, prepare personalized outreach, track communication and responses, manage meetings, and move opportunities through a sales pipeline.
+
+## Current Prototype Use Case
+
+The current prototype demonstrates LeadLens through branding and vehicle-branding opportunities, providing a focused environment for testing opportunity discovery, analysis, scoring, outreach, and CRM workflows. The underlying product vision extends beyond this initial use case to broader lead-intelligence applications.
 
 ## Features
 
-- **Customer Opportunity Dashboard** — Review imported customer opportunities and analysis status
-- **Opportunity Details** — Score breakdown, source evidence, contact context, and recommended next steps
-- **Evidence & Sources** — Show source names, source types, URLs, evidence summaries, collection dates, and confidence scores
-- **AI Outreach Generator** — Prepare personalized outreach for each customer opportunity
-- **Vehicle Branding Audit** — Review image-based vehicle branding signals
-- **Landing Page** — Product positioning, key features, and pilot-ready calls to action
+- **Lead Discovery & Import** — Run a prototype discovery flow by city, radius, and business category, then import selected businesses into the opportunity pipeline
+- **Opportunity Dashboard** — Review, search, filter, sort, and prioritize imported customer opportunities
+- **Opportunity Details** — Inspect score breakdowns, source evidence, contact context, opportunity insights, and recommended next steps
+- **Evidence & Source Tracking** — Store source names, source types, URLs, evidence summaries, collection dates, and confidence scores
+- **Personalized Outreach Generation** — Generate and save outreach drafts using the configured company profile, with optional OpenAI generation and a deterministic fallback
+- **Email Sending & Conversation History** — Send outreach through Resend when configured and track outbound, inbound, and simulated response events
+- **CRM Status & Workflow Management** — Move opportunities through CRM stages, record status history, and keep outreach, meeting, and activity state in sync
+- **Meeting Workflow** — Suggest meeting times, save scheduled meetings, show upcoming meetings, and update opportunity status when meetings are accepted or scheduled
+- **Vehicle-Branding Analysis** — Demonstrate the current specialized use case with prototype image-based vehicle-branding audit outputs
 
 ## Tech Stack
 
-- Next.js 16 (App Router)
-- TypeScript
-- Tailwind CSS v4
+- **Next.js 16** with the App Router and API routes
+- **React 19** and **TypeScript 5**
+- **Tailwind CSS v4** with `@tailwindcss/postcss`
+- **Prisma 7** with `@prisma/client` and `@prisma/adapter-pg`
+- **PostgreSQL** via the `pg` driver
+- **Resend** for configured email delivery
+- **OpenAI Chat Completions API** through server-side `fetch` when `OPENAI_API_KEY` is configured, with a local fallback generator
+- **ESLint 9** with `eslint-config-next`
 
 ## Getting Started
 
@@ -46,16 +60,16 @@ src/
 ├── app/
 │   ├── page.tsx              # Landing page
 │   └── (app)/
-│       ├── dashboard/        # Customer opportunity dashboard
+│       ├── dashboard/        # Opportunity dashboard
 │       ├── leads/[id]/       # Opportunity detail page
 │       └── analyzer/         # Vehicle branding audit
 ├── components/               # UI components
 └── lib/
-    ├── base-data.ts          # Empty baseline data until customers are imported
+    ├── base-data.ts          # Empty baseline data until opportunities are imported
     ├── scoring.ts            # Scoring model
-    ├── outreach.ts           # Email generator
+    ├── outreach.ts           # Outreach generator fallback
     └── analyzer.ts           # Vehicle branding analysis helpers
 ```
 
-Customer records are imported by the user and stored locally until a database is connected.
+Imported records are saved through API routes to PostgreSQL via Prisma, with browser storage used as a prototype fallback/cache for some client-side flows.
 
