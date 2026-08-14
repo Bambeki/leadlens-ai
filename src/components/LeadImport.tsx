@@ -76,6 +76,7 @@ export default function LeadImport() {
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [searchLabel, setSearchLabel] = useState("");
   const [importedCount, setImportedCount] = useState(0);
+  const [suppressedCount, setSuppressedCount] = useState(0);
   const [error, setError] = useState("");
   const [saveError, setSaveError] = useState("");
   const [scrapeProgress, setScrapeProgress] = useState("");
@@ -215,25 +216,34 @@ export default function LeadImport() {
       advancedMode && keyword.trim() ? keyword.trim() : "Multi-category discovery";
 
     try {
-      const existing = await fetchOpportunitiesFromApi();
+      const existing = await fetchOpportunitiesFromApi("all");
       const imported = buildLeadsForImport(toImport, existing);
       if (imported.length === 0) {
         setImportedCount(0);
+        setSuppressedCount(0);
         setStep("imported");
         return;
       }
 
       const saved = await saveOpportunitiesToApi(imported);
-      saveOpportunityCache([...saved, ...existing.filter((lead) => !saved.some((item) => item.id === lead.id))]);
-      recordImportSession(label, city, toImport.length, saved.length);
-      setImportedCount(saved.length);
+      const active = saved.imported;
+      const existingActive = existing.filter(
+        (lead) => !lead.archivedAt && !lead.doNotContact
+      );
+      saveOpportunityCache([
+        ...active,
+        ...existingActive.filter((lead) => !active.some((item) => item.id === lead.id)),
+      ]);
+      recordImportSession(label, city, toImport.length, active.length);
+      setImportedCount(active.length);
+      setSuppressedCount(saved.suppressed.length);
       setStep("imported");
 
       window.dispatchEvent(
         new CustomEvent("leadlens-notification", {
           detail: createNotification(
             "crm_updated",
-            `${saved.length} businesses imported to pipeline from ${city}.`
+            `${active.length} businesses imported to pipeline from ${city}.`
           ),
         })
       );
@@ -254,6 +264,7 @@ export default function LeadImport() {
     setError("");
     setSaveError("");
     setSearchLabel("");
+    setSuppressedCount(0);
   }
 
   const currentIdx = stepIndex(step);
@@ -705,6 +716,13 @@ export default function LeadImport() {
             Businesses from {searchLabel} near {city} are now in your LeadLens
             pipeline — scored, enriched, and ready for evidence review.
           </p>
+          {suppressedCount > 0 && (
+            <p className="mx-auto mt-4 max-w-2xl rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm font-medium text-amber-200">
+              {suppressedCount} previously opted out or archived{" "}
+              {suppressedCount === 1 ? "business was" : "businesses were"} not
+              reactivated (Do Not Contact / archived). Review them from Archived.
+            </p>
+          )}
           {saveError && (
             <p className="mx-auto mt-4 max-w-2xl rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm font-medium text-red-300">
               {saveError}

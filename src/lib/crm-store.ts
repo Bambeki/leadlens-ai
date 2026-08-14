@@ -38,7 +38,10 @@ export type ActivityType =
   | "email_bounced"
   | "crm_meeting_scheduled"
   | "crm_lost"
-  | "crm_manual_update";
+  | "crm_manual_update"
+  | "opportunity_archived"
+  | "opportunity_restored"
+  | "opportunity_opted_out";
 
 export const SENT_OUTREACH_STATUSES: OutreachStatus[] = [
   "Sent",

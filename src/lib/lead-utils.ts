@@ -14,6 +14,12 @@ export type SortField =
 
 export type SortDirection = "asc" | "desc";
 
+export function isExcludedFromActivePipeline(
+  lead: Pick<Lead, "archivedAt" | "doNotContact">
+): boolean {
+  return Boolean(lead.archivedAt) || Boolean(lead.doNotContact);
+}
+
 export function getEstimatedRevenue(lead: Lead): number {
   return (lead.estimatedValue.min + lead.estimatedValue.max) / 2;
 }

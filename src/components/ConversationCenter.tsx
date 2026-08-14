@@ -14,6 +14,7 @@ import {
   getOutreachDraftFromDb,
   saveOutreachDraftToDb,
 } from "@/lib/email";
+import { prepareEmailPayload } from "@/lib/email-template";
 import { fetchSystemStatus } from "@/lib/system-status-client";
 import {
   CRM_UPDATED_EVENT,
@@ -175,7 +176,15 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
   const isEditable = composerStep !== "sent";
   const isComposerLocked = composerStep === "sent";
   const recipient = useTestEmail ? testEmail.trim() : lead.contact.email;
-  const canSend = resendReady && !isComposerLocked;
+  const hasResponseToken =
+    typeof lead.publicResponseToken === "string" &&
+    /^[A-Za-z0-9_-]{32,64}$/.test(lead.publicResponseToken);
+  const canSend =
+    resendReady &&
+    !isComposerLocked &&
+    !lead.doNotContact &&
+    !lead.archivedAt &&
+    hasResponseToken;
 
   async function handleAiAssist(action: OutreachAssistAction) {
     const actionConfig = AI_ACTIONS.find((item) => item.action === action);
@@ -285,16 +294,44 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
       return;
     }
 
+    if (lead.doNotContact || lead.archivedAt) {
+      setSendError(
+        lead.doNotContact
+          ? "This opportunity is marked Do Not Contact. Restore it before sending outreach."
+          : "This opportunity is archived. Restore it before sending outreach."
+      );
+      return;
+    }
+
+    if (
+      typeof lead.publicResponseToken !== "string" ||
+      !/^[A-Za-z0-9_-]{32,64}$/.test(lead.publicResponseToken)
+    ) {
+      setSendError(
+        "A secure customer response link is not available. Refresh this opportunity from the database and try again."
+      );
+      return;
+    }
+
     saveTestEmail(testEmail);
     setIsSending(true);
     setSendError(null);
     setSendSuccess(null);
 
-    const result = await sendEmailViaApi({
-      to: recipient,
+    const prepared = prepareEmailPayload({
       subject: subject.trim(),
       body: body.trim(),
+      leadId: lead.publicResponseToken,
+      baseUrl: window.location.origin,
+    });
+
+    const result = await sendEmailViaApi({
+      to: recipient,
+      subject: prepared.subject,
+      body: prepared.body,
+      html: prepared.html,
       leadName: lead.businessName,
+      opportunityId: lead.id,
     });
 
     if (!result.success) {
@@ -305,8 +342,8 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
 
     try {
       await addOutboundSentMessage(lead.id, {
-        subject: subject.trim(),
-        body: body.trim(),
+        subject: prepared.subject,
+        body: prepared.body,
         author: SENDER_NAME,
         messageId: result.messageId,
       });
@@ -436,6 +473,19 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
             <p>Sending from {fromEmail ?? "your connected account"}</p>
             <p>Open tracking not configured. Inbound reply integration not configured.</p>
           </div>
+        )}
+        {(lead.doNotContact || lead.archivedAt) && (
+          <p className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-300">
+            {lead.doNotContact
+              ? "Do Not Contact: outreach is blocked until an authorized user restores this opportunity."
+              : "Archived: restore this opportunity before sending outreach."}
+          </p>
+        )}
+        {!lead.doNotContact && !lead.archivedAt && !hasResponseToken && (
+          <p className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-300">
+            A secure customer response link is not available. Refresh this
+            opportunity from the database before sending outreach.
+          </p>
         )}
         {generateSuccess && (
           <p className="mt-3 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-300">

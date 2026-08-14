@@ -1,10 +1,77 @@
 import { Resend } from "resend";
 import { NextResponse } from "next/server";
+import { outreachBlockedResponse } from "@/lib/api-diagnostics";
+import {
+  assertOpportunityAllowsOutreach,
+} from "@/lib/opportunity-db";
+import { emailIncludesPublicResponseLink } from "@/lib/opportunity-lifecycle";
 import { getEnvValue, getReplyToEmail, getSystemStatus } from "@/lib/system-status";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
+  let body: {
+    to?: string;
+    subject?: string;
+    body?: string;
+    html?: string;
+    leadName?: string;
+    opportunityId?: string;
+  };
+
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+  }
+
+  const { to, subject, body: text, html, opportunityId } = body;
+
+  if (!opportunityId || typeof opportunityId !== "string") {
+    return NextResponse.json(
+      { error: "opportunityId is required to send outreach." },
+      { status: 400 }
+    );
+  }
+
+  let responseToken: string;
+  try {
+    responseToken = await assertOpportunityAllowsOutreach(opportunityId);
+  } catch (error) {
+    return (
+      outreachBlockedResponse(error) ??
+      NextResponse.json(
+        {
+          error:
+            "A secure customer response link could not be loaded. Refresh this opportunity from the database and try again.",
+        },
+        { status: 503 }
+      )
+    );
+  }
+
+  if (!to || !subject || !text) {
+    return NextResponse.json(
+      { error: "Missing required fields: to, subject, body" },
+      { status: 400 }
+    );
+  }
+
+  if (!emailIncludesPublicResponseLink(responseToken, text, html)) {
+    return NextResponse.json(
+      {
+        error:
+          "Outreach must include the secure customer response link before sending. Refresh this opportunity from the database and try again.",
+      },
+      { status: 409 }
+    );
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(to)) {
+    return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+  }
+
   const status = getSystemStatus();
   const apiKey = getEnvValue("RESEND_API_KEY");
   const fromEmail =
@@ -19,34 +86,6 @@ export async function POST(request: Request) {
       },
       { status: 503 }
     );
-  }
-
-  let body: {
-    to?: string;
-    subject?: string;
-    body?: string;
-    html?: string;
-    leadName?: string;
-  };
-
-  try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
-  }
-
-  const { to, subject, body: text, html } = body;
-
-  if (!to || !subject || !text) {
-    return NextResponse.json(
-      { error: "Missing required fields: to, subject, body" },
-      { status: 400 }
-    );
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(to)) {
-    return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
   }
 
   const resend = new Resend(apiKey);

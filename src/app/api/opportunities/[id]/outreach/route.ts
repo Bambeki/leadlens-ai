@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { databaseUnavailableResponse } from "@/lib/api-diagnostics";
+import {
+  databaseUnavailableResponse,
+  outreachBlockedResponse,
+} from "@/lib/api-diagnostics";
 import { createOutreachMessage, listOutreachMessages } from "@/lib/opportunity-db";
 
 export const dynamic = "force-dynamic";
@@ -41,6 +44,9 @@ export async function POST(
       { status: 201 }
     );
   } catch (error) {
-    return databaseUnavailableResponse("save outreach message", error);
+    return (
+      outreachBlockedResponse(error) ??
+      databaseUnavailableResponse("save outreach message", error)
+    );
   }
 }

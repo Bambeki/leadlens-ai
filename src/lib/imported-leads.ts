@@ -75,25 +75,36 @@ export function recordImportSession(
   });
 }
 
+function leadNameKey(lead: Pick<Lead, "businessName" | "city">): string {
+  return `${lead.businessName.toLowerCase()}-${lead.city.toLowerCase()}`;
+}
+
+function isActivePipelineLead(lead: Lead): boolean {
+  return !lead.archivedAt && !lead.doNotContact;
+}
+
 export function buildLeadsForImport(
   businesses: ScrapedBusiness[],
   existingLeads: Lead[] = []
 ): Lead[] {
-  const existingIds = new Set(existingLeads.map((l) => l.id));
-  const existingNames = new Set(
-    existingLeads.map((l) => `${l.businessName.toLowerCase()}-${l.city.toLowerCase()}`)
+  const existingById = new Map(existingLeads.map((lead) => [lead.id, lead]));
+  const existingByName = new Map(
+    existingLeads.map((lead) => [leadNameKey(lead), lead])
   );
-
+  const seenIds = new Set<string>();
+  const seenNames = new Set<string>();
   const newLeads: Lead[] = [];
 
   for (const biz of businesses) {
     const nameKey = `${biz.businessName.toLowerCase()}-${biz.city.toLowerCase()}`;
-    if (existingIds.has(biz.id) || existingNames.has(nameKey)) continue;
+    const match = existingById.get(biz.id) ?? existingByName.get(nameKey);
+    if (match && isActivePipelineLead(match)) continue;
+    if (seenIds.has(biz.id) || seenNames.has(nameKey)) continue;
 
     const lead = buildLeadFromScraped(biz);
     newLeads.push(lead);
-    existingIds.add(lead.id);
-    existingNames.add(nameKey);
+    seenIds.add(lead.id);
+    seenNames.add(nameKey);
   }
 
   return newLeads;

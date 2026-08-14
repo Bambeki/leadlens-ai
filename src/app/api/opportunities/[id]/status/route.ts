@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import type { CRMStatus } from "@/lib/types";
-import { databaseUnavailableResponse } from "@/lib/api-diagnostics";
+import {
+  databaseUnavailableResponse,
+  outreachBlockedResponse,
+} from "@/lib/api-diagnostics";
 import { listOpportunityActivity, updateOpportunityStatus } from "@/lib/opportunity-db";
 
 export const dynamic = "force-dynamic";
@@ -34,7 +37,10 @@ export async function PATCH(
 
     return NextResponse.json({ opportunity, persistence: "database" });
   } catch (error) {
-    return databaseUnavailableResponse("update opportunity status", error);
+    return (
+      outreachBlockedResponse(error) ??
+      databaseUnavailableResponse("update opportunity status", error)
+    );
   }
 }
 

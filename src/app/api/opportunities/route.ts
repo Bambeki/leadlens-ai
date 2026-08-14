@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type { Lead } from "@/lib/types";
 import { databaseUnavailableResponse } from "@/lib/api-diagnostics";
 import { listOpportunities, saveOpportunities, saveOpportunity } from "@/lib/opportunity-db";
+import { parseOpportunityListScope } from "@/lib/opportunity-lifecycle";
 
 export const dynamic = "force-dynamic";
 
@@ -16,10 +17,13 @@ function isLeadPayload(value: unknown): value is Lead {
   );
 }
 
-export async function GET() {
+export async function GET(request: Request) {
+  const scope = parseOpportunityListScope(
+    new URL(request.url).searchParams.get("scope")
+  );
   try {
-    const opportunities = await listOpportunities();
-    return NextResponse.json({ opportunities, persistence: "database" });
+    const opportunities = await listOpportunities(scope);
+    return NextResponse.json({ opportunities, scope, persistence: "database" });
   } catch (error) {
     return databaseUnavailableResponse("list opportunities", error);
   }
@@ -35,8 +39,15 @@ export async function POST(request: Request) {
     }
     try {
       const saved = await saveOpportunities(opportunities);
+      const suppressed = saved.filter((item) => item.importSuppressed);
+      const active = saved.filter((item) => !item.importSuppressed);
       return NextResponse.json(
-        { opportunities: saved, persistence: "database" },
+        {
+          opportunities: saved,
+          imported: active,
+          suppressed,
+          persistence: "database",
+        },
         { status: 201 }
       );
     } catch (error) {

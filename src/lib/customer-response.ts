@@ -15,18 +15,18 @@ export interface MeetingSlot {
   scheduledAt: string;
 }
 
-export function getCustomerResponsePaths(leadId: string) {
+export function getCustomerResponsePaths(token: string) {
   return {
-    interested: `/respond/${leadId}?action=interested`,
-    schedule: `/respond/${leadId}?action=schedule`,
-    declined: `/respond/${leadId}?action=declined`,
-    hub: `/respond/${leadId}`,
+    interested: `/r/${token}?action=interested`,
+    schedule: `/r/${token}?action=schedule`,
+    declined: `/r/${token}?action=not_interested`,
+    hub: `/r/${token}`,
   };
 }
 
 /** Relative paths by default; pass baseUrl (no trailing slash) for absolute links in emails. */
-export function getCustomerResponseUrls(leadId: string, baseUrl?: string) {
-  const paths = getCustomerResponsePaths(leadId);
+export function getCustomerResponseUrls(token: string, baseUrl?: string) {
+  const paths = getCustomerResponsePaths(token);
   if (!baseUrl) {
     return paths;
   }
@@ -137,8 +137,8 @@ export async function processCustomerMeetingScheduled(
   });
 }
 
-export function buildEmailCtaBlock(leadId: string, baseUrl?: string): string {
-  const urls = getCustomerResponseUrls(leadId, baseUrl);
+export function buildEmailCtaBlock(token: string, baseUrl?: string): string {
+  const urls = getCustomerResponseUrls(token, baseUrl);
   return `
 ──────────────────────────────
 Are you interested?
@@ -149,7 +149,7 @@ ${urls.interested}
 [Choose a Meeting Time]
 ${urls.schedule}
 
-[Not Interested]
+Not interested? Let us know here.
 ${urls.declined}
 ──────────────────────────────`;
 }

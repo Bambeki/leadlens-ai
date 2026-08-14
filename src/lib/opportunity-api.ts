@@ -1,4 +1,4 @@
-import type { CRMStatus, Lead } from "./types";
+import type { CRMStatus, Lead, OpportunityListScope } from "./types";
 import type { OutreachStatus, ActivityEvent } from "./crm-store";
 import type { ConversationMessage } from "./conversation-store";
 import type { OutreachDraft } from "./email";
@@ -41,13 +41,48 @@ function apiErrorMessage(data: unknown, fallback: string): string {
       : fallback;
 }
 
-export async function fetchOpportunitiesFromApi(): Promise<Lead[]> {
-  const res = await fetch("/api/opportunities", { cache: "no-store" });
+export async function fetchOpportunitiesFromApi(
+  scope: OpportunityListScope = "active"
+): Promise<Lead[]> {
+  const res = await fetch(`/api/opportunities?scope=${scope}`, { cache: "no-store" });
   const data = await readApiJson(res);
   if (!res.ok) {
     throw new Error(apiErrorMessage(data, "Failed to fetch opportunities"));
   }
   return Array.isArray(data.opportunities) ? (data.opportunities as Lead[]) : [];
+}
+
+export async function updateOpportunityLifecycleInApi(
+  opportunityId: string,
+  action: "archive" | "restore"
+): Promise<Lead> {
+  const id = encodeURIComponent(opportunityId);
+  const res = await fetch(`/api/opportunities/${id}/lifecycle`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action }),
+  });
+  const data = await readApiJson(res);
+  if (!res.ok) {
+    throw new Error(apiErrorMessage(data, "Failed to update opportunity"));
+  }
+  return (data as { opportunity: Lead }).opportunity;
+}
+
+export async function deleteOpportunityInApi(
+  opportunityId: string,
+  confirmName: string
+): Promise<void> {
+  const id = encodeURIComponent(opportunityId);
+  const res = await fetch(`/api/opportunities/${id}/lifecycle`, {
+    method: "DELETE",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ confirm: true, confirmName }),
+  });
+  const data = await readApiJson(res);
+  if (!res.ok) {
+    throw new Error(apiErrorMessage(data, "Failed to delete opportunity"));
+  }
 }
 
 export async function fetchOpportunityFromApi(
@@ -65,7 +100,13 @@ export async function fetchOpportunityFromApi(
   return (data as { opportunity?: Lead }).opportunity ?? null;
 }
 
-export async function saveOpportunitiesToApi(leads: Lead[]): Promise<Lead[]> {
+export type SaveOpportunitiesResult = {
+  opportunities: Lead[];
+  imported: Lead[];
+  suppressed: Lead[];
+};
+
+export async function saveOpportunitiesToApi(leads: Lead[]): Promise<SaveOpportunitiesResult> {
   const res = await fetch("/api/opportunities", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -75,7 +116,11 @@ export async function saveOpportunitiesToApi(leads: Lead[]): Promise<Lead[]> {
   if (!res.ok) {
     throw new Error(apiErrorMessage(data, "Failed to save opportunities"));
   }
-  return Array.isArray(data.opportunities) ? data.opportunities : [];
+  return {
+    opportunities: Array.isArray(data.opportunities) ? data.opportunities : [],
+    imported: Array.isArray(data.imported) ? data.imported : [],
+    suppressed: Array.isArray(data.suppressed) ? data.suppressed : [],
+  };
 }
 
 export async function updateOpportunityStatusInApi(

@@ -23,6 +23,9 @@ const TYPE_STYLES: Record<string, { dot: string; icon: string }> = {
   crm_meeting_scheduled: { dot: "bg-amber-600", icon: "◎" },
   crm_lost: { dot: "bg-red-600", icon: "◎" },
   crm_manual_update: { dot: "bg-slate-500", icon: "◎" },
+  opportunity_archived: { dot: "bg-slate-400", icon: "▣" },
+  opportunity_restored: { dot: "bg-emerald-500", icon: "↩" },
+  opportunity_opted_out: { dot: "bg-red-500", icon: "⊘" },
 };
 
 function formatTime(iso: string): string {

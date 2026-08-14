@@ -38,8 +38,8 @@ export default function DashboardClient({ baseLeads }: { baseLeads: Lead[] }) {
             view pipeline
           </Link>
           {" · "}
-          <Link href="/data-sources" className="font-medium text-violet-400 hover:text-violet-300">
-            data sources
+          <Link href="/archived" className="font-medium text-violet-400 hover:text-violet-300">
+            archived
           </Link>
         </p>
         {isFallback && (

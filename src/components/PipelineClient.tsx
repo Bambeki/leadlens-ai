@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import PipelineVisualization from "@/components/PipelineVisualization";
 import CrmFunnel from "@/components/CrmFunnel";
 import LeadsTable from "@/components/LeadsTable";
@@ -29,7 +30,10 @@ export default function PipelineClient({ baseLeads }: { baseLeads: Lead[] }) {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">Opportunity Pipeline</h1>
         <p className="mt-1 text-slate-400">
-          Track customer opportunities from discovery to conversation
+          Track customer opportunities from discovery to conversation ·{" "}
+          <Link href="/archived" className="font-medium text-violet-400 hover:text-violet-300">
+            view archived
+          </Link>
         </p>
         {isFallback && (
           <p className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-sm font-medium text-amber-300">

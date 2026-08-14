@@ -199,7 +199,8 @@ export function buildPlainTextEmail(options: HtmlEmailOptions): string {
 ──────────────────────────────
 ${ctaLines}
 
-Not interested? ${getCustomerResponseUrls(leadId, baseUrl).declined}
+Not interested? Let us know here.
+${getCustomerResponseUrls(leadId, baseUrl).declined}
 ──────────────────────────────`;
 }
 
@@ -294,7 +295,7 @@ export function buildHtmlEmail(options: HtmlEmailOptions): string {
             <td style="padding:0 32px 24px 32px;">
               ${ctaHtml}
               <p style="margin:8px 0 0 0;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:${BRAND.slate};">
-                <a href="${declinedUrl}" style="color:${BRAND.slate};text-decoration:underline;">Not interested</a>
+                <a href="${declinedUrl}" style="color:${BRAND.slate};text-decoration:underline;">Not interested? Let us know here.</a>
               </p>
             </td>
           </tr>

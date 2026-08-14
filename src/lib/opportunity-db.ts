@@ -11,12 +11,21 @@ import type {
   CRMStatus,
   EvidenceSource as LeadEvidenceSource,
   Lead,
+  OpportunityListScope,
+  OptOutReason,
   Priority,
 } from "./types";
 import type { ScheduledMeeting } from "./meetings";
 import type { ActivityEvent, ActivityType } from "./crm-store";
 import { prisma } from "./prisma";
 import { getPilotOrganization } from "./pilot-context";
+import {
+  generatePublicResponseToken,
+  isValidPublicResponseToken,
+  OutreachBlockedError,
+  type PublicCustomerAction,
+} from "./opportunity-lifecycle";
+import { getMeetingSlotOptions } from "./customer-response";
 
 const opportunityInclude = {
   evidenceSources: true,
@@ -177,7 +186,17 @@ function outreachToActivity(
   };
 }
 
-function toLead(opportunity: OpportunityWithRelations): Lead {
+function toLead(
+  opportunity: OpportunityWithRelations,
+  options: { includeToken?: boolean } = {}
+): Lead {
+  return toLeadWithOptions(opportunity, Boolean(options.includeToken));
+}
+
+function toLeadWithOptions(
+  opportunity: OpportunityWithRelations,
+  includeToken: boolean
+): Lead {
   const primaryContact = opportunity.contacts[0];
   const fallbackContact: LeadContact = {
     name: "Contact pending",
@@ -262,26 +281,80 @@ function toLead(opportunity: OpportunityWithRelations): Lead {
     imported: opportunity.imported,
     phone: opportunity.phone ?? undefined,
     website: opportunity.website ?? undefined,
+    archivedAt: opportunity.archivedAt?.toISOString() ?? null,
+    doNotContact: opportunity.doNotContact,
+    optOutReason:
+      opportunity.optOutReason === "unsubscribe" ||
+      opportunity.optOutReason === "not_interested"
+        ? opportunity.optOutReason
+        : null,
+    optOutAt: opportunity.optOutAt?.toISOString() ?? null,
+    optOutSource: opportunity.optOutSource ?? null,
+    publicResponseToken: includeToken
+      ? opportunity.publicResponseToken ?? undefined
+      : undefined,
   };
 }
 
-export async function listOpportunities(): Promise<Lead[]> {
+function listScopeWhere(scope: OpportunityListScope): Prisma.OpportunityWhereInput {
+  if (scope === "archived") {
+    return {
+      OR: [{ archivedAt: { not: null } }, { doNotContact: true }],
+    };
+  }
+  if (scope === "all") return {};
+  return { archivedAt: null, doNotContact: false };
+}
+
+function isLifecycleSuppressed(record: {
+  archivedAt: Date | null;
+  doNotContact: boolean;
+}): boolean {
+  return record.archivedAt != null || record.doNotContact;
+}
+
+async function ensureTokenOnRecord(
+  opportunity: OpportunityWithRelations
+): Promise<OpportunityWithRelations> {
+  if (opportunity.publicResponseToken) return opportunity;
+  try {
+    return await prisma.opportunity.update({
+      where: { id: opportunity.id },
+      data: { publicResponseToken: generatePublicResponseToken() },
+      include: opportunityInclude,
+    });
+  } catch (error) {
+    if (!isUniqueConstraintError(error)) throw error;
+    const retried = await prisma.opportunity.findFirst({
+      where: { id: opportunity.id },
+      include: opportunityInclude,
+    });
+    if (!retried) throw error;
+    return retried;
+  }
+}
+
+export async function listOpportunities(
+  scope: OpportunityListScope = "active"
+): Promise<Lead[]> {
   const organization = await getPilotOrganization();
   const opportunities = await prisma.opportunity.findMany({
-    where: { organizationId: organization.id },
+    where: { organizationId: organization.id, ...listScopeWhere(scope) },
     include: opportunityInclude,
     orderBy: [{ createdAt: "desc" }],
   });
-  return opportunities.map(toLead);
+  return opportunities.map((opportunity) => toLead(opportunity));
 }
 
 export async function getOpportunity(id: string): Promise<Lead | null> {
   const organization = await getPilotOrganization();
-  const opportunity = await prisma.opportunity.findFirst({
+  const found = await prisma.opportunity.findFirst({
     where: { id, organizationId: organization.id },
     include: opportunityInclude,
   });
-  return opportunity ? toLead(opportunity) : null;
+  if (!found) return null;
+  const opportunity = await ensureTokenOnRecord(found);
+  return toLead(opportunity, { includeToken: true });
 }
 
 export async function saveOpportunity(lead: Lead): Promise<Lead> {
@@ -314,6 +387,7 @@ export async function saveOpportunity(lead: Lead): Promise<Lead> {
   const createData = {
       id: lead.id,
       ...data,
+      publicResponseToken: generatePublicResponseToken(),
       evidenceSources: {
         create: lead.evidenceSources.map((source) => ({
           sourceName: source.sourceName,
@@ -360,12 +434,19 @@ export async function saveOpportunity(lead: Lead): Promise<Lead> {
 
   const existing = await findExisting();
   if (existing) {
+    if (isLifecycleSuppressed(existing)) {
+      return {
+        ...toLead(existing, { includeToken: true }),
+        importSuppressed: true,
+      };
+    }
+
     const opportunity = await prisma.opportunity.update({
       where: { id: existing.id },
       data,
       include: opportunityInclude,
     });
-    return toLead(opportunity);
+    return toLead(opportunity, { includeToken: true });
   }
 
   try {
@@ -373,19 +454,26 @@ export async function saveOpportunity(lead: Lead): Promise<Lead> {
       data: createData,
       include: opportunityInclude,
     });
-    return toLead(opportunity);
+    return toLead(opportunity, { includeToken: true });
   } catch (error) {
     if (!isUniqueConstraintError(error)) throw error;
 
     const raced = await findExisting();
     if (!raced) throw error;
 
+    if (isLifecycleSuppressed(raced)) {
+      return {
+        ...toLead(raced, { includeToken: true }),
+        importSuppressed: true,
+      };
+    }
+
     const opportunity = await prisma.opportunity.update({
       where: { id: raced.id },
       data,
       include: opportunityInclude,
     });
-    return toLead(opportunity);
+    return toLead(opportunity, { includeToken: true });
   }
 }
 
@@ -456,6 +544,83 @@ export async function listOutreachMessages(opportunityId: string) {
   });
 }
 
+export { OutreachBlockedError };
+
+const RESPONSE_LINK_UNAVAILABLE =
+  "A secure customer response link could not be loaded. Refresh this opportunity from the database and try again.";
+
+export async function assertOpportunityAllowsOutreach(
+  opportunityId: string
+): Promise<string> {
+  const organization = await getPilotOrganization();
+  const current = await prisma.opportunity.findFirst({
+    where: { id: opportunityId, organizationId: organization.id },
+    select: {
+      id: true,
+      doNotContact: true,
+      archivedAt: true,
+      publicResponseToken: true,
+    },
+  });
+  if (!current) {
+    throw new OutreachBlockedError("Opportunity not found.");
+  }
+  if (current.doNotContact) {
+    throw new OutreachBlockedError(
+      "This opportunity is marked Do Not Contact. Restore it before sending outreach."
+    );
+  }
+  if (current.archivedAt) {
+    throw new OutreachBlockedError(
+      "This opportunity is archived. Restore it before sending outreach."
+    );
+  }
+
+  let token = current.publicResponseToken;
+  if (!token || !isValidPublicResponseToken(token)) {
+    try {
+      const updated = await prisma.opportunity.update({
+        where: { id: current.id },
+        data: { publicResponseToken: generatePublicResponseToken() },
+        select: { publicResponseToken: true },
+      });
+      token = updated.publicResponseToken;
+    } catch (error) {
+      if (!isUniqueConstraintError(error)) throw error;
+      const retried = await prisma.opportunity.findFirst({
+        where: { id: current.id },
+        select: { publicResponseToken: true },
+      });
+      token = retried?.publicResponseToken ?? null;
+    }
+  }
+
+  if (!token || !isValidPublicResponseToken(token)) {
+    throw new OutreachBlockedError(RESPONSE_LINK_UNAVAILABLE);
+  }
+
+  return token;
+}
+
+function isCustomerOutreachSend(message: {
+  direction?: "outbound" | "inbound";
+  statusText?: string;
+  sentAt?: string;
+  provider?: string;
+  providerMessageId?: string;
+}): boolean {
+  const status = message.statusText ?? "";
+  if (status.startsWith("activity:")) return false;
+  if (["Drafted", "Approved", "Follow-up Draft"].includes(status)) return false;
+  if (message.direction === "inbound") return false;
+  return (
+    Boolean(message.sentAt) ||
+    Boolean(message.providerMessageId) ||
+    Boolean(message.provider) ||
+    status === "Sent"
+  );
+}
+
 export async function createOutreachMessage(
   opportunityId: string,
   message: {
@@ -470,6 +635,10 @@ export async function createOutreachMessage(
     sentAt?: string;
   }
 ) {
+  if (isCustomerOutreachSend(message)) {
+    await assertOpportunityAllowsOutreach(opportunityId);
+  }
+
   return prisma.outreachMessage.create({
     data: {
       opportunityId,
@@ -495,7 +664,9 @@ export async function listMeetings(opportunityId?: string): Promise<ScheduledMee
     include: { opportunity: true },
     orderBy: { scheduledAt: "asc" },
   });
-  return meetings.map(meetingToScheduledMeeting);
+  return meetings
+    .filter((meeting) => !meeting.opportunity.archivedAt && !meeting.opportunity.doNotContact)
+    .map(meetingToScheduledMeeting);
 }
 
 export async function createMeeting(
@@ -516,6 +687,13 @@ export async function createMeeting(
   });
 
   if (!current) return null;
+  if (current.doNotContact || current.archivedAt) {
+    throw new OutreachBlockedError(
+      current.doNotContact
+        ? "This opportunity is marked Do Not Contact. Restore it before sending outreach."
+        : "This opportunity is archived. Restore it before sending outreach."
+    );
+  }
 
   const created = await prisma.$transaction(async (tx) => {
     await tx.opportunity.update({
@@ -562,6 +740,11 @@ export async function updateOpportunityStatus(
   });
 
   if (!current) return null;
+  if (current.doNotContact) {
+    throw new OutreachBlockedError(
+      "This opportunity is marked Do Not Contact. Restore it before changing status."
+    );
+  }
 
   const updated = await prisma.opportunity.update({
     where: { id: opportunityId },
@@ -607,4 +790,249 @@ export async function listOpportunityActivity(opportunityId: string): Promise<Ac
   return [...history, ...outreachActivity].sort(
     (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
   );
+}
+
+async function recordLifecycleEvent(
+  opportunityId: string,
+  organizationId: string,
+  type: ActivityType,
+  label: string,
+  fromStatus: OpportunityStatus | null,
+  toStatus: OpportunityStatus
+) {
+  await prisma.$transaction([
+    prisma.pipelineStatusHistory.create({
+      data: {
+        organizationId,
+        opportunityId,
+        fromStatus,
+        toStatus,
+        note: label,
+      },
+    }),
+    prisma.outreachMessage.create({
+      data: {
+        opportunityId,
+        body: label,
+        statusText: `activity:${type}`,
+      },
+    }),
+  ]);
+}
+
+export async function archiveOpportunity(id: string): Promise<Lead | null> {
+  const organization = await getPilotOrganization();
+  const current = await prisma.opportunity.findFirst({
+    where: { id, organizationId: organization.id },
+    include: opportunityInclude,
+  });
+  if (!current) return null;
+
+  if (current.archivedAt) {
+    return toLead(current, { includeToken: true });
+  }
+
+  const updated = await prisma.opportunity.update({
+    where: { id: current.id },
+    data: { archivedAt: new Date() },
+    include: opportunityInclude,
+  });
+  await recordLifecycleEvent(
+    current.id,
+    organization.id,
+    "opportunity_archived",
+    "Opportunity archived",
+    current.status,
+    current.status
+  );
+  return toLead(updated, { includeToken: true });
+}
+
+export async function restoreOpportunity(id: string): Promise<Lead | null> {
+  const organization = await getPilotOrganization();
+  const current = await prisma.opportunity.findFirst({
+    where: { id, organizationId: organization.id },
+    include: opportunityInclude,
+  });
+  if (!current) return null;
+
+  const updated = await prisma.opportunity.update({
+    where: { id: current.id },
+    data: {
+      archivedAt: null,
+      doNotContact: false,
+      optOutReason: null,
+      optOutAt: null,
+      optOutSource: null,
+    },
+    include: opportunityInclude,
+  });
+  await recordLifecycleEvent(
+    current.id,
+    organization.id,
+    "opportunity_restored",
+    current.doNotContact
+      ? "Opportunity restored; Do Not Contact cleared"
+      : "Opportunity restored from archive",
+    current.status,
+    current.status
+  );
+  return toLead(updated, { includeToken: true });
+}
+
+export async function deleteOpportunityPermanently(
+  id: string,
+  confirmName: string
+): Promise<{ ok: true } | { ok: false; reason: string }> {
+  const organization = await getPilotOrganization();
+  const current = await prisma.opportunity.findFirst({
+    where: { id, organizationId: organization.id },
+  });
+  if (!current) return { ok: false, reason: "Opportunity not found" };
+
+  if (current.businessName.trim().toLowerCase() !== confirmName.trim().toLowerCase()) {
+    return {
+      ok: false,
+      reason: "Business name does not match. Permanent delete was not performed.",
+    };
+  }
+
+  await prisma.opportunity.delete({ where: { id: current.id } });
+  return { ok: true };
+}
+
+export interface PublicResponseContext {
+  businessName: string;
+  contactName: string;
+  alreadyOptedOut: boolean;
+  allowedActions: PublicCustomerAction[];
+}
+
+function toPublicContext(opportunity: OpportunityWithRelations): PublicResponseContext {
+  const contactName = opportunity.contacts[0]?.name?.split(" ")[0] ?? "there";
+  const alreadyOptedOut = opportunity.doNotContact;
+  return {
+    businessName: opportunity.businessName,
+    contactName,
+    alreadyOptedOut,
+    allowedActions: alreadyOptedOut
+      ? []
+      : ["interested", "schedule", "not_interested"],
+  };
+}
+
+export async function getPublicResponseContext(
+  token: string
+): Promise<PublicResponseContext | null> {
+  if (!isValidPublicResponseToken(token)) return null;
+  const opportunity = await prisma.opportunity.findFirst({
+    where: { publicResponseToken: token },
+    include: opportunityInclude,
+  });
+  if (!opportunity) return null;
+  return toPublicContext(opportunity);
+}
+
+export async function applyPublicCustomerAction(
+  token: string,
+  action: PublicCustomerAction,
+  slotId?: string
+): Promise<
+  | { ok: true; context: PublicResponseContext; confirmedSlot?: string }
+  | { ok: false; reason: "invalid" | "blocked" | "unknown_slot" }
+> {
+  if (!isValidPublicResponseToken(token)) return { ok: false, reason: "invalid" };
+
+  const current = await prisma.opportunity.findFirst({
+    where: { publicResponseToken: token },
+    include: opportunityInclude,
+  });
+  if (!current) return { ok: false, reason: "invalid" };
+
+  if (action === "not_interested") {
+    const now = new Date();
+    const reason: OptOutReason = "not_interested";
+    const updated = await prisma.opportunity.update({
+      where: { id: current.id },
+      data: {
+        status: OpportunityStatus.LOST,
+        doNotContact: true,
+        optOutReason: reason,
+        optOutAt: now,
+        optOutSource: "customer_response_link",
+        statusHistory: {
+          create: {
+            organizationId: current.organizationId,
+            fromStatus: current.status,
+            toStatus: OpportunityStatus.LOST,
+            note: "Customer opted out via response link (not_interested)",
+          },
+        },
+      },
+      include: opportunityInclude,
+    });
+    await prisma.outreachMessage.create({
+      data: {
+        opportunityId: current.id,
+        body: "Customer opted out via response link (not_interested)",
+        statusText: "activity:opportunity_opted_out",
+      },
+    });
+    return { ok: true, context: toPublicContext(updated) };
+  }
+
+  if (current.doNotContact || current.archivedAt) {
+    return { ok: false, reason: "blocked" };
+  }
+
+  if (action === "interested") {
+    const updated = await prisma.opportunity.update({
+      where: { id: current.id },
+      data: {
+        status: OpportunityStatus.RESPONDED,
+        statusHistory: {
+          create: {
+            organizationId: current.organizationId,
+            fromStatus: current.status,
+            toStatus: OpportunityStatus.RESPONDED,
+            note: "Customer clicked Request a Call via response link",
+          },
+        },
+      },
+      include: opportunityInclude,
+    });
+    await prisma.outreachMessage.create({
+      data: {
+        opportunityId: current.id,
+        direction: OutreachDirection.INBOUND,
+        body: "Customer clicked Request a Call via response link",
+        statusText: "Replied",
+      },
+    });
+    return { ok: true, context: toPublicContext(updated) };
+  }
+
+  const slot = getMeetingSlotOptions().find((item) => item.id === slotId);
+  if (!slot) return { ok: false, reason: "unknown_slot" };
+
+  const created = await createMeeting(current.id, {
+    contactName: current.contacts[0]?.name ?? "Customer",
+    contactRole: current.contacts[0]?.role ?? "Decision maker",
+    scheduledAt: slot.scheduledAt,
+    displayTime: slot.label,
+    meetingType: "Discovery Call",
+    autoScheduled: true,
+    scheduledBy: "customer",
+  });
+  if (!created) return { ok: false, reason: "invalid" };
+
+  const refreshed = await prisma.opportunity.findFirst({
+    where: { id: current.id },
+    include: opportunityInclude,
+  });
+  return {
+    ok: true,
+    context: toPublicContext(refreshed ?? current),
+    confirmedSlot: slot.label,
+  };
 }

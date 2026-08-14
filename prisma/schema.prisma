@@ -102,6 +102,12 @@ model Opportunity {
   estimatedValueMin   Int?
   estimatedValueMax   Int?
   imported            Boolean                 @default(false)
+  archivedAt          DateTime?
+  doNotContact        Boolean                 @default(false)
+  optOutReason        String?
+  optOutAt            DateTime?
+  optOutSource        String?
+  publicResponseToken String?                 @unique
   createdAt           DateTime                @default(now())
   updatedAt           DateTime                @updatedAt
   evidenceSources     EvidenceSource[]
@@ -112,6 +118,8 @@ model Opportunity {
 
   @@index([organizationId, status])
   @@index([organizationId, city])
+  @@index([organizationId, archivedAt])
+  @@index([organizationId, doNotContact])
 }
 
 model EvidenceSource {

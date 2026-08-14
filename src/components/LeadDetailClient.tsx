@@ -15,6 +15,7 @@ import CRMStatusTracker from "@/components/CRMStatusTracker";
 import LeadProcessTracker from "@/components/LeadProcessTracker";
 import CRMStatusBadge from "@/components/CRMStatusBadge";
 import ActivityTimeline from "@/components/ActivityTimeline";
+import OpportunityActions from "@/components/OpportunityActions";
 import EventAutomationSimulator from "@/components/EventAutomationSimulator";
 import { useLeadById } from "@/hooks/useAllLeads";
 import { DEMO_SIMULATION_ENABLED } from "@/lib/event-automation";
@@ -107,6 +108,16 @@ export default function LeadDetailClient({ id }: { id: string }) {
             </h1>
             <PriorityBadge priority={lead.priority} />
             <CRMStatusBadge status={crmStatus} />
+            {lead.doNotContact && (
+              <span className="rounded-full bg-red-500/15 px-2.5 py-0.5 text-xs font-semibold text-red-300">
+                Do Not Contact
+              </span>
+            )}
+            {lead.archivedAt && (
+              <span className="rounded-full bg-white/10 px-2.5 py-0.5 text-xs font-semibold text-slate-300">
+                Archived
+              </span>
+            )}
           </div>
           <p className="mt-2 text-slate-400">
             {lead.industry} · {lead.location}, {lead.city}
@@ -187,6 +198,7 @@ export default function LeadDetailClient({ id }: { id: string }) {
 
           <div className="space-y-6">
             <ScoreBreakdown breakdown={lead.scoreBreakdown} />
+            <OpportunityActions lead={lead} />
             <div className="saas-card p-6">
               <h3 className="text-lg font-semibold text-white">
                 Quick Summary

@@ -30,6 +30,7 @@ export interface SendEmailPayload {
   body: string;
   html?: string;
   leadName?: string;
+  opportunityId: string;
 }
 
 export interface SendEmailResult {

@@ -13,19 +13,19 @@ export default function CustomerResponsePanel({ lead }: { lead: Lead }) {
   const links = [
     {
       label: "Interested / Request a Call",
-      path: `/respond/${lead.id}?action=interested`,
+      path: `/r/${lead.publicResponseToken}?action=interested`,
     },
     {
       label: "Choose Meeting Time",
-      path: `/respond/${lead.id}?action=schedule`,
+      path: `/r/${lead.publicResponseToken}?action=schedule`,
     },
     {
       label: "Not Interested",
-      path: `/respond/${lead.id}?action=declined`,
+      path: `/r/${lead.publicResponseToken}?action=not_interested`,
     },
   ];
 
-  const hubPath = `/respond/${lead.id}`;
+  const hubPath = `/r/${lead.publicResponseToken}`;
 
   function copyUrl(path: string, label: string) {
     navigator.clipboard.writeText(toAbsoluteResponseUrl(path));
@@ -63,40 +63,48 @@ export default function CustomerResponsePanel({ lead }: { lead: Lead }) {
       </p>
 
       <div className="mt-4 space-y-2">
-        {links.map((link) => (
-          <div
-            key={link.label}
-            className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-saas-border bg-saas-card px-4 py-3"
-          >
-            <div className="min-w-0">
-              <span className="text-sm font-medium text-slate-300">
-                {link.label}
-              </span>
-              <p className="mt-0.5 truncate font-mono text-xs text-slate-400">
-                {link.path}
-              </p>
+        {lead.publicResponseToken ? (
+          links.map((link) => (
+            <div
+              key={link.label}
+              className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-saas-border bg-saas-card px-4 py-3"
+            >
+              <div className="min-w-0">
+                <span className="text-sm font-medium text-slate-300">
+                  {link.label}
+                </span>
+                <p className="mt-0.5 truncate font-mono text-xs text-slate-400">
+                  {link.path}
+                </p>
+              </div>
+              <div className="flex shrink-0 gap-2">
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => copyUrl(link.path, link.label)}
+                >
+                  {copied === link.label ? "Copied!" : "Copy Link"}
+                </Button>
+                <a href={link.path} target="_blank" rel="noopener noreferrer">
+                  <Button size="sm">Open</Button>
+                </a>
+              </div>
             </div>
-            <div className="flex shrink-0 gap-2">
-              <Button
-                size="sm"
-                variant="secondary"
-                onClick={() => copyUrl(link.path, link.label)}
-              >
-                {copied === link.label ? "Copied!" : "Copy Link"}
-              </Button>
-              <a href={link.path} target="_blank" rel="noopener noreferrer">
-                <Button size="sm">Open</Button>
-              </a>
-            </div>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p className="text-sm text-slate-400">
+            A secure response link is created when this opportunity is loaded from the database.
+          </p>
+        )}
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-3">
-        <a href={hubPath} target="_blank" rel="noopener noreferrer">
-          <Button>Open customer response link</Button>
-        </a>
-      </div>
+      {lead.publicResponseToken && (
+        <div className="mt-5 flex flex-wrap gap-3">
+          <a href={hubPath} target="_blank" rel="noopener noreferrer">
+            <Button>Open customer response link</Button>
+          </a>
+        </div>
+      )}
 
       <p className="mt-3 text-xs text-slate-400">
         Copy Link includes the full URL for email sharing. Open uses relative

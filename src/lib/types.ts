@@ -15,6 +15,12 @@ export type CRMStatus =
   | "Won"
   | "Lost";
 
+export type OptOutReason = "not_interested" | "unsubscribe";
+
+export type PublicCustomerAction = "interested" | "schedule" | "not_interested";
+
+export type OpportunityListScope = "active" | "archived" | "all";
+
 export type PipelineStageId =
   | "discovery"
   | "qualification"
@@ -125,6 +131,13 @@ export interface Lead {
   imported?: boolean;
   phone?: string;
   website?: string;
+  archivedAt?: string | null;
+  doNotContact?: boolean;
+  optOutReason?: OptOutReason | null;
+  optOutAt?: string | null;
+  optOutSource?: string | null;
+  publicResponseToken?: string;
+  importSuppressed?: boolean;
 }
 
 export interface ScrapedBusiness {

@@ -26,13 +26,15 @@ export function useAllLeads(baseLeads: Lead[]) {
   const refresh = useCallback(() => {
     fetchOpportunitiesFromApi()
       .then((opportunities) => {
-        setLeads(opportunities);
-        saveOpportunityCache(opportunities);
+        setLeads(opportunities.filter((lead) => !lead.archivedAt && !lead.doNotContact));
+        saveOpportunityCache(opportunities.filter((lead) => !lead.archivedAt && !lead.doNotContact));
         setDataSource("database");
         setDataSourceError(null);
       })
       .catch((error) => {
-        const cached = getCachedOpportunities();
+        const cached = getCachedOpportunities().filter(
+          (lead) => !lead.archivedAt && !lead.doNotContact
+        );
         if (cached.length > 0) {
           setLeads(cached);
           setDataSource("cache-fallback");
