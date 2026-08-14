@@ -15,7 +15,9 @@ import CRMStatusTracker from "@/components/CRMStatusTracker";
 import LeadProcessTracker from "@/components/LeadProcessTracker";
 import CRMStatusBadge from "@/components/CRMStatusBadge";
 import ActivityTimeline from "@/components/ActivityTimeline";
+import EventAutomationSimulator from "@/components/EventAutomationSimulator";
 import { useLeadById } from "@/hooks/useAllLeads";
+import { DEMO_SIMULATION_ENABLED } from "@/lib/event-automation";
 import { leads as baseLeads } from "@/lib/base-data";
 import { PIPELINE_STAGE_DEFS } from "@/lib/pipeline";
 
@@ -164,6 +166,9 @@ export default function LeadDetailClient({ id }: { id: string }) {
             <ContactDiscovery contact={lead.contact} />
             <LeadProcessTracker leadId={lead.id} />
             <ActivityTimeline leadId={lead.id} />
+            {DEMO_SIMULATION_ENABLED && (
+              <EventAutomationSimulator lead={lead} />
+            )}
           </div>
         </div>
       ) : (

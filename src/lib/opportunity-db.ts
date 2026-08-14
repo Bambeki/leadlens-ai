@@ -102,6 +102,19 @@ function dateOrNow(value: string): Date {
   return Number.isNaN(date.getTime()) ? new Date() : date;
 }
 
+function opportunityBusinessKey(lead: Pick<Lead, "businessName" | "city">): string {
+  return `${lead.businessName.trim().toLowerCase()}::${lead.city.trim().toLowerCase()}`;
+}
+
+function isUniqueConstraintError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error != null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "P2002"
+  );
+}
+
 function toJsonInput(value: unknown): Prisma.InputJsonValue {
   return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
 }
@@ -273,12 +286,14 @@ export async function getOpportunity(id: string): Promise<Lead | null> {
 
 export async function saveOpportunity(lead: Lead): Promise<Lead> {
   const organization = await getPilotOrganization();
+  const businessName = lead.businessName.trim();
+  const city = lead.city.trim();
   const data = {
     organizationId: organization.id,
-    businessName: lead.businessName,
+    businessName,
     industry: lead.industry,
     location: lead.location,
-    city: lead.city,
+    city,
     score: lead.scoreBreakdown.total,
     priority: priorityToDb[lead.priority],
     status: statusToDb[lead.crmStatus],
@@ -296,9 +311,7 @@ export async function saveOpportunity(lead: Lead): Promise<Lead> {
     imported: Boolean(lead.imported),
   } satisfies Prisma.OpportunityUncheckedCreateInput;
 
-  const opportunity = await prisma.opportunity.upsert({
-    where: { id: lead.id },
-    create: {
+  const createData = {
       id: lead.id,
       ...data,
       evidenceSources: {
@@ -328,17 +341,65 @@ export async function saveOpportunity(lead: Lead): Promise<Lead> {
           note: "Opportunity created",
         },
       },
-    },
-    update: data,
-    include: opportunityInclude,
-  });
+  } satisfies Prisma.OpportunityCreateInput | Prisma.OpportunityUncheckedCreateInput;
 
-  return toLead(opportunity);
+  const findExisting = () =>
+    prisma.opportunity.findFirst({
+      where: {
+        organizationId: organization.id,
+        OR: [
+          { id: lead.id },
+          {
+            businessName,
+            city,
+          },
+        ],
+      },
+      include: opportunityInclude,
+    });
+
+  const existing = await findExisting();
+  if (existing) {
+    const opportunity = await prisma.opportunity.update({
+      where: { id: existing.id },
+      data,
+      include: opportunityInclude,
+    });
+    return toLead(opportunity);
+  }
+
+  try {
+    const opportunity = await prisma.opportunity.create({
+      data: createData,
+      include: opportunityInclude,
+    });
+    return toLead(opportunity);
+  } catch (error) {
+    if (!isUniqueConstraintError(error)) throw error;
+
+    const raced = await findExisting();
+    if (!raced) throw error;
+
+    const opportunity = await prisma.opportunity.update({
+      where: { id: raced.id },
+      data,
+      include: opportunityInclude,
+    });
+    return toLead(opportunity);
+  }
 }
 
 export async function saveOpportunities(leads: Lead[]): Promise<Lead[]> {
   const saved: Lead[] = [];
+  const seenIds = new Set<string>();
+  const seenBusinesses = new Set<string>();
+
   for (const lead of leads) {
+    const id = lead.id.trim();
+    const businessKey = opportunityBusinessKey(lead);
+    if (seenIds.has(id) || seenBusinesses.has(businessKey)) continue;
+    seenIds.add(id);
+    seenBusinesses.add(businessKey);
     saved.push(await saveOpportunity(lead));
   }
   return saved;

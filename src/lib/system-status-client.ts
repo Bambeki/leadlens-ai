@@ -16,8 +16,11 @@ const DEFAULT_STATUS: SystemStatus = {
   apifyActorDetected: false,
   resendReady: false,
   apifyReady: false,
+  emailOpenTrackingConfigured: false,
+  inboundReplyIntegrationConfigured: false,
   meetingProvider: "none",
   meetingProviderConfigured: false,
+  demoSimulationToolsAvailable: false,
 };
 
 export async function fetchSystemStatus(): Promise<SystemStatus> {

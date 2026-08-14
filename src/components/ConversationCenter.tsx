@@ -31,7 +31,11 @@ import {
   addSimulatedCustomerReply,
   type ConversationMessage,
 } from "@/lib/conversation-store";
-import { processEmailSent, simulateWebhookEvent } from "@/lib/event-automation";
+import {
+  DEMO_SIMULATION_ENABLED,
+  processEmailSent,
+  simulateWebhookEvent,
+} from "@/lib/event-automation";
 import {
   generateOutreachDraftFromApi,
   type OutreachAssistAction,
@@ -64,23 +68,11 @@ const AI_ACTIONS: {
 ];
 
 function getStatusFlags(status: OutreachStatus | null) {
-  const sent =
-    status != null && SENT_OUTREACH_STATUSES.includes(status);
-  const opened =
-    status != null &&
-    ["Opened", "Replied", "Meeting Suggested", "Meeting Accepted", "Meeting Scheduled", "Meeting Declined"].includes(
-      status
-    );
-  const replied =
-    status != null &&
-    ["Replied", "Meeting Suggested", "Meeting Accepted", "Meeting Scheduled"].includes(
-      status
-    );
+  const sent = status != null && SENT_OUTREACH_STATUSES.includes(status);
+  const opened = status === "Opened";
+  const replied = status === "Replied";
   const meetingRequested =
-    status != null &&
-    ["Meeting Suggested", "Meeting Accepted", "Meeting Scheduled"].includes(
-      status
-    );
+    status === "Meeting Accepted" || status === "Meeting Scheduled";
   return { sent, opened, replied, meetingRequested };
 }
 
@@ -337,16 +329,23 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
     setSendError(null);
     try {
       await saveOutreachDraftToDb(lead.id, { subject, body: updated }, "Drafted");
-      await updateOutreachStatus(lead.id, "Meeting Suggested");
-      addActivity(lead.id, "meeting_scheduled", `Meeting proposal added: ${MEETING_OPTIONS.find((m) => m.id === type)?.shortLabel}`);
+      addActivity(
+        lead.id,
+        "email_drafted",
+        `Meeting proposal added to draft: ${MEETING_OPTIONS.find((m) => m.id === type)?.shortLabel}`
+      );
       if (composerStep === "approved") setComposerStep("draft");
-      setOutreachStatus("Meeting Suggested");
+      setOutreachStatus(await getOutreachStatusFromDb(lead.id));
     } catch {
       setSendError("Could not save the meeting proposal to the database.");
     }
   }
 
   function handleSimulateOpened() {
+    if (!DEMO_SIMULATION_ENABLED) {
+      setSendError("Open tracking is not configured.");
+      return;
+    }
     if (!hasOutreachBeenSent(lead.id)) {
       setSendError("Send an email first before simulating opens.");
       return;
@@ -358,6 +357,10 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
   }
 
   function handleSimulateReply() {
+    if (!DEMO_SIMULATION_ENABLED) {
+      setSendError("Inbound reply integration is not configured.");
+      return;
+    }
     if (!hasOutreachBeenSent(lead.id)) {
       setSendError("Send an email first before simulating a customer reply.");
       return;
@@ -429,9 +432,10 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
           </p>
         )}
         {resendReady && (
-          <p className="mt-3 text-xs text-slate-400">
-            Sending from {fromEmail ?? "your connected account"}
-          </p>
+          <div className="mt-3 space-y-1 text-xs text-slate-400">
+            <p>Sending from {fromEmail ?? "your connected account"}</p>
+            <p>Open tracking not configured. Inbound reply integration not configured.</p>
+          </div>
         )}
         {generateSuccess && (
           <p className="mt-3 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-300">
@@ -779,15 +783,15 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
           )}
         </section>
 
-        {/* Simulated inbox */}
-        {composerStep === "sent" && (
+        {/* Developer-only simulated inbox */}
+        {DEMO_SIMULATION_ENABLED && composerStep === "sent" && (
           <div className="mt-6 rounded-lg border border-dashed border-violet-500/25 bg-violet-500/10 p-4">
             <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
-              Response preview
+              Demo / Developer Simulation
             </p>
             <p className="mt-1 text-sm text-slate-300">
-              Preview response events in the thread above without requiring an
-              external inbox.
+              Trigger simulated response events for local testing. These are not
+              real customer actions or provider webhooks.
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Button size="sm" variant="secondary" onClick={handleSimulateOpened}>

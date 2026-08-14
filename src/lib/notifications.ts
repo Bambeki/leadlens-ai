@@ -33,52 +33,10 @@ export function getNotificationMeta(type: NotificationType) {
   return TYPE_META[type];
 }
 
-export const INITIAL_NOTIFICATIONS: AppNotification[] = [
-  {
-    id: "n1",
-    type: "email_replied",
-    title: "Customer replied",
-    message: "Bella Vista Trattoria responded to your outreach email.",
-    timestamp: "12 min ago",
-    read: false,
-  },
-  {
-    id: "n2",
-    type: "email_opened",
-    title: "Customer opened email",
-    message: "TrendMart Fashion opened your email 3 times.",
-    timestamp: "1 hr ago",
-    read: false,
-  },
-  {
-    id: "n3",
-    type: "meeting_requested",
-    title: "Meeting requested",
-    message: "FitZone Premium Gym requested a 30-min discovery call.",
-    timestamp: "2 hrs ago",
-    read: true,
-  },
-  {
-    id: "n4",
-    type: "email_sent",
-    title: "Email sent",
-    message: "Outreach sent to Grand Hotel Meridian.",
-    timestamp: "3 hrs ago",
-    read: true,
-  },
-  {
-    id: "n5",
-    type: "crm_updated",
-    title: "Opportunity status updated",
-    message: "Hausarztpraxis am See moved to Meeting Scheduled.",
-    timestamp: "5 hrs ago",
-    read: true,
-  },
-];
-
 export function createNotification(
   type: NotificationType,
-  message: string
+  message: string,
+  options?: { simulated?: boolean }
 ): AppNotification {
   const titles: Record<NotificationType, string> = {
     email_sent: "Email sent",
@@ -88,10 +46,13 @@ export function createNotification(
     meeting_scheduled: "Meeting scheduled",
     crm_updated: "Opportunity status updated",
   };
+  const title = options?.simulated
+    ? `Demo simulation: ${titles[type]}`
+    : titles[type];
   return {
     id: uniqueId("n-"),
     type,
-    title: titles[type],
+    title,
     message,
     timestamp: "Just now",
     read: false,

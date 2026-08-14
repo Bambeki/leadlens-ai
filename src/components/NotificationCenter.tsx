@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from "react";
 import {
-  INITIAL_NOTIFICATIONS,
   getNotificationMeta,
   type AppNotification,
 } from "@/lib/notifications";
 
 export default function NotificationCenter() {
   const [open, setOpen] = useState(false);
-  const [notifications, setNotifications] = useState(INITIAL_NOTIFICATIONS);
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
 
   const unread = notifications.filter((n) => !n.read).length;
 

@@ -9,6 +9,7 @@ import {
   type OutreachStatus,
 } from "@/lib/crm-store";
 import {
+  DEMO_SIMULATION_ENABLED,
   simulateWebhookEvent,
   type WebhookEvent,
 } from "@/lib/event-automation";
@@ -24,36 +25,36 @@ const EVENTS: {
   {
     id: "email_opened",
     label: "Simulate Email Opened",
-    description: "Resend webhook: email.opened",
-    webhook: "email.opened",
+    description: "Demo event: email.opened",
+    webhook: "simulated.email.opened",
     variant: "secondary",
   },
   {
     id: "customer_replied",
     label: "Simulate Customer Replied",
-    description: "Resend inbound: customer replied",
-    webhook: "inbound.received",
+    description: "Demo event: customer replied",
+    webhook: "simulated.inbound.received",
     variant: "primary",
   },
   {
     id: "meeting_accepted",
     label: "Simulate Meeting Accepted",
-    description: "Calendar webhook: invite accepted",
-    webhook: "calendar.accepted",
+    description: "Demo event: invite accepted",
+    webhook: "simulated.calendar.accepted",
     variant: "success",
   },
   {
     id: "meeting_declined",
     label: "Simulate Meeting Declined",
-    description: "Calendar webhook: invite declined",
-    webhook: "calendar.declined",
+    description: "Demo event: invite declined",
+    webhook: "simulated.calendar.declined",
     variant: "danger",
   },
   {
     id: "email_bounced",
     label: "Simulate Email Bounced",
-    description: "Resend webhook: email.bounced",
-    webhook: "email.bounced",
+    description: "Demo event: email bounced",
+    webhook: "simulated.email.bounced",
     variant: "danger",
   },
 ];
@@ -88,6 +89,10 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
     };
   }, [lead.id]);
 
+  if (!DEMO_SIMULATION_ENABLED) {
+    return null;
+  }
+
   async function handleSimulate(event: WebhookEvent) {
     setError(null);
     try {
@@ -99,7 +104,7 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
       setLastEvent(event);
       setOutreachStatus(await getOutreachStatusFromDb(lead.id));
     } catch {
-      setError("Could not save webhook event to the database.");
+      setError("Could not save the simulated event to the database.");
     }
   }
 
@@ -108,14 +113,14 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="text-lg font-semibold text-white">
-            Event Automation Simulator
+            Demo / Developer Simulation
           </h3>
           <p className="mt-1 text-sm text-slate-300">
-            Trigger webhook events to update outreach and opportunity status automatically
+            Manually trigger simulated events for local testing. These are not real customer actions.
           </p>
         </div>
         <span className="rounded-full bg-violet-500/15 px-3 py-1 text-[10px] font-semibold uppercase tracking-wide text-violet-300">
-          Webhook preview — production uses Resend and Calendar webhooks
+          Simulation only
         </span>
       </div>
 
@@ -128,7 +133,7 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
 
       {!canSimulate && (
         <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">
-          Send an outreach email first. Webhooks only fire after delivery.
+          Send an outreach email first. These buttons create simulated events for local testing.
         </div>
       )}
 
@@ -165,7 +170,7 @@ export default function EventAutomationSimulator({ lead }: { lead: Lead }) {
 
       {lastEvent && !error && (
         <p className="mt-4 text-sm font-medium text-emerald-400">
-          ✓ Webhook event processed — opportunity status and timeline updated.
+          ✓ Simulated event processed — opportunity status and timeline updated.
         </p>
       )}
     </div>

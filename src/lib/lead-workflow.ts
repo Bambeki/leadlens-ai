@@ -7,6 +7,7 @@ import {
   getCrmOverride,
   getOutreachStatus,
   getOutreachStatusFromDb,
+  SENT_OUTREACH_STATUSES,
   type OutreachStatus,
 } from "./crm-store";
 import { fetchOpportunityFromApi } from "./opportunity-api";
@@ -43,18 +44,21 @@ export const EMPTY_LEAD_WORKFLOW_STATE: LeadWorkflowState = {
   meetingScheduled: false,
 };
 
-function notify(type: Parameters<typeof createNotification>[0], message: string) {
+function notify(
+  type: Parameters<typeof createNotification>[0],
+  message: string,
+  simulated = false
+) {
   if (typeof window === "undefined") return;
   window.dispatchEvent(
     new CustomEvent("leadlens-notification", {
-      detail: createNotification(type, message),
+      detail: createNotification(type, message, { simulated }),
     })
   );
 }
 
 const RESPONDED_OUTREACH: OutreachStatus[] = [
   "Replied",
-  "Meeting Suggested",
   "Meeting Accepted",
   "Meeting Scheduled",
 ];
@@ -83,7 +87,17 @@ export function completeMeetingSchedule(
 
     if (options.source === "customer") {
       addActivity(lead.id, "meeting_scheduled", "Customer selected meeting time");
-      notify("meeting_scheduled", "Meeting scheduled automatically");
+      notify(
+        "meeting_scheduled",
+        `${lead.businessName} selected a meeting time on the response page.`
+      );
+    } else if (options.source === "simulator") {
+      addActivity(lead.id, "meeting_accepted", "Simulated meeting accepted");
+      notify(
+        "meeting_scheduled",
+        `Demo simulation scheduled a meeting with ${lead.businessName}`,
+        true
+      );
     } else {
       addActivity(lead.id, "meeting_accepted", "Meeting accepted");
       notify(
@@ -106,7 +120,8 @@ export function getLeadWorkflowState(leadId: string): LeadWorkflowState {
   const outreachStatus = getOutreachStatus(leadId);
   const crmStatus = getCrmOverride(leadId);
   const meeting = getMeetingByLeadId(leadId);
-  const emailSent = outreachStatus === "Sent";
+  const emailSent =
+    outreachStatus != null && SENT_OUTREACH_STATUSES.includes(outreachStatus);
   const customerResponded =
     (outreachStatus != null && RESPONDED_OUTREACH.includes(outreachStatus)) ||
     meeting != null;
@@ -134,7 +149,8 @@ export async function getLeadWorkflowStateFromDb(
     const opportunity = await fetchOpportunityFromApi(leadId);
     const meeting = meetings.find((item) => item.leadId === leadId);
     const crmStatus = opportunity?.crmStatus ?? meeting?.crmStatus ?? null;
-    const emailSent = outreachStatus === "Sent";
+    const emailSent =
+      outreachStatus != null && SENT_OUTREACH_STATUSES.includes(outreachStatus);
     const customerResponded =
       (outreachStatus != null && RESPONDED_OUTREACH.includes(outreachStatus)) ||
       meeting != null;

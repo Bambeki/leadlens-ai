@@ -14,8 +14,11 @@ export interface SystemStatus {
   apifyActorDetected: boolean;
   resendReady: boolean;
   apifyReady: boolean;
+  emailOpenTrackingConfigured: boolean;
+  inboundReplyIntegrationConfigured: boolean;
   meetingProvider: "none";
   meetingProviderConfigured: boolean;
+  demoSimulationToolsAvailable: boolean;
 }
 
 function readEnv(key: string): string | undefined {
@@ -76,6 +79,7 @@ export function getSystemStatus(): SystemStatus {
   const resendReady = resendApiKeyDetected && resendFromEmailDetected;
   const openAiReady = openAiApiKeyDetected;
   const apifyReady = apifyTokenDetected && apifyActorDetected;
+  const demoSimulationToolsAvailable = process.env.NODE_ENV !== "production";
 
   return {
     databaseUrlDetected,
@@ -91,8 +95,11 @@ export function getSystemStatus(): SystemStatus {
     apifyActorDetected,
     resendReady,
     apifyReady,
+    emailOpenTrackingConfigured: false,
+    inboundReplyIntegrationConfigured: false,
     meetingProvider: "none",
     meetingProviderConfigured: false,
+    demoSimulationToolsAvailable,
   };
 }
 

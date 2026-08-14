@@ -44,7 +44,6 @@ export const SENT_OUTREACH_STATUSES: OutreachStatus[] = [
   "Sent",
   "Opened",
   "Replied",
-  "Meeting Suggested",
   "Meeting Accepted",
   "Meeting Scheduled",
   "Meeting Declined",

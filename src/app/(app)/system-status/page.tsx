@@ -151,6 +151,42 @@ export default function SystemStatusPage() {
                 statusLabel={status.resendReady ? "Configured" : "Not configured"}
                 description="Both API key and from-email are set"
               />
+              <StatusCard
+                label="Open Tracking"
+                ok={status.emailOpenTrackingConfigured}
+                statusLabel={
+                  status.emailOpenTrackingConfigured ? "Configured" : "Not configured"
+                }
+                description="No real email open webhook is currently connected"
+              />
+              <StatusCard
+                label="Inbound Replies"
+                ok={status.inboundReplyIntegrationConfigured}
+                statusLabel={
+                  status.inboundReplyIntegrationConfigured
+                    ? "Configured"
+                    : "Not configured"
+                }
+                description="No inbound reply webhook or mailbox integration is currently connected"
+              />
+            </div>
+          </section>
+
+          <section>
+            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">
+              Simulation
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <StatusCard
+                label="Demo Simulation Tools"
+                ok={status.demoSimulationToolsAvailable}
+                statusLabel={
+                  status.demoSimulationToolsAvailable
+                    ? "Available in dev"
+                    : "Disabled in production"
+                }
+                description="Manual simulation controls are not part of normal production workflow"
+              />
             </div>
           </section>
 

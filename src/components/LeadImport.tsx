@@ -238,11 +238,9 @@ export default function LeadImport() {
         })
       );
       window.dispatchEvent(new CustomEvent("leadlens-leads-updated"));
-    } catch (error) {
+    } catch {
       setSaveError(
-        error instanceof Error && error.message
-          ? `Could not save imported opportunities to PostgreSQL. ${error.message}`
-          : "Could not save imported opportunities to PostgreSQL. Check System Status and try again."
+        "Could not save imported opportunities to PostgreSQL. No opportunities were added to the active pipeline. Check System Status and try again."
       );
       return;
     }

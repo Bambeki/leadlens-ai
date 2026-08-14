@@ -35,21 +35,11 @@ const EMAIL_PROVIDERS = [
 ];
 
 export default function EmailCenterPage() {
-  const [connected, setConnected] = useState<Record<string, boolean>>({});
-  const [connecting, setConnecting] = useState<string | null>(null);
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
 
   useEffect(() => {
     fetchSystemStatus().then(setSystemStatus);
   }, []);
-
-  function handleConnect(id: string) {
-    setConnecting(id);
-    setTimeout(() => {
-      setConnected((prev) => ({ ...prev, [id]: true }));
-      setConnecting(null);
-    }, 1200);
-  }
 
   const resendReady = systemStatus?.resendReady ?? false;
 
@@ -65,7 +55,8 @@ export default function EmailCenterPage() {
       <div className="mb-8 overflow-hidden rounded-2xl border border-saas-border bg-gradient-to-br from-violet-500/10 via-saas-card to-saas-card p-6">
         <h2 className="text-lg font-semibold text-white">Outreach Workflow</h2>
         <p className="mt-1 text-sm text-slate-400">
-          Every email follows a clear opportunity path from draft to reply
+          Draft and send are live. Open tracking and inbound replies are not
+          configured, so those steps do not advance automatically.
         </p>
         <div className="mt-6 flex flex-wrap items-center gap-2">
           {WORKFLOW_STEPS.map((step, i) => (
@@ -109,7 +100,7 @@ export default function EmailCenterPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {EMAIL_PROVIDERS.map((provider) => {
           const isResend = provider.id === "resend";
-          const isConnected = isResend ? resendReady : connected[provider.id];
+          const isConnected = isResend && resendReady;
 
           return (
             <div
@@ -130,18 +121,20 @@ export default function EmailCenterPage() {
                 )}
               </div>
               <div className="mt-4">
-                {isConnected ? (
-                  <Button variant="secondary" size="sm" disabled>
-                    Connected
-                  </Button>
+                {isResend ? (
+                  isConnected ? (
+                    <Button variant="secondary" size="sm" disabled>
+                      Connected
+                    </Button>
+                  ) : (
+                    <p className="text-xs text-slate-400">
+                      Configure Resend in System Status to enable live sending.
+                    </p>
+                  )
                 ) : (
-                  <Button
-                    size="sm"
-                    onClick={() => handleConnect(provider.id)}
-                    disabled={connecting === provider.id}
-                  >
-                    {connecting === provider.id ? "Connecting…" : `Connect ${provider.name}`}
-                  </Button>
+                  <p className="text-xs text-slate-400">
+                    Not available. Only Resend is connected for live sending.
+                  </p>
                 )}
               </div>
             </div>

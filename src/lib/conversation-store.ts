@@ -111,6 +111,6 @@ export function addSimulatedCustomerReply(
   return addConversationMessage(leadId, {
     direction: "inbound",
     body: payload.body,
-    author: payload.author,
+    author: `[Demo simulation] ${payload.author}`,
   });
 }
