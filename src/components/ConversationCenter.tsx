@@ -11,14 +11,9 @@ import {
   sendEmailViaApi,
   getSavedTestEmail,
   saveTestEmail,
-  getOutreachDraft,
   getOutreachDraftFromDb,
   saveOutreachDraftToDb,
 } from "@/lib/email";
-import {
-  DEFAULT_EMAIL_CTA_CONFIG,
-  prepareEmailPayload,
-} from "@/lib/email-template";
 import { fetchSystemStatus } from "@/lib/system-status-client";
 import {
   CRM_UPDATED_EVENT,
@@ -37,7 +32,10 @@ import {
   type ConversationMessage,
 } from "@/lib/conversation-store";
 import { processEmailSent, simulateWebhookEvent } from "@/lib/event-automation";
-import { generateOutreachDraftFromApi } from "@/lib/opportunity-api";
+import {
+  generateOutreachDraftFromApi,
+  type OutreachAssistAction,
+} from "@/lib/opportunity-api";
 import { useHasMounted } from "@/hooks/useHasMounted";
 import { LEADLENS_BRAND } from "@/lib/branding";
 import Button from "./ui/Button";
@@ -51,6 +49,19 @@ const MEETING_BUTTONS: { type: MeetingType; label: string }[] = [
 ];
 
 type ComposerStep = "draft" | "approved" | "sent";
+
+const AI_ACTIONS: {
+  action: OutreachAssistAction;
+  label: string;
+  needsContent?: boolean;
+}[] = [
+  { action: "generate", label: "Generate Draft" },
+  { action: "improve", label: "Improve Writing", needsContent: true },
+  { action: "professional", label: "Make More Professional", needsContent: true },
+  { action: "shorter", label: "Make Shorter", needsContent: true },
+  { action: "rewrite", label: "Rewrite", needsContent: true },
+  { action: "personalize", label: "Personalize for Lead", needsContent: true },
+];
 
 function getStatusFlags(status: OutreachStatus | null) {
   const sent =
@@ -117,6 +128,10 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
   const [isSending, setIsSending] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
   const [generateSuccess, setGenerateSuccess] = useState(false);
+  const [saveFeedback, setSaveFeedback] = useState(false);
+  const [assistAction, setAssistAction] = useState<OutreachAssistAction | null>(null);
+  const [assistNotice, setAssistNotice] = useState<string | null>(null);
+  const [sendSuccess, setSendSuccess] = useState<string | null>(null);
   const [testEmail, setTestEmail] = useState("");
   const [useTestEmail, setUseTestEmail] = useState(true);
   const [resendReady, setResendReady] = useState(false);
@@ -165,51 +180,107 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
   }, [hasMounted, refreshState]);
 
   const statusFlags = getStatusFlags(outreachStatus);
-  const isEditable = composerStep === "draft";
-  const isComposerLocked = composerStep !== "draft";
-  const canSend = composerStep === "approved" && resendReady;
+  const isEditable = composerStep !== "sent";
+  const isComposerLocked = composerStep === "sent";
+  const recipient = useTestEmail ? testEmail.trim() : lead.contact.email;
+  const canSend = resendReady && !isComposerLocked;
 
-  function handleGenerate() {
+  async function handleAiAssist(action: OutreachAssistAction) {
+    const actionConfig = AI_ACTIONS.find((item) => item.action === action);
+    const hasContent = Boolean(subject.trim() || body.trim());
+    if (actionConfig?.needsContent && !hasContent) {
+      setAssistNotice("Write a message first, or use Generate Draft to start from lead context.");
+      return;
+    }
+
     setIsGenerating(true);
+    setAssistAction(action);
     setSendError(null);
-    setTimeout(async () => {
-      try {
-        const draft = await generateOutreachDraftFromApi(lead.id);
-        setSubject(draft.subject);
-        setBody(draft.body);
-        setFollowUp(draft.followUp);
+    setAssistNotice(null);
+    setSendSuccess(null);
+
+    try {
+      const draft = await generateOutreachDraftFromApi(lead.id, {
+        action,
+        subject,
+        body,
+      });
+      setSubject(draft.subject);
+      setBody(draft.body);
+      setFollowUp(draft.followUp);
+      setComposerStep("draft");
+      setActiveMeeting(null);
+      addActivity(
+        lead.id,
+        "email_drafted",
+        action === "generate"
+          ? "Email draft generated in Communication Center"
+          : "Email draft updated with AI assist"
+      );
+      setGenerateSuccess(true);
+      setAssistNotice(
+        draft.warning ??
+          (draft.source === "fallback"
+            ? "AI assistance is unavailable, so LeadLens used the local fallback."
+            : "Draft updated. Review and edit before sending.")
+      );
+      setTimeout(() => setGenerateSuccess(false), 2000);
+    } catch {
+      setAssistNotice(
+        "AI assistance is unavailable right now. Your current draft is unchanged and you can keep writing manually."
+      );
+    } finally {
+      setIsGenerating(false);
+      setAssistAction(null);
+    }
+  }
+
+  async function handleSaveDraft(status: Extract<OutreachStatus, "Drafted" | "Approved"> = "Drafted") {
+    if (!subject.trim() || !body.trim()) {
+      setSendError("Add a subject and message before saving.");
+      return;
+    }
+    setSendError(null);
+    setAssistNotice(null);
+    try {
+      await saveOutreachDraftToDb(lead.id, { subject, body }, status);
+      if (status === "Approved") {
+        await updateOutreachStatus(lead.id, "Approved");
+        setComposerStep("approved");
+        addActivity(lead.id, "email_approved", "Email approved for sending");
+      } else {
+        await updateOutreachStatus(lead.id, "Drafted");
         setComposerStep("draft");
-        setActiveMeeting(null);
-        addActivity(lead.id, "email_drafted", "Email drafted in Communication Center");
-        setGenerateSuccess(true);
-        setTimeout(() => setGenerateSuccess(false), 2000);
-      } catch {
-        setSendError("Could not generate outreach. Please try again.");
-      } finally {
-        setIsGenerating(false);
       }
-    }, 900);
+      setSaveFeedback(true);
+      setTimeout(() => setSaveFeedback(false), 2000);
+    } catch {
+      setSendError("Could not save the draft to the database. You can keep editing locally.");
+    }
   }
 
   async function handleApprove() {
     if (!subject.trim() || !body.trim()) return;
-    setSendError(null);
-    try {
-      await saveOutreachDraftToDb(lead.id, { subject, body }, "Approved");
-      await updateOutreachStatus(lead.id, "Approved");
-      setComposerStep("approved");
-      addActivity(lead.id, "email_approved", "Email approved for sending");
-    } catch {
-      setSendError("Could not save approval to the database.");
-    }
+    await handleSaveDraft("Approved");
   }
 
   async function handleSend() {
-    if (composerStep !== "approved") return;
-
-    const recipient = useTestEmail ? testEmail.trim() : lead.contact.email;
     if (!recipient) {
-      setSendError("Enter a test email address before sending.");
+      setSendError(
+        useTestEmail
+          ? "Enter a test email address before sending."
+          : "This lead does not have a recipient email."
+      );
+      return;
+    }
+
+    if (!subject.trim()) {
+      setSendError("Add a subject before sending.");
+      return;
+    }
+
+    if (!body.trim()) {
+      setSendError("Add a message before sending.");
       return;
     }
 
@@ -223,23 +294,12 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
     saveTestEmail(testEmail);
     setIsSending(true);
     setSendError(null);
-
-    const draft = getOutreachDraft(lead.id);
-    const baseUrl =
-      typeof window !== "undefined" ? window.location.origin : undefined;
-    const prepared = prepareEmailPayload({
-      subject: subject.trim(),
-      body: body.trim(),
-      leadId: lead.id,
-      baseUrl,
-      ctaConfig: draft?.ctaConfig ?? DEFAULT_EMAIL_CTA_CONFIG,
-    });
+    setSendSuccess(null);
 
     const result = await sendEmailViaApi({
       to: recipient,
-      subject: prepared.subject,
-      body: prepared.body,
-      html: prepared.html,
+      subject: subject.trim(),
+      body: body.trim(),
       leadName: lead.businessName,
     });
 
@@ -260,6 +320,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
       setComposerStep("sent");
       setOutreachStatus(await getOutreachStatusFromDb(lead.id));
       setMessages(await getConversationMessagesFromDb(lead.id));
+      setSendSuccess(`Email sent to ${recipient}.`);
     } catch {
       setSendError("Email was sent, but LeadLens could not save the conversation to the database.");
     } finally {
@@ -341,8 +402,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
               Customer Communication Center
             </h3>
             <p className="mt-0.5 text-sm text-slate-400">
-              Contact {lead.contact.name} at {lead.businessName} — no Gmail or
-              Outlook required
+              Editable outreach workspace for {lead.businessName}
             </p>
           </div>
           <span className="rounded-full bg-violet-500/15 px-3 py-1 text-xs font-semibold text-violet-300">
@@ -373,7 +433,22 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
         )}
         {generateSuccess && (
           <p className="mt-3 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-300">
-            Outreach draft generated and saved to the database.
+            Outreach draft updated and saved to the database.
+          </p>
+        )}
+        {saveFeedback && (
+          <p className="mt-3 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-300">
+            Draft saved.
+          </p>
+        )}
+        {assistNotice && (
+          <p className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-300">
+            {assistNotice}
+          </p>
+        )}
+        {sendSuccess && (
+          <p className="mt-3 rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-300">
+            {sendSuccess}
           </p>
         )}
       </div>
@@ -384,7 +459,7 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
           <div className="py-10 text-center">
             <p className="text-sm font-medium text-slate-300">No messages yet</p>
             <p className="mt-1 text-xs text-slate-400">
-              Generate an AI email below to start the conversation thread
+              Write manually or use AI Assist below to start the conversation thread
             </p>
           </div>
         ) : (
@@ -451,161 +526,256 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
 
       {/* Composer */}
       <div className="p-5">
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
           <span className="rounded-full bg-violet-500/15 px-2.5 py-1 text-xs font-semibold text-violet-300">
-            AI draft — editable before sending
+            Editable email workspace
           </span>
-          <div className="flex flex-wrap gap-2">
-            {composerStep === "draft" && (
-              <span className="rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-semibold text-amber-300">
-                Awaiting approval
-              </span>
-            )}
-            {composerStep === "approved" && (
-              <span className="rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-semibold text-emerald-300">
-                Approved — ready to send
-              </span>
-            )}
-            {composerStep === "sent" && (
-              <span className="rounded-full bg-blue-500/15 px-2 py-0.5 text-xs font-semibold text-blue-300">
-                Sent
-              </span>
-            )}
-          </div>
+          <span
+            className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+              composerStep === "sent"
+                ? "bg-blue-500/15 text-blue-300"
+                : composerStep === "approved"
+                  ? "bg-emerald-500/15 text-emerald-300"
+                  : "bg-amber-500/15 text-amber-300"
+            }`}
+          >
+            {composerStep === "sent"
+              ? "Sent"
+              : composerStep === "approved"
+                ? "Saved as approved"
+                : "Draft editor"}
+          </span>
         </div>
 
-        {!subject && !body && composerStep === "draft" && (
-          <div className="mb-4 rounded-lg border border-dashed border-saas-border bg-white/5 py-8 text-center">
-            <p className="text-sm text-slate-400">
-              Generate a personalized outreach email to begin
+        <section className="rounded-xl border border-saas-border bg-white/5 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
+            Recipient
+          </p>
+          <div className="mt-3 grid gap-3 md:grid-cols-[1fr_1.2fr]">
+            <div className="rounded-lg border border-saas-border bg-saas-card p-3">
+              <p className="text-sm font-semibold text-white">
+                {lead.contact.name || "Contact pending"}
+              </p>
+              <p className="mt-1 text-xs text-slate-400">{lead.contact.role}</p>
+              <p className="mt-2 break-all text-xs text-violet-300">
+                {lead.contact.email || "No lead email saved"}
+              </p>
+            </div>
+            <div className="rounded-lg border border-saas-border bg-saas-card p-3">
+              <p className="text-sm font-semibold text-white">{lead.businessName}</p>
+              <p className="mt-1 text-xs text-slate-400">
+                {lead.industry} · {lead.location}, {lead.city}
+              </p>
+              <p className="mt-2 text-xs text-slate-400">
+                Score{" "}
+                <span className="font-semibold text-violet-300">
+                  {lead.scoreBreakdown.total}/100
+                </span>{" "}
+                · CRM{" "}
+                <span className="font-semibold text-violet-300">
+                  {lead.crmStatus}
+                </span>
+              </p>
+            </div>
+          </div>
+          <label className="mt-4 flex items-center gap-2 text-sm text-slate-300">
+            <input
+              type="checkbox"
+              checked={useTestEmail}
+              onChange={(e) => setUseTestEmail(e.target.checked)}
+              className="rounded border-slate-300"
+              disabled={isSending}
+            />
+            Send to my test address
+          </label>
+          {useTestEmail ? (
+            <input
+              type="email"
+              value={testEmail}
+              onChange={(e) => setTestEmail(e.target.value)}
+              placeholder="your@email.com"
+              className="saas-input mt-2 w-full px-4 py-2.5 text-sm"
+              disabled={isSending}
+            />
+          ) : (
+            <p className="mt-2 text-xs text-slate-400">
+              Sending to saved lead contact:{" "}
+              <span className="font-medium text-slate-300">
+                {lead.contact.email || "No email available"}
+              </span>
             </p>
-            <Button className="mt-3" onClick={handleGenerate} disabled={isGenerating}>
-              {isGenerating ? "Generating…" : "Generate AI email"}
+          )}
+        </section>
+
+        <section className="mt-4 rounded-xl border border-saas-border bg-white/5 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
+            Lead Context
+          </p>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Opportunity Signals
+              </p>
+              <ul className="mt-2 space-y-1 text-sm text-slate-300">
+                {lead.valuableReasons.slice(0, 3).map((reason) => (
+                  <li key={reason}>• {reason}</li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Evidence
+              </p>
+              <ul className="mt-2 space-y-1 text-sm text-slate-300">
+                {lead.evidenceSources.slice(0, 3).map((source) => (
+                  <li key={`${source.sourceName}-${source.evidenceSummary}`}>
+                    • {source.sourceName}: {source.evidenceSummary}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-4 rounded-xl border border-violet-500/20 bg-violet-500/10 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-violet-300">
+                AI Assist
+              </p>
+              <p className="mt-1 text-xs text-slate-400">
+                Optional. These actions use the current editor content and lead context.
+              </p>
+            </div>
+          </div>
+          <div className="mt-3 flex flex-wrap gap-2">
+            {AI_ACTIONS.map((item) => (
+              <Button
+                key={item.action}
+                size="sm"
+                variant={item.action === "generate" ? "primary" : "secondary"}
+                onClick={() => handleAiAssist(item.action)}
+                disabled={isGenerating || isSending || isComposerLocked}
+              >
+                {isGenerating && assistAction === item.action
+                  ? "Working..."
+                  : item.label}
+              </Button>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-4 rounded-xl border border-saas-border bg-white/5 p-4">
+          <label className="block text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Subject
+          </label>
+          <input
+            type="text"
+            value={subject}
+            onChange={(e) => {
+              setSubject(e.target.value);
+              setSendSuccess(null);
+              if (composerStep === "approved") setComposerStep("draft");
+            }}
+            readOnly={isComposerLocked}
+            placeholder={`Outreach for ${lead.businessName}`}
+            className="saas-input mt-1.5 w-full px-4 py-2.5 text-sm disabled:bg-white/5"
+          />
+
+          <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-slate-400">
+            Message
+          </label>
+          <textarea
+            value={body}
+            onChange={(e) => {
+              setBody(e.target.value);
+              setSendSuccess(null);
+              if (composerStep === "approved") setComposerStep("draft");
+            }}
+            readOnly={isComposerLocked}
+            rows={14}
+            placeholder={`Write a message to ${lead.contact.name || lead.businessName}...`}
+            className="saas-input mt-1.5 w-full resize-y px-4 py-3 font-sans text-sm leading-relaxed disabled:bg-white/5"
+          />
+
+          <p className="mt-2 text-xs text-slate-400">
+            The subject and message are sent exactly as edited. Meeting links are only
+            included if you insert a meeting proposal.
+          </p>
+
+          {followUp && (
+            <div className="mt-4 rounded-lg border border-saas-border bg-white/5 p-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
+                Optional follow-up generated
+              </p>
+              <pre className="mt-2 whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-300">
+                {followUp}
+              </pre>
+            </div>
+          )}
+        </section>
+
+        {isEditable && (
+          <section className="mt-4 rounded-xl border border-saas-border bg-white/5 p-4">
+            <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
+              Meeting Workflow
+            </p>
+            <p className="mt-1 text-xs text-slate-400">
+              Insert a meeting proposal into the current message when useful.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {MEETING_BUTTONS.map((btn) => (
+                <Button
+                  key={btn.type}
+                  size="sm"
+                  variant={activeMeeting === btn.type ? "primary" : "secondary"}
+                  onClick={() => handleMeetingProposal(btn.type)}
+                  disabled={isSending}
+                >
+                  {btn.label}
+                </Button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section className="mt-4 rounded-xl border border-saas-border bg-white/5 p-4">
+          <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
+            Send
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => handleSaveDraft("Drafted")}
+              disabled={isSending || isGenerating || isComposerLocked}
+            >
+              {saveFeedback ? "Saved!" : "Save Draft"}
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleApprove}
+              disabled={isSending || isGenerating || isComposerLocked}
+            >
+              Save as Approved
+            </Button>
+            <Button
+              variant="success"
+              size="sm"
+              onClick={handleSend}
+              disabled={isSending || isGenerating || !canSend}
+            >
+              {isSending ? "Sending..." : "Send Email"}
             </Button>
           </div>
-        )}
-
-        {(subject || body || composerStep !== "draft") && (
-          <>
-            <label className="block text-xs font-semibold uppercase tracking-wide text-slate-400">
-              Subject
-            </label>
-            <input
-              type="text"
-              value={subject}
-              onChange={(e) => {
-                setSubject(e.target.value);
-                if (composerStep === "approved") setComposerStep("draft");
-              }}
-              readOnly={isComposerLocked}
-              className="saas-input mt-1.5 w-full px-4 py-2.5 text-sm disabled:bg-white/5"
-            />
-
-            <label className="mt-4 block text-xs font-semibold uppercase tracking-wide text-slate-400">
-              Message
-            </label>
-            <textarea
-              value={body}
-              onChange={(e) => {
-                setBody(e.target.value);
-                if (composerStep === "approved") setComposerStep("draft");
-              }}
-              readOnly={isComposerLocked}
-              rows={12}
-              className="saas-input mt-1.5 w-full resize-y px-4 py-3 font-sans text-sm leading-relaxed disabled:bg-white/5"
-            />
-
-            <p className="mt-2 text-xs text-slate-400">
-              Includes customer response links: Request a Call · Choose Meeting
-              Time · Not Interested
+          {!resendReady && (
+            <p className="mt-3 text-xs text-amber-300">
+              Resend is not configured. You can keep writing and saving drafts,
+              but live sending is disabled.
             </p>
-
-            {followUp && (
-              <div className="mt-4 rounded-lg border border-saas-border bg-white/5 p-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
-                  Optional follow-up generated
-                </p>
-                <pre className="mt-2 whitespace-pre-wrap font-sans text-sm leading-relaxed text-slate-300">
-                  {followUp}
-                </pre>
-              </div>
-            )}
-
-            {isEditable && (
-              <div className="mt-4">
-                <p className="text-xs font-semibold uppercase tracking-wide text-violet-400">
-                  Meeting proposals
-                </p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {MEETING_BUTTONS.map((btn) => (
-                    <Button
-                      key={btn.type}
-                      size="sm"
-                      variant={activeMeeting === btn.type ? "primary" : "secondary"}
-                      onClick={() => handleMeetingProposal(btn.type)}
-                    >
-                      {btn.label}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {composerStep === "approved" && (
-              <div className="mt-4 rounded-lg border border-violet-500/20 bg-violet-500/10 p-4">
-                <label className="flex items-center gap-2 text-sm text-slate-300">
-                  <input
-                    type="checkbox"
-                    checked={useTestEmail}
-                    onChange={(e) => setUseTestEmail(e.target.checked)}
-                    className="rounded border-slate-300"
-                  />
-                  Send to my test address
-                </label>
-                {useTestEmail && (
-                  <input
-                    type="email"
-                    value={testEmail}
-                    onChange={(e) => setTestEmail(e.target.value)}
-                    placeholder="your@email.com"
-                    className="saas-input mt-2 w-full px-4 py-2.5 text-sm"
-                  />
-                )}
-                <p className="mt-2 text-xs text-slate-400">
-                  Emails are never sent automatically — click Send after approval.
-                </p>
-              </div>
-            )}
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              {isEditable && (
-                <>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={handleGenerate}
-                    disabled={isGenerating}
-                  >
-                    Regenerate
-                  </Button>
-                  <Button size="sm" onClick={handleApprove}>
-                    Approve email
-                  </Button>
-                </>
-              )}
-              {composerStep === "approved" && (
-                <Button
-                  variant="success"
-                  size="sm"
-                  onClick={handleSend}
-                  disabled={isSending || !canSend}
-                >
-                  {isSending ? "Sending…" : "Send email"}
-                </Button>
-              )}
-            </div>
-          </>
-        )}
+          )}
+        </section>
 
         {/* Simulated inbox */}
         {composerStep === "sent" && (

@@ -16,6 +16,17 @@ type OutreachMessageApi = {
   providerMessageId?: string | null;
 };
 
+const STATUS_ONLY_MESSAGES = [
+  "Sent",
+  "Opened",
+  "Replied",
+  "Meeting Suggested",
+  "Meeting Accepted",
+  "Meeting Scheduled",
+  "Meeting Declined",
+  "Bounced",
+];
+
 export async function fetchOpportunitiesFromApi(): Promise<Lead[]> {
   const res = await fetch("/api/opportunities", { cache: "no-store" });
   if (!res.ok) throw new Error("Failed to fetch opportunities");
@@ -75,6 +86,15 @@ export async function fetchOutreachMessagesFromApi(
     .filter((message) =>
       !["Drafted", "Approved", "Follow-up Draft"].includes(message.statusText ?? "")
     )
+    .filter((message) => {
+      const status = String(message.statusText ?? "");
+      const body = String(message.body ?? "");
+      return !(
+        STATUS_ONLY_MESSAGES.includes(status) &&
+        !message.subject &&
+        body === status
+      );
+    })
     .map((message) => ({
       id: String(message.id),
       direction: message.direction === "INBOUND" || message.direction === "inbound" ? "inbound" : "outbound",
@@ -177,12 +197,26 @@ export async function saveOutreachDraftToApi(
   });
 }
 
+export type OutreachAssistAction =
+  | "generate"
+  | "improve"
+  | "professional"
+  | "shorter"
+  | "rewrite"
+  | "personalize";
+
 export async function generateOutreachDraftFromApi(
-  opportunityId: string
+  opportunityId: string,
+  payload: {
+    action?: OutreachAssistAction;
+    subject?: string;
+    body?: string;
+  } = {}
 ): Promise<GeneratedOutreachDraft> {
   const res = await fetch(`/api/opportunities/${opportunityId}/outreach/generate`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error("Failed to generate outreach draft");
   const data = await res.json();

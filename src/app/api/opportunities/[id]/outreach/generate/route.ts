@@ -21,12 +21,76 @@ type OpenAiResponse = {
   }>;
 };
 
-function buildPrompt(lead: Lead, profile: OutreachCompanyProfile | null) {
+type AssistAction =
+  | "generate"
+  | "improve"
+  | "professional"
+  | "shorter"
+  | "rewrite"
+  | "personalize";
+
+type AssistRequest = {
+  action?: AssistAction;
+  subject?: string;
+  body?: string;
+};
+
+const ACTION_INSTRUCTIONS: Record<AssistAction, string> = {
+  generate:
+    "Create a new outreach draft if no current draft is provided. If a current draft is provided, improve it without discarding the user's intent.",
+  improve:
+    "Improve clarity, structure, and usefulness while preserving the user's core message.",
+  professional:
+    "Make the message more professional, polished, and direct without adding unsupported claims.",
+  shorter:
+    "Make the message shorter and easier to scan while keeping the core ask and evidence.",
+  rewrite:
+    "Rewrite the message in a fresh way while preserving the factual basis and desired outcome.",
+  personalize:
+    "Personalize the message more strongly using the available lead, evidence, score, CRM, and sender context.",
+};
+
+function isAssistAction(value: unknown): value is AssistAction {
+  return (
+    value === "generate" ||
+    value === "improve" ||
+    value === "professional" ||
+    value === "shorter" ||
+    value === "rewrite" ||
+    value === "personalize"
+  );
+}
+
+function getAssistRequest(value: unknown): AssistRequest {
+  if (typeof value !== "object" || value == null) return {};
+  const payload = value as {
+    action?: unknown;
+    subject?: unknown;
+    body?: unknown;
+  };
+  return {
+    action: isAssistAction(payload.action) ? payload.action : "generate",
+    subject: typeof payload.subject === "string" ? payload.subject : "",
+    body: typeof payload.body === "string" ? payload.body : "",
+  };
+}
+
+function buildPrompt(
+  lead: Lead,
+  profile: OutreachCompanyProfile | null,
+  request: Required<AssistRequest>
+) {
   const evidence = lead.evidenceSources
     .map((source) => `${source.sourceName} (${source.sourceType}): ${source.evidenceSummary}`)
     .slice(0, 4);
+  const currentDraft = request.subject.trim() || request.body.trim()
+    ? `Current editor draft:
+- Subject: ${request.subject.trim() || "(empty)"}
+- Body:
+${request.body.trim() || "(empty)"}`
+    : "Current editor draft: empty";
 
-  return `Create a concise B2B outreach email for a vehicle branding opportunity.
+  return `Create or edit a concise B2B outreach email for a lead intelligence workflow.
 
 Return only valid JSON with this exact shape:
 {
@@ -40,10 +104,16 @@ Rules:
 - Mention the specific customer/company name.
 - Mention the specific reason this customer was recommended.
 - Mention evidence/source context.
-- Mention vehicle branding or fleet graphics.
+- Mention vehicle branding or fleet graphics only because it is the current prototype use case.
 - Use a professional, direct tone.
 - Do not use generic sales hype.
 - Keep the body under 180 words.
+- Preserve the user's current draft intent when a current draft exists.
+
+Requested action:
+- ${ACTION_INSTRUCTIONS[request.action]}
+
+${currentDraft}
 
 Customer opportunity:
 - Company: ${lead.businessName}
@@ -51,6 +121,7 @@ Customer opportunity:
 - Location: ${lead.location}, ${lead.city}
 - Recommended contact: ${lead.contact.name || "Unknown"} (${lead.contact.role || "Decision maker"})
 - Opportunity score: ${lead.scoreBreakdown.total}/100
+- CRM status: ${lead.crmStatus}
 - Recommended services: ${lead.recommendedServices.join(", ") || "Vehicle branding consultation"}
 - Opportunity reasons: ${lead.valuableReasons.join("; ") || "Relevant regional business for vehicle branding review"}
 - Insights: ${lead.opportunityInsights.map((item) => `${item.finding} Evidence: ${item.evidence}`).join("; ") || "No extra insights"}
@@ -88,7 +159,8 @@ function parseOpenAiDraft(content: string): Omit<GeneratedOutreachDraft, "source
 
 async function generateWithOpenAi(
   lead: Lead,
-  profile: OutreachCompanyProfile | null
+  profile: OutreachCompanyProfile | null,
+  request: Required<AssistRequest>
 ): Promise<GeneratedOutreachDraft | null> {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) return null;
@@ -110,7 +182,7 @@ async function generateWithOpenAi(
         },
         {
           role: "user",
-          content: buildPrompt(lead, profile),
+          content: buildPrompt(lead, profile, request),
         },
       ],
       temperature: 0.4,
@@ -126,8 +198,33 @@ async function generateWithOpenAi(
   return draft ? { ...draft, source: "openai" } : null;
 }
 
+function generateFallbackDraft(
+  lead: Lead,
+  profile: OutreachCompanyProfile | null,
+  request: Required<AssistRequest>
+): GeneratedOutreachDraft {
+  const hasCurrentDraft = Boolean(request.subject.trim() || request.body.trim());
+
+  if (hasCurrentDraft) {
+    return {
+      subject: request.subject.trim() || `Outreach for ${lead.businessName}`,
+      body: request.body.trim(),
+      followUp: "",
+      source: "fallback",
+      warning:
+        "AI assistance is unavailable right now, so your current draft was kept unchanged.",
+    };
+  }
+
+  return {
+    ...generateOutreachDraft(lead, profile),
+    warning:
+      "AI assistance is unavailable right now, so LeadLens used the local draft generator.",
+  };
+}
+
 export async function POST(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
@@ -149,10 +246,17 @@ export async function POST(
         targetCustomer: profile.targetCustomer,
       }
     : null;
+  const body = await request.json().catch(() => null);
+  const assist = getAssistRequest(body);
+  const assistRequest: Required<AssistRequest> = {
+    action: assist.action ?? "generate",
+    subject: assist.subject ?? "",
+    body: assist.body ?? "",
+  };
 
   const draft =
-    (await generateWithOpenAi(lead, companyProfile)) ??
-    generateOutreachDraft(lead, companyProfile);
+    (await generateWithOpenAi(lead, companyProfile, assistRequest)) ??
+    generateFallbackDraft(lead, companyProfile, assistRequest);
 
   const outreachMessage = await createOutreachMessage(id, {
     direction: "outbound",

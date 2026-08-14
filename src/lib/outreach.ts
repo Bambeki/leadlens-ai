@@ -14,6 +14,7 @@ export interface GeneratedOutreachDraft {
   body: string;
   followUp: string;
   source: "openai" | "fallback";
+  warning?: string;
 }
 
 const VALUE_PROPS: Record<string, string> = {
