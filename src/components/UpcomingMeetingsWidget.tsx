@@ -6,7 +6,7 @@ import {
   formatMeetingCountdown,
   formatMeetingDate,
   formatMeetingTime,
-  getUpcomingMeetingsFromDb,
+  getUpcomingMeetingsWithSource,
   MEETINGS_UPDATED_EVENT,
   type ScheduledMeeting,
 } from "@/lib/meetings";
@@ -17,6 +17,7 @@ import { useHasMounted } from "@/hooks/useHasMounted";
 export default function UpcomingMeetingsWidget() {
   const hasMounted = useHasMounted();
   const [meetings, setMeetings] = useState<ScheduledMeeting[]>([]);
+  const [loadWarning, setLoadWarning] = useState<string | null>(null);
   const [, setTick] = useState(0);
 
   useEffect(() => {
@@ -26,12 +27,18 @@ export default function UpcomingMeetingsWidget() {
 
     const load = async () => {
       try {
-        const upcoming = await getUpcomingMeetingsFromDb();
+        const result = await getUpcomingMeetingsWithSource();
         if (!isCurrent) return;
-        setMeetings(upcoming);
+        setMeetings(result.meetings);
+        setLoadWarning(
+          result.source === "cache-fallback"
+            ? `Showing cached meetings: ${result.error}`
+            : null
+        );
       } catch {
         if (!isCurrent) return;
         setMeetings([]);
+        setLoadWarning("Could not load meetings from the database.");
       }
     };
     const queueLoad = () => {
@@ -92,12 +99,22 @@ export default function UpcomingMeetingsWidget() {
 
       {meetings.length === 0 ? (
         <div className="px-5 py-8 text-center">
+          {loadWarning && (
+            <p className="mb-3 text-xs font-medium text-amber-300">
+              {loadWarning}
+            </p>
+          )}
           <p className="text-sm text-slate-400">
             Meetings appear here when customers pick a time via response links.
           </p>
         </div>
       ) : (
         <div className="overflow-x-auto">
+          {loadWarning && (
+            <p className="px-5 pt-3 text-xs font-medium text-amber-300">
+              {loadWarning}
+            </p>
+          )}
           <table className="saas-table w-full min-w-[640px] text-left text-sm">
             <thead>
               <tr className="border-b border-saas-border text-slate-400">

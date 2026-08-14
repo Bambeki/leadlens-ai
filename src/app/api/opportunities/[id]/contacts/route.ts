@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { Contact } from "@/lib/types";
+import { databaseUnavailableResponse } from "@/lib/api-diagnostics";
 import { createContact, listContacts } from "@/lib/opportunity-db";
 
 export const dynamic = "force-dynamic";
@@ -20,8 +21,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const contacts = await listContacts(id);
-  return NextResponse.json({ contacts });
+  try {
+    const contacts = await listContacts(id);
+    return NextResponse.json({ contacts, persistence: "database" });
+  } catch (error) {
+    return databaseUnavailableResponse("list contacts", error);
+  }
 }
 
 export async function POST(
@@ -35,6 +40,10 @@ export async function POST(
     return NextResponse.json({ error: "Invalid contact payload" }, { status: 400 });
   }
 
-  const contact = await createContact(id, body);
-  return NextResponse.json({ contact }, { status: 201 });
+  try {
+    const contact = await createContact(id, body);
+    return NextResponse.json({ contact, persistence: "database" }, { status: 201 });
+  } catch (error) {
+    return databaseUnavailableResponse("save contact", error);
+  }
 }

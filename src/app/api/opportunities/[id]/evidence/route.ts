@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { EvidenceSource } from "@/lib/types";
+import { databaseUnavailableResponse } from "@/lib/api-diagnostics";
 import { createEvidenceSource, listEvidenceSources } from "@/lib/opportunity-db";
 
 export const dynamic = "force-dynamic";
@@ -21,8 +22,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const evidenceSources = await listEvidenceSources(id);
-  return NextResponse.json({ evidenceSources });
+  try {
+    const evidenceSources = await listEvidenceSources(id);
+    return NextResponse.json({ evidenceSources, persistence: "database" });
+  } catch (error) {
+    return databaseUnavailableResponse("list evidence sources", error);
+  }
 }
 
 export async function POST(
@@ -36,6 +41,13 @@ export async function POST(
     return NextResponse.json({ error: "Invalid evidence source payload" }, { status: 400 });
   }
 
-  const evidenceSource = await createEvidenceSource(id, body);
-  return NextResponse.json({ evidenceSource }, { status: 201 });
+  try {
+    const evidenceSource = await createEvidenceSource(id, body);
+    return NextResponse.json(
+      { evidenceSource, persistence: "database" },
+      { status: 201 }
+    );
+  } catch (error) {
+    return databaseUnavailableResponse("save evidence source", error);
+  }
 }

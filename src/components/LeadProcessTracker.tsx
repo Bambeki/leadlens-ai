@@ -6,7 +6,6 @@ import { MEETINGS_UPDATED_EVENT } from "@/lib/meetings";
 import {
   EMPTY_LEAD_WORKFLOW_STATE,
   getLeadWorkflowStateFromDb,
-  syncMeetingWorkflowState,
   type LeadWorkflowState,
 } from "@/lib/lead-workflow";
 import { formatMeetingDate, formatMeetingTime } from "@/lib/meetings";
@@ -96,7 +95,6 @@ export default function LeadProcessTracker({ leadId }: { leadId: string }) {
     let isCurrent = true;
     let refreshQueue = Promise.resolve();
 
-    syncMeetingWorkflowState(leadId);
     const refresh = async () => {
       const workflowState = await getLeadWorkflowStateFromDb(leadId);
       if (isCurrent) setState(workflowState);

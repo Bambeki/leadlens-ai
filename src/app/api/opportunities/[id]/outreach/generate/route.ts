@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { databaseUnavailableResponse } from "@/lib/api-diagnostics";
 import { getCompanyProfile } from "@/lib/company-profile-db";
 import {
   createOutreachMessage,
@@ -9,6 +10,7 @@ import {
   type GeneratedOutreachDraft,
   type OutreachCompanyProfile,
 } from "@/lib/outreach";
+import { toSafeDiagnosticMessage } from "@/lib/system-status";
 import type { Lead } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -34,6 +36,10 @@ type AssistRequest = {
   subject?: string;
   body?: string;
 };
+
+type OpenAiGenerationResult =
+  | { draft: GeneratedOutreachDraft; diagnostic: null }
+  | { draft: null; diagnostic: string };
 
 const ACTION_INSTRUCTIONS: Record<AssistAction, string> = {
   generate:
@@ -161,47 +167,70 @@ async function generateWithOpenAi(
   lead: Lead,
   profile: OutreachCompanyProfile | null,
   request: Required<AssistRequest>
-): Promise<GeneratedOutreachDraft | null> {
+): Promise<OpenAiGenerationResult> {
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return null;
+  if (!apiKey) {
+    return { draft: null, diagnostic: "OPENAI_API_KEY is not configured." };
+  }
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: process.env.OPENAI_MODEL || "gpt-4o-mini",
-      response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "system",
-          content:
-            "You write concise, evidence-backed B2B outreach for vehicle branding and fleet graphics.",
-        },
-        {
-          role: "user",
-          content: buildPrompt(lead, profile, request),
-        },
-      ],
-      temperature: 0.4,
-    }),
-  });
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+        response_format: { type: "json_object" },
+        messages: [
+          {
+            role: "system",
+            content:
+              "You write concise, evidence-backed B2B outreach for vehicle branding and fleet graphics.",
+          },
+          {
+            role: "user",
+            content: buildPrompt(lead, profile, request),
+          },
+        ],
+        temperature: 0.4,
+      }),
+    });
 
-  if (!response.ok) return null;
-  const data = (await response.json()) as OpenAiResponse;
-  const content = data.choices?.[0]?.message?.content;
-  if (!content) return null;
+    if (!response.ok) {
+      const errorPayload = await response.json().catch(() => null);
+      const errorMessage =
+        typeof errorPayload?.error?.message === "string"
+          ? errorPayload.error.message
+          : response.statusText;
+      const diagnostic = `OpenAI request failed (${response.status}): ${toSafeDiagnosticMessage(errorMessage)}`;
+      console.warn(`[openai] Outreach generation failed: ${diagnostic}`);
+      return { draft: null, diagnostic };
+    }
 
-  const draft = parseOpenAiDraft(content);
-  return draft ? { ...draft, source: "openai" } : null;
+    const data = (await response.json()) as OpenAiResponse;
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) {
+      return { draft: null, diagnostic: "OpenAI returned no message content." };
+    }
+
+    const draft = parseOpenAiDraft(content);
+    return draft
+      ? { draft: { ...draft, source: "openai" }, diagnostic: null }
+      : { draft: null, diagnostic: "OpenAI returned invalid draft JSON." };
+  } catch (error) {
+    const diagnostic = `OpenAI request error: ${toSafeDiagnosticMessage(error)}`;
+    console.warn(`[openai] Outreach generation failed: ${diagnostic}`);
+    return { draft: null, diagnostic };
+  }
 }
 
 function generateFallbackDraft(
   lead: Lead,
   profile: OutreachCompanyProfile | null,
-  request: Required<AssistRequest>
+  request: Required<AssistRequest>,
+  diagnostic: string
 ): GeneratedOutreachDraft {
   const hasCurrentDraft = Boolean(request.subject.trim() || request.body.trim());
 
@@ -212,14 +241,16 @@ function generateFallbackDraft(
       followUp: "",
       source: "fallback",
       warning:
-        "AI assistance is unavailable right now, so your current draft was kept unchanged.",
+        `Local fallback — AI unavailable. ${diagnostic} Your current draft was kept unchanged.`,
+      diagnostic,
     };
   }
 
   return {
     ...generateOutreachDraft(lead, profile),
     warning:
-      "AI assistance is unavailable right now, so LeadLens used the local draft generator.",
+      `Local fallback — AI unavailable. ${diagnostic} LeadLens used the local draft generator.`,
+    diagnostic,
   };
 }
 
@@ -228,10 +259,16 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const [lead, profile] = await Promise.all([
-    getOpportunity(id),
-    getCompanyProfile(),
-  ]);
+  let lead: Lead | null;
+  let profile: Awaited<ReturnType<typeof getCompanyProfile>>;
+  try {
+    [lead, profile] = await Promise.all([
+      getOpportunity(id),
+      getCompanyProfile(),
+    ]);
+  } catch (error) {
+    return databaseUnavailableResponse("load opportunity for outreach generation", error);
+  }
 
   if (!lead) {
     return NextResponse.json({ error: "Opportunity not found" }, { status: 404 });
@@ -254,25 +291,47 @@ export async function POST(
     body: assist.body ?? "",
   };
 
+  const openAiResult = await generateWithOpenAi(lead, companyProfile, assistRequest);
   const draft =
-    (await generateWithOpenAi(lead, companyProfile, assistRequest)) ??
-    generateFallbackDraft(lead, companyProfile, assistRequest);
+    openAiResult.draft ??
+    generateFallbackDraft(
+      lead,
+      companyProfile,
+      assistRequest,
+      openAiResult.diagnostic
+    );
 
-  const outreachMessage = await createOutreachMessage(id, {
-    direction: "outbound",
-    subject: draft.subject,
-    body: draft.body,
-    statusText: "Drafted",
-  });
-
-  if (draft.followUp) {
-    await createOutreachMessage(id, {
+  try {
+    const outreachMessage = await createOutreachMessage(id, {
       direction: "outbound",
-      subject: `Follow-up: ${draft.subject}`,
-      body: draft.followUp,
-      statusText: "Follow-up Draft",
+      subject: draft.subject,
+      body: draft.body,
+      statusText: "Drafted",
     });
-  }
 
-  return NextResponse.json({ draft, outreachMessage }, { status: 201 });
+    if (draft.followUp) {
+      await createOutreachMessage(id, {
+        direction: "outbound",
+        subject: `Follow-up: ${draft.subject}`,
+        body: draft.followUp,
+        statusText: "Follow-up Draft",
+      });
+    }
+
+    return NextResponse.json(
+      {
+        draft,
+        outreachMessage,
+        ai: {
+          source: draft.source,
+          configured: Boolean(process.env.OPENAI_API_KEY),
+          diagnostic: draft.source === "fallback" ? draft.diagnostic : null,
+        },
+        persistence: "database",
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    return databaseUnavailableResponse("save generated outreach draft", error);
+  }
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import {
   CRM_UPDATED_EVENT,
-  getActivityTimelineFromDb,
+  getActivityTimelineWithSource,
   type ActivityEvent,
 } from "@/lib/crm-store";
 import { useHasMounted } from "@/hooks/useHasMounted";
@@ -38,6 +38,7 @@ function formatTime(iso: string): string {
 export default function ActivityTimeline({ leadId }: { leadId: string }) {
   const hasMounted = useHasMounted();
   const [events, setEvents] = useState<ActivityEvent[]>([]);
+  const [loadWarning, setLoadWarning] = useState<string | null>(null);
 
   useEffect(() => {
     if (!hasMounted) return;
@@ -45,8 +46,14 @@ export default function ActivityTimeline({ leadId }: { leadId: string }) {
     let loadQueue = Promise.resolve();
 
     const load = async () => {
-      const timeline = await getActivityTimelineFromDb(leadId);
-      if (isCurrent) setEvents(timeline);
+      const result = await getActivityTimelineWithSource(leadId);
+      if (!isCurrent) return;
+      setEvents(result.events);
+      setLoadWarning(
+        result.source === "cache-fallback"
+          ? `Database unavailable. Showing cached activity: ${result.error}`
+          : null
+      );
     };
     const queueLoad = () => {
       loadQueue = loadQueue.catch(() => {}).then(load).catch(() => {});
@@ -88,6 +95,11 @@ export default function ActivityTimeline({ leadId }: { leadId: string }) {
       <p className="mt-1 text-sm text-slate-400">
         Outreach and opportunity events for this customer
       </p>
+      {loadWarning && (
+        <p className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-300">
+          {loadWarning}
+        </p>
+      )}
 
       {events.length === 0 ? (
         <p className="mt-6 text-sm text-slate-400">

@@ -112,7 +112,7 @@ export default function CRMStatusTracker({
       <p className="mt-2 text-xs text-slate-400">
         {isSaving
           ? "Saving opportunity status to database..."
-          : "Click a status to update the opportunity stage. Changes are saved to Supabase."}
+          : "Click a status to update the opportunity stage. Changes are saved to the database."}
       </p>
       {saveError && (
         <p className="mt-2 text-xs font-medium text-red-400">{saveError}</p>

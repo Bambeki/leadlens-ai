@@ -222,12 +222,14 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
         draft.warning ??
           (draft.source === "fallback"
             ? "AI assistance is unavailable, so LeadLens used the local fallback."
-            : "Draft updated. Review and edit before sending.")
+            : "AI-generated draft updated. Review and edit before sending.")
       );
       setTimeout(() => setGenerateSuccess(false), 2000);
-    } catch {
+    } catch (error) {
       setAssistNotice(
-        "AI assistance is unavailable right now. Your current draft is unchanged and you can keep writing manually."
+        error instanceof Error && error.message
+          ? `Draft was not saved. ${error.message}`
+          : "AI assistance is unavailable right now. Your current draft is unchanged and you can keep writing manually."
       );
     } finally {
       setIsGenerating(false);
@@ -699,8 +701,8 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
           />
 
           <p className="mt-2 text-xs text-slate-400">
-            The subject and message are sent exactly as edited. Meeting links are only
-            included if you insert a meeting proposal.
+            The subject and message are sent exactly as edited. Meeting proposals
+            insert LeadLens response links, not external video meeting links.
           </p>
 
           {followUp && (

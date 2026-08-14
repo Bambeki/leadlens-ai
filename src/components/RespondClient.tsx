@@ -250,8 +250,8 @@ export default function RespondClient({
             scheduled for <strong>{confirmedSlot}</strong>.
           </p>
           <p className="mt-4 text-sm text-slate-400">
-            A calendar invite will be sent to your email. Opportunity status
-            is updated automatically in LeadLens AI.
+            This confirms a LeadLens scheduling record and updates opportunity
+            status automatically. No external calendar invite is sent yet.
           </p>
         </div>
       </div>

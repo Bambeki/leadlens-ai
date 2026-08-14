@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { Lead } from "@/lib/types";
+import { databaseUnavailableResponse } from "@/lib/api-diagnostics";
 import { listOpportunities, saveOpportunities, saveOpportunity } from "@/lib/opportunity-db";
 
 export const dynamic = "force-dynamic";
@@ -16,8 +17,12 @@ function isLeadPayload(value: unknown): value is Lead {
 }
 
 export async function GET() {
-  const opportunities = await listOpportunities();
-  return NextResponse.json({ opportunities });
+  try {
+    const opportunities = await listOpportunities();
+    return NextResponse.json({ opportunities, persistence: "database" });
+  } catch (error) {
+    return databaseUnavailableResponse("list opportunities", error);
+  }
 }
 
 export async function POST(request: Request) {
@@ -28,8 +33,15 @@ export async function POST(request: Request) {
     if (!opportunities.every(isLeadPayload)) {
       return NextResponse.json({ error: "Invalid opportunities payload" }, { status: 400 });
     }
-    const saved = await saveOpportunities(opportunities);
-    return NextResponse.json({ opportunities: saved }, { status: 201 });
+    try {
+      const saved = await saveOpportunities(opportunities);
+      return NextResponse.json(
+        { opportunities: saved, persistence: "database" },
+        { status: 201 }
+      );
+    } catch (error) {
+      return databaseUnavailableResponse("save opportunities", error);
+    }
   }
 
   const opportunity = body?.opportunity ?? body;
@@ -37,6 +49,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Invalid opportunity payload" }, { status: 400 });
   }
 
-  const saved = await saveOpportunity(opportunity);
-  return NextResponse.json({ opportunity: saved }, { status: 201 });
+  try {
+    const saved = await saveOpportunity(opportunity);
+    return NextResponse.json(
+      { opportunity: saved, persistence: "database" },
+      { status: 201 }
+    );
+  } catch (error) {
+    return databaseUnavailableResponse("save opportunity", error);
+  }
 }

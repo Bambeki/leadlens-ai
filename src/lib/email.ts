@@ -177,7 +177,7 @@ export async function getOutreachDraftFromDb(
       localStorage.setItem(outreachDraftKey(leadId), JSON.stringify(payload));
       return payload;
     }
-    return draft ?? getOutreachDraft(leadId);
+    return draft;
   } catch {
     return getOutreachDraft(leadId);
   }

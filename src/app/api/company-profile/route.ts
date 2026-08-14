@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { databaseUnavailableResponse } from "@/lib/api-diagnostics";
 import {
   getCompanyProfile,
   upsertCompanyProfile,
@@ -14,8 +15,12 @@ function isValidProfilePayload(value: unknown): value is CompanyProfilePayload {
 }
 
 export async function GET() {
-  const profile = await getCompanyProfile();
-  return NextResponse.json({ profile });
+  try {
+    const profile = await getCompanyProfile();
+    return NextResponse.json({ profile, persistence: "database" });
+  } catch (error) {
+    return databaseUnavailableResponse("get company profile", error);
+  }
 }
 
 export async function POST(request: Request) {
@@ -27,8 +32,12 @@ export async function POST(request: Request) {
     );
   }
 
-  const profile = await upsertCompanyProfile(body);
-  return NextResponse.json({ profile }, { status: 201 });
+  try {
+    const profile = await upsertCompanyProfile(body);
+    return NextResponse.json({ profile, persistence: "database" }, { status: 201 });
+  } catch (error) {
+    return databaseUnavailableResponse("save company profile", error);
+  }
 }
 
 export async function PATCH(request: Request) {

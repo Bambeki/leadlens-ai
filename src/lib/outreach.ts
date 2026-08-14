@@ -15,6 +15,7 @@ export interface GeneratedOutreachDraft {
   followUp: string;
   source: "openai" | "fallback";
   warning?: string;
+  diagnostic?: string;
 }
 
 const VALUE_PROPS: Record<string, string> = {

@@ -1,18 +1,17 @@
 import type { Lead } from "./types";
 import { leads as baseLeads } from "./base-data";
-import { getImportedLeads } from "./imported-leads";
+import { getCachedOpportunities, getImportedLeads } from "./imported-leads";
+import { fetchOpportunityFromApi } from "./opportunity-api";
 
 export function findLeadById(id: string): Lead | undefined {
+  const cached = getCachedOpportunities();
   const imported = getImportedLeads();
-  return [...baseLeads, ...imported].find((l) => l.id === id);
+  return [...cached, ...imported, ...baseLeads].find((l) => l.id === id);
 }
 
 export async function findLeadByIdFromApi(id: string): Promise<Lead | undefined> {
   try {
-    const res = await fetch(`/api/opportunities/${id}`, { cache: "no-store" });
-    if (!res.ok) return findLeadById(id);
-    const data = await res.json();
-    return data.opportunity as Lead | undefined;
+    return (await fetchOpportunityFromApi(id)) ?? undefined;
   } catch {
     return findLeadById(id);
   }

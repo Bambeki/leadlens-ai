@@ -3,6 +3,7 @@ import { buildLeadFromScraped } from "./build-lead";
 import { uniqueId } from "./unique-id";
 
 const LEADS_KEY = "leadlens-imported-leads";
+const OPPORTUNITY_CACHE_KEY = "leadlens-opportunity-cache";
 const SESSIONS_KEY = "leadlens-import-sessions";
 
 export const LEADS_UPDATED_EVENT = "leadlens-leads-updated";
@@ -27,6 +28,21 @@ export function saveImportedLeads(leads: Lead[]) {
   window.dispatchEvent(new CustomEvent(LEADS_UPDATED_EVENT));
 }
 
+export function getCachedOpportunities(): Lead[] {
+  if (!isBrowser()) return [];
+  try {
+    const raw = localStorage.getItem(OPPORTUNITY_CACHE_KEY);
+    return raw ? (JSON.parse(raw) as Lead[]) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function saveOpportunityCache(leads: Lead[]) {
+  if (!isBrowser()) return;
+  localStorage.setItem(OPPORTUNITY_CACHE_KEY, JSON.stringify(leads));
+}
+
 export function getImportSessions(): ImportSession[] {
   if (!isBrowser()) return [];
   try {
@@ -43,15 +59,29 @@ function saveSession(session: ImportSession) {
   localStorage.setItem(SESSIONS_KEY, JSON.stringify([session, ...sessions].slice(0, 20)));
 }
 
-export function importBusinessesToPipeline(
-  businesses: ScrapedBusiness[],
+export function recordImportSession(
   searchTerm: string,
-  city: string
+  city: string,
+  resultCount: number,
+  importedCount: number
+) {
+  saveSession({
+    id: uniqueId("session-"),
+    searchTerm,
+    city,
+    scrapedAt: new Date().toISOString(),
+    resultCount,
+    importedCount,
+  });
+}
+
+export function buildLeadsForImport(
+  businesses: ScrapedBusiness[],
+  existingLeads: Lead[] = []
 ): Lead[] {
-  const existing = getImportedLeads();
-  const existingIds = new Set(existing.map((l) => l.id));
+  const existingIds = new Set(existingLeads.map((l) => l.id));
   const existingNames = new Set(
-    existing.map((l) => `${l.businessName.toLowerCase()}-${l.city.toLowerCase()}`)
+    existingLeads.map((l) => `${l.businessName.toLowerCase()}-${l.city.toLowerCase()}`)
   );
 
   const newLeads: Lead[] = [];
@@ -66,17 +96,20 @@ export function importBusinessesToPipeline(
     existingNames.add(nameKey);
   }
 
+  return newLeads;
+}
+
+export function importBusinessesToPipeline(
+  businesses: ScrapedBusiness[],
+  searchTerm: string,
+  city: string
+): Lead[] {
+  const existing = getImportedLeads();
+  const newLeads = buildLeadsForImport(businesses, existing);
+
   const merged = [...existing, ...newLeads];
   saveImportedLeads(merged);
-
-  saveSession({
-    id: uniqueId("session-"),
-    searchTerm,
-    city,
-    scrapedAt: new Date().toISOString(),
-    resultCount: businesses.length,
-    importedCount: newLeads.length,
-  });
+  recordImportSession(searchTerm, city, businesses.length, newLeads.length);
 
   return newLeads;
 }

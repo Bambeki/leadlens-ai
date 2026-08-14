@@ -23,8 +23,20 @@ type LeadTab = "overview" | "conversation";
 
 export default function LeadDetailClient({ id }: { id: string }) {
   const [tab, setTab] = useState<LeadTab>("overview");
-  const lead = useLeadById(baseLeads, id);
+  const { lead, dataSource, dataSourceError } = useLeadById(baseLeads, id);
   const crmStatus = lead ? lead.crmStatus : null;
+  const isFallback = dataSource === "cache-fallback" || dataSource === "demo-fallback";
+
+  if (dataSource === "loading") {
+    return (
+      <div className="py-16 text-center">
+        <p className="text-lg font-semibold text-white">Loading opportunity...</p>
+        <p className="mt-2 text-sm text-slate-400">
+          Fetching the current record from the database.
+        </p>
+      </div>
+    );
+  }
 
   if (!lead || !crmStatus) {
     return (
@@ -54,6 +66,14 @@ export default function LeadDetailClient({ id }: { id: string }) {
           <span className="text-sm text-emerald-300">
             Imported customer opportunity identified for vehicle branding review
           </span>
+        </div>
+      )}
+
+      {isFallback && (
+        <div className="mb-4 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-2 text-sm font-medium text-amber-300">
+          Database unavailable. Showing{" "}
+          {dataSource === "cache-fallback" ? "cached opportunity data" : "demo/sample data"}
+          {dataSourceError ? `: ${dataSourceError}` : "."}
         </div>
       )}
 

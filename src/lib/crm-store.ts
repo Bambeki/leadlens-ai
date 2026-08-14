@@ -58,6 +58,8 @@ export interface ActivityEvent {
   timestamp: string;
 }
 
+export type ActivityDataSource = "database" | "cache-fallback";
+
 function isBrowser() {
   return typeof window !== "undefined";
 }
@@ -160,7 +162,7 @@ export async function getOutreachStatusFromDb(
     if (status) {
       localStorage.setItem(outreachKey(leadId), status);
     }
-    return status ?? getOutreachStatus(leadId);
+    return status;
   } catch {
     return getOutreachStatus(leadId);
   }
@@ -197,14 +199,29 @@ export function getActivityTimeline(leadId: string): ActivityEvent[] {
 export async function getActivityTimelineFromDb(
   leadId: string
 ): Promise<ActivityEvent[]> {
+  const result = await getActivityTimelineWithSource(leadId);
+  return result.events;
+}
+
+export async function getActivityTimelineWithSource(
+  leadId: string
+): Promise<{
+  events: ActivityEvent[];
+  source: ActivityDataSource;
+  error: string | null;
+}> {
   try {
     const events = await fetchOpportunityActivityFromApi(leadId);
-    if (events.length > 0 && isBrowser()) {
+    if (isBrowser()) {
       localStorage.setItem(activityKey(leadId), JSON.stringify(events));
     }
-    return events.length > 0 ? events : getActivityTimeline(leadId);
-  } catch {
-    return getActivityTimeline(leadId);
+    return { events, source: "database", error: null };
+  } catch (error) {
+    return {
+      events: getActivityTimeline(leadId),
+      source: "cache-fallback",
+      error: error instanceof Error ? error.message : "Database unavailable",
+    };
   }
 }
 
@@ -222,20 +239,22 @@ export function addActivity(
 
   if (!isBrowser()) return event;
 
-  const existing = getActivityTimeline(leadId);
-  localStorage.setItem(
-    activityKey(leadId),
-    JSON.stringify([...existing, event])
-  );
-  saveActivityToApi(leadId, event).catch(() => {
-    // Activity is non-critical UI context; status updates surface their own DB errors.
-  });
-
-  window.dispatchEvent(
-    new CustomEvent(CRM_UPDATED_EVENT, {
-      detail: { leadId, activity: event },
+  saveActivityToApi(leadId, event)
+    .then(() => {
+      const existing = getActivityTimeline(leadId);
+      localStorage.setItem(
+        activityKey(leadId),
+        JSON.stringify([...existing, event])
+      );
+      window.dispatchEvent(
+        new CustomEvent(CRM_UPDATED_EVENT, {
+          detail: { leadId, activity: event },
+        })
+      );
     })
-  );
+    .catch(() => {
+      // Activity is supporting context; primary status/write failures surface elsewhere.
+    });
 
   return event;
 }

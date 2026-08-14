@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { databaseUnavailableResponse } from "@/lib/api-diagnostics";
 import { createOutreachMessage, listOutreachMessages } from "@/lib/opportunity-db";
 
 export const dynamic = "force-dynamic";
@@ -14,8 +15,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const outreachMessages = await listOutreachMessages(id);
-  return NextResponse.json({ outreachMessages });
+  try {
+    const outreachMessages = await listOutreachMessages(id);
+    return NextResponse.json({ outreachMessages, persistence: "database" });
+  } catch (error) {
+    return databaseUnavailableResponse("list outreach messages", error);
+  }
 }
 
 export async function POST(
@@ -29,6 +34,13 @@ export async function POST(
     return NextResponse.json({ error: "Invalid outreach message payload" }, { status: 400 });
   }
 
-  const outreachMessage = await createOutreachMessage(id, body);
-  return NextResponse.json({ outreachMessage }, { status: 201 });
+  try {
+    const outreachMessage = await createOutreachMessage(id, body);
+    return NextResponse.json(
+      { outreachMessage, persistence: "database" },
+      { status: 201 }
+    );
+  } catch (error) {
+    return databaseUnavailableResponse("save outreach message", error);
+  }
 }

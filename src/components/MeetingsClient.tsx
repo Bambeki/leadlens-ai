@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  getScheduledMeetingsFromDb,
+  getScheduledMeetingsWithSource,
   MEETINGS_UPDATED_EVENT,
   type ScheduledMeeting,
 } from "@/lib/meetings";
@@ -24,10 +24,14 @@ export default function MeetingsClient() {
 
     const load = async () => {
       try {
-        const all = await getScheduledMeetingsFromDb();
+        const result = await getScheduledMeetingsWithSource();
         if (!isCurrent) return;
-        setMeetings(all);
-        setLoadError(null);
+        setMeetings(result.meetings);
+        setLoadError(
+          result.source === "cache-fallback"
+            ? `Database unavailable. Showing cached meetings: ${result.error}`
+            : null
+        );
       } catch {
         if (!isCurrent) return;
         setLoadError("Could not load meetings from the database.");

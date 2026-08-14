@@ -3,12 +3,21 @@ import type { SystemStatus } from "./system-status";
 export type { SystemStatus };
 
 const DEFAULT_STATUS: SystemStatus = {
+  databaseUrlDetected: false,
+  directUrlDetected: false,
+  databaseConnected: null,
+  databaseError: null,
+  openAiApiKeyDetected: false,
+  openAiModel: "gpt-4o-mini",
+  openAiReady: false,
   resendApiKeyDetected: false,
   resendFromEmailDetected: false,
   apifyTokenDetected: false,
   apifyActorDetected: false,
   resendReady: false,
   apifyReady: false,
+  meetingProvider: "none",
+  meetingProviderConfigured: false,
 };
 
 export async function fetchSystemStatus(): Promise<SystemStatus> {

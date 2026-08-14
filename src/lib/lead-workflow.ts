@@ -7,9 +7,9 @@ import {
   getCrmOverride,
   getOutreachStatus,
   getOutreachStatusFromDb,
-  hasOutreachBeenSent,
   type OutreachStatus,
 } from "./crm-store";
+import { fetchOpportunityFromApi } from "./opportunity-api";
 import { createNotification } from "./notifications";
 import {
   createMeetingRecord,
@@ -106,7 +106,7 @@ export function getLeadWorkflowState(leadId: string): LeadWorkflowState {
   const outreachStatus = getOutreachStatus(leadId);
   const crmStatus = getCrmOverride(leadId);
   const meeting = getMeetingByLeadId(leadId);
-  const emailSent = hasOutreachBeenSent(leadId);
+  const emailSent = outreachStatus === "Sent";
   const customerResponded =
     (outreachStatus != null && RESPONDED_OUTREACH.includes(outreachStatus)) ||
     meeting != null;
@@ -131,9 +131,10 @@ export async function getLeadWorkflowStateFromDb(
       getOutreachStatusFromDb(leadId),
       getScheduledMeetingsFromDb(),
     ]);
+    const opportunity = await fetchOpportunityFromApi(leadId);
     const meeting = meetings.find((item) => item.leadId === leadId);
-    const crmStatus = meeting?.crmStatus ?? getCrmOverride(leadId);
-    const emailSent = hasOutreachBeenSent(leadId) || outreachStatus === "Sent";
+    const crmStatus = opportunity?.crmStatus ?? meeting?.crmStatus ?? null;
+    const emailSent = outreachStatus === "Sent";
     const customerResponded =
       (outreachStatus != null && RESPONDED_OUTREACH.includes(outreachStatus)) ||
       meeting != null;
@@ -150,20 +151,5 @@ export async function getLeadWorkflowStateFromDb(
     };
   } catch {
     return getLeadWorkflowState(leadId);
-  }
-}
-
-/** Reconcile stored meeting with opportunity status/outreach when detail loads. */
-export function syncMeetingWorkflowState(leadId: string): void {
-  const meeting = getMeetingByLeadId(leadId);
-  if (!meeting) return;
-
-  if (getCrmOverride(leadId) !== "Meeting Scheduled") {
-    updateCrmStatus(leadId, "Meeting Scheduled").catch(() => {});
-  }
-
-  const outreach = getOutreachStatus(leadId);
-  if (outreach !== "Meeting Scheduled") {
-    updateOutreachStatus(leadId, "Meeting Scheduled").catch(() => {});
   }
 }

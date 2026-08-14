@@ -10,9 +10,10 @@ import { useAllLeads } from "@/hooks/useAllLeads";
 import type { Lead } from "@/lib/types";
 
 export default function DashboardClient({ baseLeads }: { baseLeads: Lead[] }) {
-  const { allLeads } = useAllLeads(baseLeads);
+  const { allLeads, dataSource, dataSourceError } = useAllLeads(baseLeads);
   const leadsWithCrm = allLeads;
   const hasCustomerData = leadsWithCrm.length > 0;
+  const isFallback = dataSource === "cache-fallback" || dataSource === "demo-fallback";
 
   const stats = {
     total: leadsWithCrm.length,
@@ -41,6 +42,13 @@ export default function DashboardClient({ baseLeads }: { baseLeads: Lead[] }) {
             data sources
           </Link>
         </p>
+        {isFallback && (
+          <p className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-2 text-sm font-medium text-amber-300">
+            Database unavailable. Showing{" "}
+            {dataSource === "cache-fallback" ? "cached opportunity data" : "demo/sample data"}
+            {dataSourceError ? `: ${dataSourceError}` : "."}
+          </p>
+        )}
       </div>
 
       <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

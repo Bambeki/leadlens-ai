@@ -27,11 +27,42 @@ const STATUS_ONLY_MESSAGES = [
   "Bounced",
 ];
 
+async function readApiJson(res: Response) {
+  return res.json().catch(() => ({}));
+}
+
+function apiErrorMessage(data: unknown, fallback: string): string {
+  if (typeof data !== "object" || data == null) return fallback;
+  const payload = data as { diagnostic?: unknown; error?: unknown };
+  return typeof payload.diagnostic === "string"
+    ? payload.diagnostic
+    : typeof payload.error === "string"
+      ? payload.error
+      : fallback;
+}
+
 export async function fetchOpportunitiesFromApi(): Promise<Lead[]> {
   const res = await fetch("/api/opportunities", { cache: "no-store" });
-  if (!res.ok) throw new Error("Failed to fetch opportunities");
-  const data = await res.json();
-  return Array.isArray(data.opportunities) ? data.opportunities : [];
+  const data = await readApiJson(res);
+  if (!res.ok) {
+    throw new Error(apiErrorMessage(data, "Failed to fetch opportunities"));
+  }
+  return Array.isArray(data.opportunities) ? (data.opportunities as Lead[]) : [];
+}
+
+export async function fetchOpportunityFromApi(
+  opportunityId: string
+): Promise<Lead | null> {
+  const id = encodeURIComponent(opportunityId);
+  const res = await fetch(`/api/opportunities/${id}`, {
+    cache: "no-store",
+  });
+  const data = await readApiJson(res);
+  if (res.status === 404) return null;
+  if (!res.ok) {
+    throw new Error(apiErrorMessage(data, "Failed to fetch opportunity"));
+  }
+  return (data as { opportunity?: Lead }).opportunity ?? null;
 }
 
 export async function saveOpportunitiesToApi(leads: Lead[]): Promise<Lead[]> {
@@ -40,8 +71,10 @@ export async function saveOpportunitiesToApi(leads: Lead[]): Promise<Lead[]> {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ opportunities: leads }),
   });
-  if (!res.ok) throw new Error("Failed to save opportunities");
-  const data = await res.json();
+  const data = await readApiJson(res);
+  if (!res.ok) {
+    throw new Error(apiErrorMessage(data, "Failed to save opportunities"));
+  }
   return Array.isArray(data.opportunities) ? data.opportunities : [];
 }
 
@@ -50,34 +83,44 @@ export async function updateOpportunityStatusInApi(
   status: CRMStatus,
   note?: string
 ) {
-  const res = await fetch(`/api/opportunities/${opportunityId}/status`, {
+  const id = encodeURIComponent(opportunityId);
+  const res = await fetch(`/api/opportunities/${id}/status`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ status, note }),
   });
-  if (!res.ok) throw new Error("Failed to update opportunity status");
-  return res.json();
+  const data = await readApiJson(res);
+  if (!res.ok) {
+    throw new Error(apiErrorMessage(data, "Failed to update opportunity status"));
+  }
+  return data;
 }
 
 export async function fetchOpportunityActivityFromApi(
   opportunityId: string
 ): Promise<ActivityEvent[]> {
-  const res = await fetch(`/api/opportunities/${opportunityId}/status`, {
+  const id = encodeURIComponent(opportunityId);
+  const res = await fetch(`/api/opportunities/${id}/status`, {
     cache: "no-store",
   });
-  if (!res.ok) throw new Error("Failed to fetch opportunity activity");
-  const data = await res.json();
+  const data = await readApiJson(res);
+  if (!res.ok) {
+    throw new Error(apiErrorMessage(data, "Failed to fetch opportunity activity"));
+  }
   return Array.isArray(data.activity) ? data.activity : [];
 }
 
 export async function fetchOutreachMessagesFromApi(
   opportunityId: string
 ): Promise<ConversationMessage[]> {
-  const res = await fetch(`/api/opportunities/${opportunityId}/outreach`, {
+  const id = encodeURIComponent(opportunityId);
+  const res = await fetch(`/api/opportunities/${id}/outreach`, {
     cache: "no-store",
   });
-  if (!res.ok) throw new Error("Failed to fetch outreach messages");
-  const data = await res.json();
+  const data = await readApiJson(res);
+  if (!res.ok) {
+    throw new Error(apiErrorMessage(data, "Failed to fetch outreach messages"));
+  }
   const messages: OutreachMessageApi[] = Array.isArray(data.outreachMessages)
     ? data.outreachMessages
     : [];
@@ -109,11 +152,14 @@ export async function fetchOutreachMessagesFromApi(
 export async function fetchOutreachDraftFromApi(
   opportunityId: string
 ): Promise<OutreachDraft | null> {
-  const res = await fetch(`/api/opportunities/${opportunityId}/outreach`, {
+  const id = encodeURIComponent(opportunityId);
+  const res = await fetch(`/api/opportunities/${id}/outreach`, {
     cache: "no-store",
   });
-  if (!res.ok) throw new Error("Failed to fetch outreach draft");
-  const data = await res.json();
+  const data = await readApiJson(res);
+  if (!res.ok) {
+    throw new Error(apiErrorMessage(data, "Failed to fetch outreach draft"));
+  }
   const messages: OutreachMessageApi[] = Array.isArray(data.outreachMessages)
     ? data.outreachMessages
     : [];
@@ -132,11 +178,14 @@ export async function fetchOutreachDraftFromApi(
 export async function fetchOutreachStatusFromApi(
   opportunityId: string
 ): Promise<OutreachStatus | null> {
-  const res = await fetch(`/api/opportunities/${opportunityId}/outreach`, {
+  const id = encodeURIComponent(opportunityId);
+  const res = await fetch(`/api/opportunities/${id}/outreach`, {
     cache: "no-store",
   });
-  if (!res.ok) throw new Error("Failed to fetch outreach status");
-  const data = await res.json();
+  const data = await readApiJson(res);
+  if (!res.ok) {
+    throw new Error(apiErrorMessage(data, "Failed to fetch outreach status"));
+  }
   const messages: OutreachMessageApi[] = Array.isArray(data.outreachMessages)
     ? data.outreachMessages
     : [];
@@ -172,13 +221,17 @@ export async function saveOutreachMessageToApi(
     sentAt?: string;
   }
 ) {
-  const res = await fetch(`/api/opportunities/${opportunityId}/outreach`, {
+  const id = encodeURIComponent(opportunityId);
+  const res = await fetch(`/api/opportunities/${id}/outreach`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error("Failed to save outreach message");
-  return res.json();
+  const data = await readApiJson(res);
+  if (!res.ok) {
+    throw new Error(apiErrorMessage(data, "Failed to save outreach message"));
+  }
+  return data;
 }
 
 export async function saveOutreachDraftToApi(
@@ -218,8 +271,10 @@ export async function generateOutreachDraftFromApi(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error("Failed to generate outreach draft");
-  const data = await res.json();
+  const data = await readApiJson(res);
+  if (!res.ok) {
+    throw new Error(apiErrorMessage(data, "Failed to generate outreach draft"));
+  }
   return data.draft as GeneratedOutreachDraft;
 }
 
@@ -237,8 +292,8 @@ export async function saveActivityToApi(
 
 export async function fetchMeetingsFromApi(): Promise<ScheduledMeeting[]> {
   const res = await fetch("/api/meetings", { cache: "no-store" });
-  if (!res.ok) throw new Error("Failed to fetch meetings");
-  const data = await res.json();
+  const data = await readApiJson(res);
+  if (!res.ok) throw new Error(apiErrorMessage(data, "Failed to fetch meetings"));
   return Array.isArray(data.meetings) ? data.meetings : [];
 }
 
@@ -254,12 +309,13 @@ export async function saveMeetingToApi(
     scheduledBy?: string;
   }
 ) {
-  const res = await fetch(`/api/opportunities/${opportunityId}/meetings`, {
+  const id = encodeURIComponent(opportunityId);
+  const res = await fetch(`/api/opportunities/${id}/meetings`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error("Failed to save meeting");
-  const data = await res.json();
+  const data = await readApiJson(res);
+  if (!res.ok) throw new Error(apiErrorMessage(data, "Failed to save meeting"));
   return data.meeting as ScheduledMeeting;
 }

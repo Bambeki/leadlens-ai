@@ -10,10 +10,12 @@ function StatusCard({
   label,
   ok,
   description,
+  statusLabel,
 }: {
   label: string;
   ok: boolean;
   description?: string;
+  statusLabel?: string;
 }) {
   return (
     <div
@@ -32,7 +34,7 @@ function StatusCard({
               : "bg-red-500/20 text-red-300"
           }`}
         >
-          {ok ? "Detected" : "Missing"}
+          {statusLabel ?? (ok ? "Detected" : "Missing")}
         </span>
       </div>
       {description && (
@@ -58,7 +60,8 @@ export default function SystemStatusPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">System Status</h1>
         <p className="mt-1 text-slate-400">
-          Environment variable detection for Resend and Apify (no secrets shown)
+          Production integration checks for database, AI, email, and prototype services
+          (no secrets shown)
         </p>
       </div>
 
@@ -70,23 +73,105 @@ export default function SystemStatusPage() {
         <div className="space-y-8">
           <section>
             <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">
-              Resend
+              Database
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <StatusCard
+                label="DATABASE_URL"
+                ok={status.databaseUrlDetected}
+                description="Server-side PostgreSQL connection variable"
+              />
+              <StatusCard
+                label="Database Connection"
+                ok={status.databaseConnected === true}
+                statusLabel={
+                  status.databaseConnected === null
+                    ? "Not checked"
+                    : status.databaseConnected
+                      ? "Connected"
+                      : "Error"
+                }
+                description={
+                  status.databaseConnected
+                    ? "Prisma can connect to PostgreSQL"
+                    : status.databaseError ?? "Prisma could not confirm database connectivity"
+                }
+              />
+              <StatusCard
+                label="DIRECT_URL"
+                ok={status.directUrlDetected}
+                description="Optional Prisma migration/direct connection variable"
+              />
+            </div>
+          </section>
+
+          <section>
+            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">
+              AI
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <StatusCard
+                label="OpenAI API Key"
+                ok={status.openAiApiKeyDetected}
+                description="OPENAI_API_KEY is checked only on the server"
+              />
+              <StatusCard
+                label="OpenAI Model"
+                ok={status.openAiReady}
+                statusLabel={status.openAiModel}
+                description="Configured via OPENAI_MODEL, defaulting to gpt-4o-mini"
+              />
+              <StatusCard
+                label="AI Generation"
+                ok={status.openAiReady}
+                statusLabel={status.openAiReady ? "Configured" : "Not configured"}
+                description="Fallback generation remains available when OpenAI is unavailable"
+              />
+            </div>
+          </section>
+
+          <section>
+            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">
+              Email
             </h2>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <StatusCard
                 label="Resend API Key"
                 ok={status.resendApiKeyDetected}
-                description="RESEND_API_KEY in .env.local"
+                description="RESEND_API_KEY is checked only on the server"
               />
               <StatusCard
                 label="Resend From Email"
                 ok={status.resendFromEmailDetected}
-                description="RESEND_FROM_EMAIL in .env.local"
+                description="RESEND_FROM_EMAIL is required for live sending"
               />
               <StatusCard
                 label="Resend Ready"
                 ok={status.resendReady}
+                statusLabel={status.resendReady ? "Configured" : "Not configured"}
                 description="Both API key and from-email are set"
+              />
+            </div>
+          </section>
+
+          <section>
+            <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-slate-400">
+              Meetings
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <StatusCard
+                label="Meeting Provider"
+                ok={status.meetingProviderConfigured}
+                statusLabel={
+                  status.meetingProviderConfigured ? "Configured" : "Not configured"
+                }
+                description="No Google Meet, Teams, Zoom, Calendly, or calendar provider is currently integrated"
+              />
+              <StatusCard
+                label="Prototype Response Links"
+                ok
+                statusLabel="Available"
+                description="Customers can choose predefined times through LeadLens response pages"
               />
             </div>
           </section>
@@ -118,8 +203,8 @@ export default function SystemStatusPage() {
             <p className="font-medium text-slate-300">Troubleshooting</p>
             <ul className="mt-2 list-inside list-disc space-y-1">
               <li>
-                Place variables in <code className="text-xs">.env.local</code> at
-                the project root
+                Configure production variables in Vercel and local variables in{" "}
+                <code className="text-xs">.env.local</code>
               </li>
               <li>
                 Quote values with spaces:{" "}
@@ -130,8 +215,8 @@ export default function SystemStatusPage() {
               <li>Restart <code className="text-xs">npm run dev</code> after changing env files</li>
               <li>
                 Check the terminal for{" "}
-                <code className="text-xs">RESEND detected: true/false</code> on
-                server start
+                <code className="text-xs">DATABASE_URL detected: true/false</code>{" "}
+                and provider detection logs on server start
               </li>
             </ul>
           </div>

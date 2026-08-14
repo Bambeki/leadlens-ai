@@ -15,8 +15,16 @@ import {
   requestUserLocation,
   type DetectedLocation,
 } from "@/lib/location-detection";
-import { importBusinessesToPipeline, getImportSessions } from "@/lib/imported-leads";
-import { saveOpportunitiesToApi } from "@/lib/opportunity-api";
+import {
+  buildLeadsForImport,
+  getImportSessions,
+  recordImportSession,
+  saveOpportunityCache,
+} from "@/lib/imported-leads";
+import {
+  fetchOpportunitiesFromApi,
+  saveOpportunitiesToApi,
+} from "@/lib/opportunity-api";
 import type { ImportSession } from "@/lib/types";
 import { createNotification } from "@/lib/notifications";
 import PriorityBadge from "./PriorityBadge";
@@ -205,26 +213,39 @@ export default function LeadImport() {
     const toImport = results.filter((r) => selected.has(r.id)) as ScrapedBusiness[];
     const label =
       advancedMode && keyword.trim() ? keyword.trim() : "Multi-category discovery";
-    const imported = importBusinessesToPipeline(toImport, label, city);
-    try {
-      await saveOpportunitiesToApi(imported);
-    } catch {
-      setSaveError(
-        "Imported locally, but saving to Supabase failed. Please retry before using this pilot data."
-      );
-    }
-    setImportedCount(imported.length);
-    setStep("imported");
 
-    window.dispatchEvent(
-      new CustomEvent("leadlens-notification", {
-        detail: createNotification(
-          "crm_updated",
-          `${imported.length} businesses imported to pipeline from ${city}.`
-        ),
-      })
-    );
-    window.dispatchEvent(new CustomEvent("leadlens-leads-updated"));
+    try {
+      const existing = await fetchOpportunitiesFromApi();
+      const imported = buildLeadsForImport(toImport, existing);
+      if (imported.length === 0) {
+        setImportedCount(0);
+        setStep("imported");
+        return;
+      }
+
+      const saved = await saveOpportunitiesToApi(imported);
+      saveOpportunityCache([...saved, ...existing.filter((lead) => !saved.some((item) => item.id === lead.id))]);
+      recordImportSession(label, city, toImport.length, saved.length);
+      setImportedCount(saved.length);
+      setStep("imported");
+
+      window.dispatchEvent(
+        new CustomEvent("leadlens-notification", {
+          detail: createNotification(
+            "crm_updated",
+            `${saved.length} businesses imported to pipeline from ${city}.`
+          ),
+        })
+      );
+      window.dispatchEvent(new CustomEvent("leadlens-leads-updated"));
+    } catch (error) {
+      setSaveError(
+        error instanceof Error && error.message
+          ? `Could not save imported opportunities to PostgreSQL. ${error.message}`
+          : "Could not save imported opportunities to PostgreSQL. Check System Status and try again."
+      );
+      return;
+    }
   }
 
   function resetWizard() {

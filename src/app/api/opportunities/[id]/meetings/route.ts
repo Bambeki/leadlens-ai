@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { databaseUnavailableResponse } from "@/lib/api-diagnostics";
 import { createMeeting, listMeetings } from "@/lib/opportunity-db";
 
 export const dynamic = "force-dynamic";
@@ -26,8 +27,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const meetings = await listMeetings(id);
-  return NextResponse.json({ meetings });
+  try {
+    const meetings = await listMeetings(id);
+    return NextResponse.json({ meetings, persistence: "database" });
+  } catch (error) {
+    return databaseUnavailableResponse("list opportunity meetings", error);
+  }
 }
 
 export async function POST(
@@ -41,9 +46,16 @@ export async function POST(
     return NextResponse.json({ error: "Invalid meeting payload" }, { status: 400 });
   }
 
-  const meeting = await createMeeting(id, body);
-  if (!meeting) {
-    return NextResponse.json({ error: "Opportunity not found" }, { status: 404 });
+  try {
+    const meeting = await createMeeting(id, body);
+    if (!meeting) {
+      return NextResponse.json({ error: "Opportunity not found" }, { status: 404 });
+    }
+    return NextResponse.json(
+      { meeting, persistence: "database" },
+      { status: 201 }
+    );
+  } catch (error) {
+    return databaseUnavailableResponse("save meeting", error);
   }
-  return NextResponse.json({ meeting }, { status: 201 });
 }

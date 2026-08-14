@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { databaseUnavailableResponse } from "@/lib/api-diagnostics";
 import { getOpportunity } from "@/lib/opportunity-db";
 
 export const dynamic = "force-dynamic";
@@ -8,11 +9,15 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const opportunity = await getOpportunity(id);
+  try {
+    const opportunity = await getOpportunity(id);
 
-  if (!opportunity) {
-    return NextResponse.json({ error: "Opportunity not found" }, { status: 404 });
+    if (!opportunity) {
+      return NextResponse.json({ error: "Opportunity not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ opportunity, persistence: "database" });
+  } catch (error) {
+    return databaseUnavailableResponse("get opportunity", error);
   }
-
-  return NextResponse.json({ opportunity });
 }

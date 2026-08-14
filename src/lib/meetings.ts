@@ -19,6 +19,8 @@ export interface ScheduledMeeting {
   scheduledBy?: MeetingScheduleSource;
 }
 
+export type MeetingDataSource = "database" | "cache-fallback";
+
 const MEETINGS_KEY = "leadlens-meetings";
 export const MEETINGS_UPDATED_EVENT = "leadlens-meetings-updated";
 
@@ -36,16 +38,29 @@ export function getScheduledMeetings(): ScheduledMeeting[] {
   }
 }
 
-export async function getScheduledMeetingsFromDb(): Promise<ScheduledMeeting[]> {
+export async function getScheduledMeetingsWithSource(): Promise<{
+  meetings: ScheduledMeeting[];
+  source: MeetingDataSource;
+  error: string | null;
+}> {
   try {
     const meetings = await fetchMeetingsFromApi();
     if (isBrowser()) {
       localStorage.setItem(MEETINGS_KEY, JSON.stringify(meetings));
     }
-    return meetings;
-  } catch {
-    return getScheduledMeetings();
+    return { meetings, source: "database", error: null };
+  } catch (error) {
+    return {
+      meetings: getScheduledMeetings(),
+      source: "cache-fallback",
+      error: error instanceof Error ? error.message : "Database unavailable",
+    };
   }
+}
+
+export async function getScheduledMeetingsFromDb(): Promise<ScheduledMeeting[]> {
+  const result = await getScheduledMeetingsWithSource();
+  return result.meetings;
 }
 
 export async function saveScheduledMeeting(meeting: ScheduledMeeting): Promise<ScheduledMeeting> {
@@ -119,14 +134,24 @@ export function getUpcomingMeetings(): ScheduledMeeting[] {
 }
 
 export async function getUpcomingMeetingsFromDb(): Promise<ScheduledMeeting[]> {
+  const result = await getUpcomingMeetingsWithSource();
+  return result.meetings;
+}
+
+export async function getUpcomingMeetingsWithSource(): Promise<{
+  meetings: ScheduledMeeting[];
+  source: MeetingDataSource;
+  error: string | null;
+}> {
   const now = Date.now();
-  const meetings = await getScheduledMeetingsFromDb();
-  return meetings
+  const result = await getScheduledMeetingsWithSource();
+  const meetings = result.meetings
     .filter((m) => new Date(m.scheduledAt).getTime() > now)
     .sort(
       (a, b) =>
         new Date(a.scheduledAt).getTime() - new Date(b.scheduledAt).getTime()
     );
+  return { ...result, meetings };
 }
 
 export function createMeetingRecord(

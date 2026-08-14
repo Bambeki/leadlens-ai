@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { CRMStatus } from "@/lib/types";
+import { databaseUnavailableResponse } from "@/lib/api-diagnostics";
 import { listOpportunityActivity, updateOpportunityStatus } from "@/lib/opportunity-db";
 
 export const dynamic = "force-dynamic";
@@ -25,12 +26,16 @@ export async function PATCH(
     return NextResponse.json({ error: "Invalid opportunity status" }, { status: 400 });
   }
 
-  const opportunity = await updateOpportunityStatus(id, status, body?.note);
-  if (!opportunity) {
-    return NextResponse.json({ error: "Opportunity not found" }, { status: 404 });
-  }
+  try {
+    const opportunity = await updateOpportunityStatus(id, status, body?.note);
+    if (!opportunity) {
+      return NextResponse.json({ error: "Opportunity not found" }, { status: 404 });
+    }
 
-  return NextResponse.json({ opportunity });
+    return NextResponse.json({ opportunity, persistence: "database" });
+  } catch (error) {
+    return databaseUnavailableResponse("update opportunity status", error);
+  }
 }
 
 export async function GET(
@@ -38,8 +43,12 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
-  const activity = await listOpportunityActivity(id);
-  return NextResponse.json({ activity });
+  try {
+    const activity = await listOpportunityActivity(id);
+    return NextResponse.json({ activity, persistence: "database" });
+  } catch (error) {
+    return databaseUnavailableResponse("list opportunity activity", error);
+  }
 }
 
 export async function POST(
