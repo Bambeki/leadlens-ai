@@ -5,7 +5,7 @@ export const PIPELINE_STAGE_DEFS = [
   {
     id: "discovery" as const,
     label: "Discovery",
-    description: "Vehicle branding prospects identified from market data",
+    description: "Prospects identified from market data",
   },
   {
     id: "qualification" as const,
@@ -15,7 +15,7 @@ export const PIPELINE_STAGE_DEFS = [
   {
     id: "opportunity" as const,
     label: "Opportunity Analysis",
-    description: "Vehicle branding gaps and source evidence",
+    description: "Opportunity signals and source evidence",
   },
   {
     id: "outreach" as const,

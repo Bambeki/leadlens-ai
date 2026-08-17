@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LeadLens AI — AI-Powered B2B Lead Discovery for Vehicle Branding",
+  title: "LeadLens AI | Lead Intelligence & Sales Workflow Platform",
   description:
-    "Discover vehicle branding prospects, score opportunities, send outreach, and book meetings — built for vehicle wrap companies.",
+    "AI-powered lead intelligence platform for discovering, qualifying, prioritizing and managing business opportunities.",
 };
 
 export default function RootLayout({

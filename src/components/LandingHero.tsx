@@ -24,26 +24,17 @@ export default function LandingHero() {
       <div className="relative z-10 mx-auto max-w-6xl px-6 pb-20 pt-20 text-center">
         <h1 className="mx-auto max-w-5xl">
           <span className="block text-xs font-semibold uppercase tracking-[0.35em] text-violet-300/90 sm:text-sm">
-            Customer Opportunity Discovery Platform
+            Lead Intelligence & Sales Workflow Platform
           </span>
           <span className="mt-4 block text-3xl font-bold uppercase leading-[1.1] tracking-tight text-white drop-shadow-[0_2px_16px_rgba(0,0,0,0.65)] sm:text-4xl lg:text-5xl">
-            Find the Right Customers Before Your Competitors Do
+            Discover and prioritize the right business opportunities.
           </span>
         </h1>
 
-        <p className="mx-auto mt-4 max-w-2xl text-sm text-slate-400 sm:text-base">
-          Built for professional vehicle branding teams preparing customer
-          outreach with better timing, evidence, and context.
-        </p>
-
-        <h2 className="mx-auto mt-10 max-w-3xl text-2xl font-bold tracking-tight text-white sm:text-3xl">
-          Opportunity discovery for vehicle branding businesses
-        </h2>
-
-        <p className="mx-auto mt-4 max-w-2xl text-base text-slate-400 sm:text-lg">
-          LeadLens AI discovers customer opportunities, explains why they matter,
-          identifies the right contact person, and helps businesses start
-          conversations at the right time.
+        <p className="mx-auto mt-6 max-w-2xl text-base text-slate-300 sm:text-lg">
+          LeadLens AI helps teams discover, evaluate, prioritize and manage B2B
+          opportunities through structured data, evidence, AI-assisted analysis,
+          outreach and CRM workflows.
         </p>
 
         <div className="mt-10 flex flex-wrap items-center justify-center gap-4">

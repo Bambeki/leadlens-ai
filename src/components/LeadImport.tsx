@@ -401,7 +401,7 @@ export default function LeadImport() {
                 Select business types
               </h2>
               <p className="mt-1 text-sm text-slate-400">
-                High-value vehicle branding prospects near {city || "your location"}
+                High-value prospects near {city || "your location"} for the current prototype use case
               </p>
             </div>
             <button

@@ -190,7 +190,7 @@ export default function ROICalculator() {
           <div className="saas-card p-6">
             <h2 className="text-lg font-semibold text-white">Your Inputs</h2>
             <p className="mt-1 text-sm text-slate-400">
-              Adjust sliders to model your vehicle branding business ROI
+              Adjust sliders to model potential ROI from opportunity discovery
             </p>
 
             <div className="mt-6 space-y-6">

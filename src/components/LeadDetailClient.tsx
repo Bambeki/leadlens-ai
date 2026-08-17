@@ -67,7 +67,7 @@ export default function LeadDetailClient({ id }: { id: string }) {
       {lead.imported && (
         <div className="mb-4 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-2">
           <span className="text-sm text-emerald-300">
-            Imported customer opportunity identified for vehicle branding review
+            Imported customer opportunity ready for review
           </span>
         </div>
       )}

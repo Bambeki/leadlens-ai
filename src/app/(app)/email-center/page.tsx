@@ -145,7 +145,7 @@ export default function EmailCenterPage() {
       <div className="mt-8 rounded-xl border border-saas-border bg-white/5 p-6">
         <h2 className="font-semibold text-white">Start Outreach</h2>
         <p className="mt-1 text-sm text-slate-400">
-          Open any customer opportunity to draft, approve, and send personalized vehicle branding emails.
+          Open any customer opportunity to draft, approve, and send personalized outreach.
         </p>
         <Link href="/pipeline" className="mt-4 inline-block">
           <Button variant="secondary" size="sm">

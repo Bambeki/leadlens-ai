@@ -124,11 +124,11 @@ Without switching between multiple tools.
 
 ---
 
-# Vehicle Branding Version (Current Focus)
+# Current Prototype Use Case
 
-The first industry focus is Vehicle Branding and Fleet Graphics.
+The current prototype demonstrates LeadLens through branding and vehicle-branding opportunities.
 
-Target customer:
+Target customer for this initial example:
 
 * Weimar Beschriftung
 
@@ -141,7 +141,7 @@ Example opportunity signals:
 * New warehouses
 * Rebranding initiatives
 
-The goal is to build the best possible Vehicle Branding version before expanding into other industries.
+Vehicle branding is the current specialized industry example used to test the broader LeadLens workflow before applying it to additional B2B use cases.
 
 ---
 
@@ -207,7 +207,7 @@ LeadLens tracks the opportunity through the pipeline.
 
 # Future Industry Expansion
 
-After validating the Vehicle Branding version, LeadLens may expand into:
+After validating this prototype use case, LeadLens may expand into:
 
 ## Event & Catering
 

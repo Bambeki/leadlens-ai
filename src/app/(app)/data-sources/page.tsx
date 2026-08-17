@@ -228,8 +228,9 @@ export default function DataSourcesPage() {
           <div>
             <p className="text-sm font-semibold text-violet-400">3. Act</p>
             <p className="mt-1 text-sm text-slate-300">
-              AI scores each opportunity, runs Vehicle Branding Audits, generates
-              outreach, and tracks progress through the opportunity pipeline.
+              AI scores each opportunity, generates outreach, and tracks
+              progress through the pipeline. The current prototype also runs
+              Vehicle Branding Audits as a specialized use case.
             </p>
           </div>
         </div>

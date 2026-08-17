@@ -1,12 +1,23 @@
 # LeadLens AI
 
-Lead intelligence and sales workflow platform for discovering, evaluating and managing business opportunities.
+AI-powered lead intelligence and sales workflow platform for discovering, qualifying, prioritizing and managing business opportunities.
 
-LeadLens AI is intended as a broader intelligent lead discovery, qualification, outreach, and CRM workflow platform. The product vision is to help businesses discover potential leads, organize relevant lead information, analyze opportunities, score and prioritize prospects, prepare personalized outreach, track communication and responses, manage meetings, and move opportunities through a sales pipeline.
+LeadLens AI helps teams:
+
+- discover potential leads
+- organize lead information and evidence
+- analyze business opportunities
+- score and prioritize prospects
+- prepare personalized outreach
+- manage conversations and customer responses
+- schedule meetings
+- move opportunities through a CRM/sales pipeline
+
+The product is intended as a broader B2B lead-intelligence platform, not a tool only for branding or vehicle-branding companies.
 
 ## Current Prototype Use Case
 
-The current prototype demonstrates LeadLens through branding and vehicle-branding opportunities, providing a focused environment for testing opportunity discovery, analysis, scoring, outreach, and CRM workflows. The underlying product vision extends beyond this initial use case to broader lead-intelligence applications.
+The current prototype demonstrates LeadLens through branding and vehicle-branding opportunities. This focused industry example is used to test lead discovery, opportunity scoring, outreach, and CRM workflows. Vehicle-branding analysis remains available as a specialized module. The underlying platform is intended for broader lead-intelligence applications.
 
 ## Features
 
@@ -18,7 +29,7 @@ The current prototype demonstrates LeadLens through branding and vehicle-brandin
 - **Email Sending & Conversation History** — Send outreach through Resend when configured and track outbound, inbound, and simulated response events
 - **CRM Status & Workflow Management** — Move opportunities through CRM stages, record status history, and keep outreach, meeting, and activity state in sync
 - **Meeting Workflow** — Suggest meeting times, save scheduled meetings, show upcoming meetings, and update opportunity status when meetings are accepted or scheduled
-- **Vehicle-Branding Analysis** — Demonstrate the current specialized use case with prototype image-based vehicle-branding audit outputs
+- **Vehicle-Branding Analysis** — Current specialized prototype use case with image-based vehicle-branding audit outputs
 
 ## Tech Stack
 
@@ -62,7 +73,7 @@ src/
 │   └── (app)/
 │       ├── dashboard/        # Opportunity dashboard
 │       ├── leads/[id]/       # Opportunity detail page
-│       └── analyzer/         # Vehicle branding audit
+│       └── analyzer/         # Vehicle branding audit (prototype use case)
 ├── components/               # UI components
 └── lib/
     ├── base-data.ts          # Empty baseline data until opportunities are imported
@@ -72,4 +83,3 @@ src/
 ```
 
 Imported records are saved through API routes to PostgreSQL via Prisma, with browser storage used as a prototype fallback/cache for some client-side flows.
-

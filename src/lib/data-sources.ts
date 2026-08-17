@@ -12,7 +12,7 @@ export const DATA_PIPELINE_STEPS = [
   {
     id: "analyze",
     label: "Analyze",
-    description: "Vehicle Branding Audit & vehicle opportunity detection",
+    description: "Opportunity analysis, including the vehicle-branding prototype audit",
   },
   {
     id: "score",
@@ -58,7 +58,7 @@ export const DATA_SOURCES = [
     accent: "indigo",
     icon: "website",
     description:
-      "AI web crawl extracts contact details, legal pages, and vehicle photos from each discovered business website.",
+      "AI web crawl extracts contact details, legal pages, and public business context from each discovered website.",
     fields: [
       "Contact page",
       "Impressum page",
@@ -66,7 +66,7 @@ export const DATA_SOURCES = [
       "Services",
       "Vehicle photos",
     ],
-    usedFor: "Contact discovery & vehicle branding audit",
+    usedFor: "Contact discovery and opportunity analysis",
   },
   {
     id: "linkedin",
@@ -75,7 +75,7 @@ export const DATA_SOURCES = [
     accent: "blue",
     icon: "linkedin",
     description:
-      "Company page analysis surfaces key stakeholders and growth signals that indicate vehicle branding budget availability.",
+      "Company page analysis surfaces key stakeholders and growth signals that can indicate expansion or buying intent.",
     fields: [
       "Decision makers",
       "Owner",
@@ -116,7 +116,7 @@ export const DATA_SOURCES = [
   {
     id: "street-view",
     title: "Vehicle Vision / Vehicle Images",
-    subtitle: "Visual vehicle branding analysis",
+    subtitle: "Visual analysis for the vehicle-branding prototype use case",
     accent: "amber",
     icon: "image",
     description:

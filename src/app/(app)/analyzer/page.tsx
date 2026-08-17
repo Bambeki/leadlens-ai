@@ -5,10 +5,11 @@ export default function AnalyzerPage() {
     <div>
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">
-          Vehicle Branding Audit
+          Vehicle Branding Opportunity Analysis
         </h1>
         <p className="mt-1 text-slate-400">
-          Analyze vehicle photos for branding gaps and project value
+          Specialized prototype use case within the broader LeadLens platform.
+          Analyze vehicle photos for branding gaps and project value.
         </p>
       </div>
 
