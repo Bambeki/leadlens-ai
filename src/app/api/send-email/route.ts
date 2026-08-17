@@ -5,6 +5,11 @@ import {
   assertOpportunityAllowsOutreach,
 } from "@/lib/opportunity-db";
 import { emailIncludesPublicResponseLink } from "@/lib/opportunity-lifecycle";
+import {
+  canonicalizeCustomerFacingContent,
+  containsProtectedVercelDeploymentUrl,
+  getPublicAppBaseUrl,
+} from "@/lib/public-app-url";
 import { getEnvValue, getReplyToEmail, getSystemStatus } from "@/lib/system-status";
 
 export const dynamic = "force-dynamic";
@@ -67,6 +72,51 @@ export async function POST(request: Request) {
     );
   }
 
+  const canonicalBase = getPublicAppBaseUrl();
+  const canonicalText = canonicalizeCustomerFacingContent(text, responseToken);
+  const canonicalHtml = html
+    ? canonicalizeCustomerFacingContent(html, responseToken)
+    : html;
+
+  if (
+    containsProtectedVercelDeploymentUrl(canonicalText) ||
+    containsProtectedVercelDeploymentUrl(canonicalHtml ?? "")
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          "Customer response links must use the public application URL. Set NEXT_PUBLIC_APP_URL to the production domain and try again.",
+      },
+      { status: 409 }
+    );
+  }
+
+  if (
+    process.env.VERCEL_ENV === "production" &&
+    !canonicalBase
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          "Customer response links must use the public application URL. Set NEXT_PUBLIC_APP_URL to the production domain and try again.",
+      },
+      { status: 409 }
+    );
+  }
+
+  if (
+    process.env.NEXT_PUBLIC_APP_URL &&
+    !canonicalBase
+  ) {
+    return NextResponse.json(
+      {
+        error:
+          "Customer response links must use the public application URL. Set NEXT_PUBLIC_APP_URL to the production domain and try again.",
+      },
+      { status: 409 }
+    );
+  }
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(to)) {
     return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
@@ -96,8 +146,8 @@ export async function POST(request: Request) {
     from: fromEmail,
     to: [to],
     subject,
-    text,
-    ...(html ? { html } : {}),
+    text: canonicalText,
+    ...(canonicalHtml ? { html: canonicalHtml } : {}),
     ...(replyTo ? { replyTo } : {}),
   });
 

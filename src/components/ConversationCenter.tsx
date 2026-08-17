@@ -322,7 +322,6 @@ export default function ConversationCenter({ lead }: { lead: Lead }) {
       subject: subject.trim(),
       body: body.trim(),
       leadId: lead.publicResponseToken,
-      baseUrl: window.location.origin,
     });
 
     const result = await sendEmailViaApi({

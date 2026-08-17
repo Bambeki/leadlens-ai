@@ -1,5 +1,6 @@
 import { LEADLENS_BRAND } from "./branding";
 import { getCustomerResponseUrls } from "./customer-response";
+import { getPublicAppBaseUrl } from "./public-app-url";
 
 export type EmailCtaId = "consultation" | "audit" | "discovery";
 
@@ -182,9 +183,9 @@ export function buildPlainTextEmail(options: HtmlEmailOptions): string {
   const {
     body,
     leadId,
-    baseUrl,
     ctaConfig = DEFAULT_EMAIL_CTA_CONFIG,
   } = options;
+  const baseUrl = getPublicAppBaseUrl(options.baseUrl);
   const cleaned = stripPlainTextCtaBlock(body);
   const enabled = EMAIL_CTA_DEFINITIONS.filter((cta) => ctaConfig[cta.id]);
 
@@ -209,10 +210,10 @@ export function buildHtmlEmail(options: HtmlEmailOptions): string {
     headline,
     body,
     leadId,
-    baseUrl,
     ctaConfig = DEFAULT_EMAIL_CTA_CONFIG,
     companyName = LEADLENS_BRAND.name,
   } = options;
+  const baseUrl = getPublicAppBaseUrl(options.baseUrl);
 
   const bodyHtml = bodyTextToHtml(body);
   const ctaHtml = renderCtaButtons(leadId, baseUrl, ctaConfig);
@@ -327,6 +328,7 @@ export function prepareEmailPayload(options: {
 }): { subject: string; body: string; html: string } {
   const ctaConfig = options.ctaConfig ?? DEFAULT_EMAIL_CTA_CONFIG;
   const headline = options.subject.trim();
+  const baseUrl = getPublicAppBaseUrl(options.baseUrl);
 
   return {
     subject: options.subject.trim(),
@@ -334,14 +336,14 @@ export function prepareEmailPayload(options: {
       headline,
       body: options.body,
       leadId: options.leadId,
-      baseUrl: options.baseUrl,
+      baseUrl,
       ctaConfig,
     }),
     html: buildHtmlEmail({
       headline,
       body: options.body,
       leadId: options.leadId,
-      baseUrl: options.baseUrl,
+      baseUrl,
       ctaConfig,
     }),
   };

@@ -6,6 +6,7 @@ import {
 } from "./crm-store";
 import { createNotification } from "./notifications";
 import { completeMeetingSchedule } from "./lead-workflow";
+import { getPublicAppBaseUrl, toCanonicalAbsoluteUrl } from "./public-app-url";
 
 export type CustomerAction = "interested" | "schedule" | "declined";
 
@@ -24,25 +25,23 @@ export function getCustomerResponsePaths(token: string) {
   };
 }
 
-/** Relative paths by default; pass baseUrl (no trailing slash) for absolute links in emails. */
+/** Relative paths by default; absolute URLs use the canonical public origin. */
 export function getCustomerResponseUrls(token: string, baseUrl?: string) {
   const paths = getCustomerResponsePaths(token);
-  if (!baseUrl) {
+  const origin = getPublicAppBaseUrl(baseUrl);
+  if (!origin) {
     return paths;
   }
   return {
-    interested: `${baseUrl}${paths.interested}`,
-    schedule: `${baseUrl}${paths.schedule}`,
-    declined: `${baseUrl}${paths.declined}`,
-    hub: `${baseUrl}${paths.hub}`,
+    interested: `${origin}${paths.interested}`,
+    schedule: `${origin}${paths.schedule}`,
+    declined: `${origin}${paths.declined}`,
+    hub: `${origin}${paths.hub}`,
   };
 }
 
 export function toAbsoluteResponseUrl(path: string): string {
-  if (typeof window === "undefined") {
-    return path;
-  }
-  return `${window.location.origin}${path}`;
+  return toCanonicalAbsoluteUrl(path);
 }
 
 export function getMeetingSlotOptions(): MeetingSlot[] {

@@ -51,14 +51,4 @@ export class OutreachBlockedError extends Error {
   }
 }
 
-export function getPublicAppBaseUrl(): string {
-  const explicit = process.env.NEXT_PUBLIC_APP_URL?.trim();
-  if (explicit) return explicit.replace(/\/$/, "");
-
-  const vercel = process.env.VERCEL_URL?.trim();
-  if (vercel) {
-    return vercel.startsWith("http") ? vercel.replace(/\/$/, "") : `https://${vercel}`;
-  }
-
-  return "";
-}
+export { getPublicAppBaseUrl } from "./public-app-url";
